@@ -767,11 +767,14 @@ body { margin: 0; }
       '<h2>ログイン・新規登録</h2>' +
       '<p class="sub">' + esc(msg || '投票・いいね・コメント・投稿にはログインが必要です。') + '</p>' +
       '<p class="hint" style="margin:0 0 12px">初めての方も、メールアドレスを入力するだけで登録されます。パスワードは要りません。</p>' +
+      '<p class="hint" style="margin:0 0 12px">英語のメール（差出人：Supabase）が届きます。本文のリンク（Confirm email address または Log In）を開くと、ログインが完了します。届かないときは、迷惑メールのフォルダも確認してください。</p>' +
       '<form id="login-form" novalidate><div class="field"><label for="l-mail">メールアドレス</label><input type="text" id="l-mail" inputmode="email" autocomplete="email"></div>' +
       '<p class="err" id="l-err" role="alert"></p>' +
       '<button class="cta" type="submit">ログイン・登録用のリンクをメールで送る</button></form>' +
-      '<p class="hint" style="margin:12px 0 8px">または</p>' +
-      '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>';
+      (CFG.ENABLE_GOOGLE === true
+        ? '<p class="hint" style="margin:12px 0 8px">または</p>' +
+          '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>'
+        : '');
   }
   function drawSheet() {
     if (ui.sheet === 'login') { return; }
@@ -1023,7 +1026,15 @@ body { margin: 0; }
       var mail = $('#l-mail').value.trim(), le = $('#l-err');
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { le.textContent = 'メールアドレスの形式を確認してください'; return; }
       var lr = await sb.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: redirectUrl() } });
-      if (lr.error) { le.textContent = 'メールを送れませんでした。時間をおいてもう一度お試しください'; return; }
+      if (lr.error) {
+        var em = String(lr.error.message || ''), cd = String(lr.error.code || '');
+        if (lr.error.status === 429 || cd.indexOf('rate_limit') >= 0 || /rate limit|only request this after/i.test(em)) {
+          le.textContent = 'メールの送信回数の上限に達しています。しばらく（最大1時間ほど）待ってから、もう一度お試しください。何度も押さないでください。';
+        } else {
+          le.textContent = 'メールを送れませんでした。（' + (cd || em || '原因不明').slice(0, 80) + '）';
+        }
+        return;
+      }
       closeSheet();
       toast('リンクをメールで送りました。届かないときは、迷惑メールのフォルダも確認してください');
       return;
