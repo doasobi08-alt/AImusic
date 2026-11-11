@@ -766,11 +766,13 @@ body { margin: 0; }
       '<div class="sheet-top"><span class="pill">ログイン・新規登録</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>' +
       '<h2>ログイン・新規登録</h2>' +
       '<p class="sub">' + esc(msg || '投票・いいね・コメント・投稿にはログインが必要です。') + '</p>' +
-      '<p class="hint" style="margin:0 0 12px">初めての方も、メールアドレスを入力するだけで登録されます。パスワードは要りません。</p>' +
-      '<p class="hint" style="margin:0 0 12px">英語のメール（差出人：Supabase）が届きます。本文のリンク（Confirm email address または Log In）を開くと、ログインが完了します。届かないときは、迷惑メールのフォルダも確認してください。</p>' +
-      '<form id="login-form" novalidate><div class="field"><label for="l-mail">メールアドレス</label><input type="text" id="l-mail" inputmode="email" autocomplete="email"></div>' +
+      '<form id="login-form" novalidate>' +
+      '<div class="field"><label for="l-mail">メールアドレス</label><input type="text" id="l-mail" inputmode="email" autocomplete="email" autocapitalize="off"></div>' +
+      '<div class="field"><label for="l-pass">パスワード（8文字以上）</label><input type="password" id="l-pass" autocomplete="current-password" minlength="8"></div>' +
       '<p class="err" id="l-err" role="alert"></p>' +
-      '<button class="cta" type="submit">ログイン・登録用のリンクをメールで送る</button></form>' +
+      '<button class="cta" type="submit">ログイン</button>' +
+      '<p class="hint" style="margin:4px 0 0">初めての方は、メールアドレスとパスワードを決めて、下の「新規登録」を押してください。</p>' +
+      '<button class="vbtn line" type="button" style="min-height:44px" data-act="signup">新規登録</button></form>' +
       (CFG.ENABLE_GOOGLE === true
         ? '<p class="hint" style="margin:12px 0 8px">または</p>' +
           '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>'
@@ -955,6 +957,39 @@ body { margin: 0; }
     var ng = function () { toast('コピーできませんでした。' + text); };
     try { navigator.clipboard.writeText(text + ' ' + url).then(ok, ng); } catch (e) { ng(); }
   }
+  function authError(er) {
+    var m = String((er && er.message) || ''), c = String((er && er.code) || '');
+    if (er && er.status === 429 || c.indexOf('rate_limit') >= 0) { return '短時間に試した回数が多すぎます。しばらく待ってから、もう一度お試しください。'; }
+    if (/invalid login credentials/i.test(m)) { return 'メールアドレスかパスワードが違います。初めての方は「新規登録」を押してください。'; }
+    if (/already registered/i.test(m) || c === 'user_already_exists') { return 'このメールアドレスは登録済みです。「ログイン」を押してください。'; }
+    if (/password/i.test(m) && /(weak|should|least|short)/i.test(m) || c === 'weak_password') { return 'パスワードが簡単すぎます。8文字以上で、英字と数字を混ぜてください。'; }
+    if (/email not confirmed/i.test(m)) { return 'メールの確認が済んでいません。届いた確認メールのリンクを開いてください。'; }
+    return '処理できませんでした。（' + (c || m || '原因不明').slice(0, 80) + '）';
+  }
+  async function authSubmit(mode) {
+    var mail = $('#l-mail').value.trim(), pass = $('#l-pass').value, le = $('#l-err');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { le.textContent = 'メールアドレスの形式を確認してください'; return; }
+    if (pass.length < 8) { le.textContent = 'パスワードは8文字以上にしてください'; return; }
+    le.textContent = '';
+    var btns = document.querySelectorAll('#login-form button'), i;
+    for (i = 0; i < btns.length; i++) { btns[i].disabled = true; }
+    try {
+      var r = mode === 'signup'
+        ? await sb.auth.signUp({ email: mail, password: pass, options: { emailRedirectTo: redirectUrl() } })
+        : await sb.auth.signInWithPassword({ email: mail, password: pass });
+      if (r.error) { le.textContent = authError(r.error); return; }
+      if (mode === 'signup' && !(r.data && r.data.session)) {
+        le.textContent = '確認メールを送りました。メールのリンクを開いてから、「ログイン」を押してください。';
+        return;
+      }
+      closeSheet();
+      toast(mode === 'signup' ? '登録して、ログインしました' : 'ログインしました');
+    } catch (ex) {
+      le.textContent = '通信できませんでした。もう一度お試しください。';
+    } finally {
+      for (i = 0; i < btns.length; i++) { btns[i].disabled = false; }
+    }
+  }
   var formTeam = 'red';
   function redirectUrl() { return location.origin + location.pathname; }
 
@@ -979,6 +1014,7 @@ body { margin: 0; }
         load();
       });
     }
+    else if (act === 'signup') { authSubmit('signup'); }
     else if (act === 'login-open') { openLogin(''); }
     else if (act === 'auth') { if (D.me) { location.hash = '#my'; } else { openLogin(''); } }
     else if (act === 'logout') { sb.auth.signOut().then(function () { toast('ログアウトしました'); }); }
@@ -1022,23 +1058,7 @@ body { margin: 0; }
       await load();
       return;
     }
-    if (f.id === 'login-form') {
-      var mail = $('#l-mail').value.trim(), le = $('#l-err');
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { le.textContent = 'メールアドレスの形式を確認してください'; return; }
-      var lr = await sb.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: redirectUrl() } });
-      if (lr.error) {
-        var em = String(lr.error.message || ''), cd = String(lr.error.code || '');
-        if (lr.error.status === 429 || cd.indexOf('rate_limit') >= 0 || /rate limit|only request this after/i.test(em)) {
-          le.textContent = 'メールの送信回数の上限に達しています。しばらく（最大1時間ほど）待ってから、もう一度お試しください。何度も押さないでください。';
-        } else {
-          le.textContent = 'メールを送れませんでした。（' + (cd || em || '原因不明').slice(0, 80) + '）';
-        }
-        return;
-      }
-      closeSheet();
-      toast('リンクをメールで送りました。届かないときは、迷惑メールのフォルダも確認してください');
-      return;
-    }
+    if (f.id === 'login-form') { await authSubmit('login'); return; }
     if (f.id === 'name-form') {
       var nm = $('#n-text').value.trim();
       if (!nm) { return; }
