@@ -255,6 +255,7 @@ body { margin: 0; }
     <button class="pill" id="pill" data-act="auth" type="button">ログイン</button>
   </header>
   <main id="view"></main>
+  <p class="note"><a href="terms.html">利用規約</a>・<a href="terms.html#rights">投稿ルール</a>・<a href="terms.html#privacy">プライバシー</a>・<a href="terms.html#report">通報・権利侵害の申し立て</a></p>
 </div>
 
 <div class="foot"><div class="foot-in">
@@ -273,7 +274,7 @@ body { margin: 0; }
   'use strict';
   var DAILY = 3;
   var GENRES = ['J-POP', 'ロック', '演歌', 'バラード', 'アニソン'];
-  var PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['y', '年間']];
+  var PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['y', '年間'], ['gp', '年間GP']];
   var TABS = [
     ['home', 'ホーム', '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>'],
     ['ranking', 'ランキング', '<path d="M7 20V10M12 20V4M17 20v-7"/>'],
@@ -330,7 +331,7 @@ body { margin: 0; }
   if (CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient) {
     try { sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY); } catch (e) { sb = null; }
   }
-  var D = { tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, ready: false, err: '', sig: '' };
+  var D = { tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {}, reveal: false, final: [], ready: false, err: '', sig: '' };
   var ui = { tab: 'home', team: 'all', period: 'w', genre: 'all', sheet: null };
 
   function num(x) { return typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0; }
@@ -581,7 +582,8 @@ body { margin: 0; }
   }
 
   function viewRanking() {
-    var list = visible().filter(function (t) {
+    var gp = ui.period === 'gp';
+    var list = gp ? [] : visible().filter(function (t) {
       return (ui.team === 'all' || t.team === ui.team) && (ui.genre === 'all' || t.genre === ui.genre);
     }).sort(function (a, b) { return votesOf(b, ui.period) - votesOf(a, ui.period); });
     var teams = [['all', '総合', ''], ['red', '紅組', 'red'], ['ice', '白組', 'ice']];
@@ -595,9 +597,27 @@ body { margin: 0; }
       '<div class="chips" role="group" aria-label="ジャンル">' + ['all'].concat(GENRES).map(function (g) {
         return '<button class="chip" data-act="f-genre" data-v="' + g + '" aria-pressed="' + (ui.genre === g) + '">' + (g === 'all' ? 'すべて' : g) + '</button>';
       }).join('') + '</div>' +
-      (list.length ? '<ul class="list">' + list.map(function (t, i) { return row(t, i + 1, ui.period); }).join('') + '</ul>'
+      (gp ? gpBody() : list.length ? '<ul class="list">' + list.map(function (t, i) { return row(t, i + 1, ui.period); }).join('') + '</ul>'
         : '<p class="sub">この条件に合う曲はまだありません。</p>') +
       '</div>';
+  }
+
+  function gpBody() {
+    if (!D.reveal && !D.admin) {
+      return '<div class="emptybox"><p><b>年間グランプリの結果は、年末の発表までお待ちください</b></p>' +
+        '<p class="hint">一般投票と審査員評価を合わせて決まります。ルールは<a href="terms.html#grand">こちら</a>。</p></div>';
+    }
+    if (!D.final.length) { return '<p class="sub">集計できる曲がまだありません。</p>'; }
+    return (D.reveal ? '' : '<p class="hint">運営者にだけ表示しています。まだ全員には公開されていません。</p>') +
+      '<ul class="list">' + D.final.map(function (f) {
+        var t = byId(f.track_id);
+        if (!t) { return ''; }
+        var rk = num(f.rank);
+        return '<li class="row"><span class="rank ' + (rk <= 3 ? 'm' + rk : '') + '">' + rk + '</span>' +
+          '<button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
+          '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・一般 ' + Number(f.pub_score).toFixed(1) + '／審査員 ' + Number(f.judge_score).toFixed(1) + '</small></span></button>' +
+          badge(t.team) + '<span class="rv tnum">' + Number(f.total).toFixed(1) + '点</span></li>';
+      }).join('') + '</ul><p class="hint">総合点は100点満点です。一般投票と審査員評価を合わせた点数で、割合は<a href="terms.html#grand">ルール</a>に書いてあります。</p>';
   }
 
   function matchCard(a, b, compact) {
@@ -643,7 +663,7 @@ body { margin: 0; }
       '<div class="checks">' +
       '<label class="check"><input type="checkbox" id="c-ai"><span>この曲はAIで生成しました</span></label>' +
       '<label class="check"><input type="checkbox" id="c-right"><span>この曲の権利は自分にあり、他人の曲や声をまねていません</span></label>' +
-      '<label class="check"><input type="checkbox" id="c-term"><span>再生・共有・イベントでの利用を許可します（著作権は投稿者に残ります）</span></label></div>' +
+      '<label class="check"><input type="checkbox" id="c-term"><span>再生・共有・イベントでの利用を許可します（著作権は投稿者に残ります）。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label></div>' +
       '<p class="err" id="f-err" role="alert"></p>' +
       '<button class="cta" type="submit" id="f-go">審査に出す</button></form>';
   }
@@ -656,6 +676,23 @@ body { margin: 0; }
     var liked = all.filter(function (t) { return isLiked(t.id); });
     var mine = all.filter(function (t) { return t.mine; });
     var pending = D.admin ? all.filter(function (t) { return t.status === '審査中'; }) : [];
+    var judgeSec = '';
+    if (D.judge) {
+      var jl = visible();
+      judgeSec = '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>審査員：評価する曲</h3></div>' +
+        '<p class="sub">曲を開くと、3項目を5段階で評価できます。評価は他の人には見えません。</p>' +
+        (jl.length ? '<ul class="list">' + jl.map(function (t) {
+          var sc = D.myScores[t.id];
+          return '<li class="row"><button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
+            '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small></span></button>' +
+            '<span class="status">' + (sc ? '評価済 ' + (sc.c1 + sc.c2 + sc.c3) + '/15' : '未評価') + '</span></li>';
+        }).join('') + '</ul>' : '<p class="sub">公開中の曲がまだありません。</p>') + '</section>';
+    }
+    var adminSec = D.admin
+      ? '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>年間グランプリ（運営用）</h3></div>' +
+        '<p class="sub">現在：' + (D.reveal ? '結果を公開中' : '結果は非公開') + '</p>' +
+        '<button class="vbtn ' + (D.reveal ? 'line' : 'gold') + '" style="min-height:44px;width:100%" data-act="reveal">' + (D.reveal ? '結果を非公開に戻す' : '結果を全員に公開する') + '</button></section>'
+      : '';
     var review = pending.length
       ? '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>審査待ち（運営用）</h3></div><ul class="list">' +
         pending.map(function (t) {
@@ -669,7 +706,7 @@ body { margin: 0; }
       '<div class="box"><small>今日の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div>' +
       '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div></div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
-      review +
+      review + judgeSec + adminSec +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>投稿した曲</h3></div>' +
       (mine.length ? '<ul class="list">' + mine.map(function (t) { return row(t, 0, 'y'); }).join('') + '</ul>' : '<p class="sub">まだ投稿がありません。「投稿」から曲を登録できます。</p>') + '</section>' +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>いいねした曲</h3></div>' +
@@ -755,10 +792,24 @@ body { margin: 0; }
       '<button class="vbtn gold" data-act="vote" data-id="' + esc(t.id) + '"' + dis + (votable ? '' : ' disabled') + '>' + ICON.vote + '投票する</button>' +
       '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
       '<p class="hint">' + (D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます') + '</p>' +
+      (D.judge && votable ? judgeForm(t) : '') +
       '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
       cs.map(function (c) { return '<li><small>' + esc(c.n) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
       (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
     syncPlayer();
+  }
+  function judgeForm(t) {
+    var sc = D.myScores[t.id] || { c1: 3, c2: 3, c3: 3, comment: '' };
+    function sel(id, label, v) {
+      var o = '';
+      for (var i = 1; i <= 5; i++) { o += '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + i + '</option>'; }
+      return '<div class="field"><label for="' + id + '">' + label + '</label><select id="' + id + '">' + o + '</select></div>';
+    }
+    return '<div class="sec"><div class="sec-h"><h3>審査員評価</h3></div>' +
+      '<form id="jform" data-id="' + esc(t.id) + '"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">' +
+      sel('j1', '完成度', sc.c1) + sel('j2', '独創性', sc.c2) + sel('j3', '心に残る', sc.c3) + '</div>' +
+      '<div class="field"><label for="j-text">講評（任意・200字まで）</label><input type="text" id="j-text" maxlength="200" value="' + esc(sc.comment || '') + '"></div>' +
+      '<button class="cta" type="submit">評価を保存する</button></form></div>';
   }
   function closeSheet() {
     ui.sheet = null;
@@ -801,11 +852,25 @@ body { margin: 0; }
         (r[3].data || []).forEach(function (l) { likes[String(l.track_id)] = true; });
         leftNow = Math.max(0, DAILY - num(r[4].data));
       }
-      var sig = JSON.stringify([tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin]);
+      var reveal = false, myScores = {}, fin = [];
+      try {
+        var rv = await sb.from('app_settings').select('value').eq('key', 'reveal').maybeSingle();
+        reveal = !!(rv.data && (rv.data.value === true || rv.data.value === 'true'));
+        if (D.me && D.judge) {
+          var js = await sb.from('judge_scores').select('track_id,c1,c2,c3,comment');
+          (js.data || []).forEach(function (x) { myScores[String(x.track_id)] = { c1: num(x.c1), c2: num(x.c2), c3: num(x.c3), comment: x.comment || '' }; });
+        }
+        if (reveal || D.admin) {
+          var fr = await sb.rpc('final_ranking');
+          fin = fr.error ? [] : (fr.data || []);
+        }
+      } catch (x) { /* 追加分のSQL(schema_judges.sql)が未実行でも、ほかの機能は動かします */ }
+      var sig = JSON.stringify([tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
+        D.reveal = reveal; D.myScores = myScores; D.final = fin;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -819,18 +884,20 @@ body { margin: 0; }
     changeTimer = setTimeout(function () {
       if (ui.tab !== 'submit') { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン'; }
       var ci = $('#c-text'), li = $('#l-mail');
-      if (ui.sheet && ui.sheet !== 'login' && !(ci && ci.value)) { drawSheet(); }
+      var ae = document.activeElement, editing = !!(ae && ae.closest && ae.closest('#jform'));
+      if (ui.sheet && ui.sheet !== 'login' && !(ci && ci.value) && !editing) { drawSheet(); }
       if (!li && ui.tab === 'submit' && D.me && !$('#submit-form')) { render(); }
     }, 40);
   }
   async function loadMe() {
     var s = await sb.auth.getSession();
     var u = s && s.data && s.data.session ? s.data.session.user : null;
-    D.me = u ? u.id : null; D.name = ''; D.admin = false;
+    D.me = u ? u.id : null; D.name = ''; D.admin = false; D.judge = false;
     if (D.me) {
-      var p = await Promise.all([sb.from('profiles').select('name').eq('id', D.me).maybeSingle(), sb.rpc('is_admin')]);
+      var p = await Promise.all([sb.from('profiles').select('name').eq('id', D.me).maybeSingle(), sb.rpc('is_admin'), sb.rpc('is_judge')]);
       D.name = (p[0].data && p[0].data.name) || '';
       D.admin = p[1].data === true;
+      D.judge = p[2].data === true;
     }
   }
 
@@ -900,6 +967,14 @@ body { margin: 0; }
     else if (act === 'share') { share(id); }
     else if (act === 'approve') { setStatus(id, 'approved', '承認しました。みんなの画面に公開されます'); }
     else if (act === 'reject') { setStatus(id, 'rejected', '却下しました'); }
+    else if (act === 'reveal') {
+      sb.rpc('set_reveal', { p_value: !D.reveal }).then(function (r) {
+        if (r.error) { toast(errText(r.error)); return; }
+        toast(D.reveal ? '結果を非公開に戻しました' : '結果を全員に公開しました');
+        D.sig = '';
+        load();
+      });
+    }
     else if (act === 'login-open') { openLogin(''); }
     else if (act === 'auth') { if (D.me) { location.hash = '#my'; } else { openLogin(''); } }
     else if (act === 'logout') { sb.auth.signOut().then(function () { toast('ログアウトしました'); }); }
@@ -928,6 +1003,19 @@ body { margin: 0; }
       if (!text) { return; }
       inp.value = '';
       await addComment(f.getAttribute('data-id'), text);
+      return;
+    }
+    if (f.id === 'jform') {
+      var row = {
+        judge_id: D.me, track_id: f.getAttribute('data-id'),
+        c1: Number($('#j1').value), c2: Number($('#j2').value), c3: Number($('#j3').value),
+        comment: $('#j-text').value.trim().slice(0, 200) || null, updated_at: new Date().toISOString()
+      };
+      var jr = await sb.from('judge_scores').upsert(row);
+      if (jr.error) { toast(errText(jr.error)); return; }
+      toast('評価を保存しました');
+      D.sig = '';
+      await load();
       return;
     }
     if (f.id === 'login-form') {
