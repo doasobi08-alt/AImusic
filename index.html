@@ -252,7 +252,7 @@ body { margin: 0; }
 <div class="app">
   <header class="top">
     <div class="wm"><span class="wm-en">AI MUSIC</span><span class="wm-jp"><i>紅</i><i>白</i>歌合戦</span></div>
-    <button class="pill" id="pill" data-act="auth" type="button">ログイン</button>
+    <button class="pill" id="pill" data-act="auth" type="button">ログイン・登録</button>
   </header>
   <main id="view"></main>
   <p class="note"><a href="terms.html">利用規約</a>・<a href="terms.html#rights">投稿ルール</a>・<a href="terms.html#privacy">プライバシー</a>・<a href="terms.html#report">通報・権利侵害の申し立て</a></p>
@@ -645,7 +645,7 @@ body { margin: 0; }
 
   function viewSubmit() {
     if (!D.me) {
-      return '<div class="emptybox"><p>曲の投稿にはログインが必要です。</p><button class="cta" data-act="login-open">ログインする</button></div>';
+      return '<div class="emptybox"><p>曲の投稿にはログインが必要です。</p><button class="cta" data-act="login-open">ログイン・新規登録する</button></div>';
     }
     return '<form id="submit-form" novalidate>' +
       '<p class="sub">Suno・Udioなどで作った曲を登録します。運営の審査を通ると公開されます。</p>' +
@@ -670,7 +670,7 @@ body { margin: 0; }
 
   function viewMy() {
     if (!D.me) {
-      return '<div class="emptybox"><p>ログインすると、投票・いいね・投稿の記録がここに並びます。</p><button class="cta" data-act="login-open">ログインする</button></div>';
+      return '<div class="emptybox"><p>ログインすると、投票・いいね・投稿の記録がここに並びます。</p><button class="cta" data-act="login-open">ログイン・新規登録する</button></div>';
     }
     var all = D.tracks;
     var liked = all.filter(function (t) { return isLiked(t.id); });
@@ -739,7 +739,7 @@ body { margin: 0; }
     $('#tabs').innerHTML = TABS.map(function (t) {
       return '<a class="tab" href="#' + t[0] + '"' + (ui.tab === t[0] ? ' aria-current="page"' : '') + '><svg viewBox="0 0 24 24" aria-hidden="true">' + t[2] + '</svg>' + t[1] + '</a>';
     }).join('');
-    $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン';
+    $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録';
     tickCountdown();
   }
   function rerenderKeepForm() { if (ui.tab !== 'submit') { render(); } }
@@ -763,14 +763,15 @@ body { margin: 0; }
   }
   function drawLogin(msg) {
     $('#sheet').innerHTML =
-      '<div class="sheet-top"><span class="pill">ログイン</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>' +
-      '<h2>ログイン</h2>' +
+      '<div class="sheet-top"><span class="pill">ログイン・新規登録</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>' +
+      '<h2>ログイン・新規登録</h2>' +
       '<p class="sub">' + esc(msg || '投票・いいね・コメント・投稿にはログインが必要です。') + '</p>' +
+      '<p class="hint" style="margin:0 0 12px">初めての方も、メールアドレスを入力するだけで登録されます。パスワードは要りません。</p>' +
       '<form id="login-form" novalidate><div class="field"><label for="l-mail">メールアドレス</label><input type="text" id="l-mail" inputmode="email" autocomplete="email"></div>' +
       '<p class="err" id="l-err" role="alert"></p>' +
-      '<button class="cta" type="submit">ログイン用のリンクをメールで送る</button></form>' +
+      '<button class="cta" type="submit">ログイン・登録用のリンクをメールで送る</button></form>' +
       '<p class="hint" style="margin:12px 0 8px">または</p>' +
-      '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン</button>';
+      '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>';
   }
   function drawSheet() {
     if (ui.sheet === 'login') { return; }
@@ -882,7 +883,7 @@ body { margin: 0; }
   function changed() {
     clearTimeout(changeTimer);
     changeTimer = setTimeout(function () {
-      if (ui.tab !== 'submit') { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン'; }
+      if (ui.tab !== 'submit') { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
       var ci = $('#c-text'), li = $('#l-mail');
       var ae = document.activeElement, editing = !!(ae && ae.closest && ae.closest('#jform'));
       if (ui.sheet && ui.sheet !== 'login' && !(ci && ci.value) && !editing) { drawSheet(); }
@@ -1024,7 +1025,7 @@ body { margin: 0; }
       var lr = await sb.auth.signInWithOtp({ email: mail, options: { emailRedirectTo: redirectUrl() } });
       if (lr.error) { le.textContent = 'メールを送れませんでした。時間をおいてもう一度お試しください'; return; }
       closeSheet();
-      toast('ログイン用のリンクを送りました。メールを確認してください');
+      toast('リンクをメールで送りました。届かないときは、迷惑メールのフォルダも確認してください');
       return;
     }
     if (f.id === 'name-form') {
