@@ -1,0 +1,14 @@
+{
+  "name": "AI MUSIC 紅白歌合戦",
+  "short_name": "AI紅白",
+  "description": "AIで生まれた名曲を聴いて、応援して、投票して。みんなで創るAI音楽の祭典。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f0b1a",
+  "theme_color": "#0f0b1a",
+  "lang": "ja",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
