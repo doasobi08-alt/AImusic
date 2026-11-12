@@ -343,6 +343,10 @@ a.rowmain { text-decoration: none; color: inherit; }
   .st-chara .mascot { animation: bob 1.2s ease-in-out infinite alternate; }
   @keyframes bob { to { transform: translateY(-4px); } }
 }
+.cover { position: relative; overflow: hidden; }
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pv { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; margin-top: 10px; }
+.thumbrow { display: flex; align-items: center; gap: 12px; }
 </style>
 
 </head>
@@ -446,10 +450,11 @@ a.rowmain { text-decoration: none; color: inherit; }
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, ready: false, err: '', sig: ''
   };
-  var ui = { tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
+  var ui = { pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
+  var MEDIA = true, PVOK = true;
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
   function num(x) { return typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0; }
@@ -464,7 +469,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       title: title, artist: String(r.artist || '名無し'), team: r.team === 'red' ? 'red' : (r.team === 'ice' ? 'ice' : null),
       genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'その他', tool: String(r.tool || 'その他'),
       status: r.status === 'approved' ? '公開' : (r.status === 'rejected' ? '非公開' : '審査中'),
-      url: audioUrl(r.audio_path), hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
+      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
     };
   }
   function byId(id) {
@@ -475,6 +480,17 @@ a.rowmain { text-decoration: none; color: inherit; }
   function likesOf(t) { var s = D.scores[t.id]; return s ? num(s.likes) : 0; }
   function playsOf(t) { var p = D.plays[t.id]; return p ? num(p.total) : 0; }
   function pop(t) { var p = D.plays[t.id]; return (p ? num(p.w) * 2 + num(p.total) : 0) + likesOf(t) * 3 + votesOf(t, 'y') * 2; }
+  function pvLikeN(p, period) { var x = D.pvScore[p.id]; return x ? num(x[period]) : 0; }
+  function pvById(id) { for (var i = 0; i < D.pvs.length; i++) { if (D.pvs[i].id === String(id)) { return D.pvs[i]; } } return null; }
+  function pvsOf(t) {
+    return D.pvs.filter(function (p) { return p.tid === t.id && p.status === 'approved'; })
+      .sort(function (a, b) { return pvLikeN(b, 'total') - pvLikeN(a, 'total') || b.n - a.n; });
+  }
+  function pvRank(period) {
+    return D.pvs.filter(function (p) { return p.status === 'approved' && byId(p.tid) && byId(p.tid).status === '公開'; })
+      .sort(function (a, b) { return pvLikeN(b, period) - pvLikeN(a, period) || pvLikeN(b, 'total') - pvLikeN(a, 'total') || b.n - a.n; });
+  }
+  function pvStatus(p) { return p.status === 'approved' ? '公開' : (p.status === 'rejected' ? '非公開' : '承認待ち'); }
   function isLiked(id) { return !!D.myLikes[String(id)]; }
   function left() { return D.me ? D.left : DAILY; }
   function commentsFor(t) { return D.comments[t.id] || []; }
@@ -562,6 +578,7 @@ a.rowmain { text-decoration: none; color: inherit; }
   }
   function startPlayback() {
     if (!P.t) { return; }
+    Array.prototype.forEach.call(document.querySelectorAll('#sheet video'), function (v) { v.pause(); });
     if (P.el) {
       P.el.play().catch(function () { toast('この音源は再生できませんでした'); P.playing = false; syncPlayer(); });
       P.playing = true;
@@ -732,7 +749,8 @@ a.rowmain { text-decoration: none; color: inherit; }
   /* ---------- components ---------- */
   function cover(t, size) {
     var cls = size === 'lg' ? 'lg' : size === 'md' ? 'md' : '';
-    return '<span class="cover ' + cls + '" style="--h:' + t.hue + '" aria-hidden="true">' + esc(Array.from(t.title)[0]) + '</span>';
+    return '<span class="cover ' + cls + '" style="--h:' + t.hue + '" aria-hidden="true">' + esc(Array.from(t.title)[0]) +
+      (t.cover ? '<img src="' + esc(t.cover) + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</span>';
   }
   function badge(team) {
     return '<span class="badge ' + team + '" title="' + (team === 'red' ? '紅組' : '白組') + '">' + (team === 'red' ? '紅' : '白') + '</span>';
@@ -811,6 +829,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     var fresh = vs.slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 12);
     var hot = vs.slice().sort(function (a, b) { return pop(b) - pop(a); }).slice(0, 5);
     var ars = artists().slice(0, 12);
+    var pvTop = PVOK ? pvRank('w').slice(0, 3) : [];
     var recent = D.recent.map(byId).filter(function (t) { return t && t.status === '公開'; });
     var h = head + '<section class="sec" style="margin-top:14px">' + countdownCard() + '</section>';
     if (recent.length) { h += '<section class="sec"><div class="sec-h"><h3>最近聴いた曲</h3></div>' + shelf(recent, 'recent') + '</section>'; }
@@ -818,11 +837,37 @@ a.rowmain { text-decoration: none; color: inherit; }
     h += '<section class="sec"><div class="sec-h"><h3>人気の曲</h3></div>' + listHtml(hot, 'hot', { rank: true, right: playsRight }) + '</section>';
     h += '<section class="sec"><div class="sec-h"><h3>ジャンル</h3><a href="#search">すべて見る</a></div><div class="chips">' +
       GENRES.map(function (g) { return '<button class="chip" data-act="sg-go" data-v="' + esc(g) + '">' + esc(g) + '</button>'; }).join('') + '</div></section>';
+    if (PVOK) {
+      h += '<section class="sec"><div class="sec-h"><h3>みんなのPV</h3><a href="#pv">ランキング</a></div>' +
+        (pvTop.length ? '<ul class="list">' + pvTop.map(function (p, i) { return pvRow(p, i, { rank: true, period: 'w' }); }).join('') + '</ul>'
+          : '<p class="sub">好きな曲のPVを作って投稿できます。曲の詳細画面の「PVを投稿する」から。</p>') + '</section>';
+    }
     if (ars.length) { h += '<section class="sec"><div class="sec-h"><h3>注目のアーティスト</h3></div><div class="shelf">' + ars.map(artistCard).join('') + '</div></section>'; }
     h += '<section class="sec">' + eventBanner() + '</section>';
     return h;
   }
 
+  function pvRow(p, i, o) {
+    o = o || {};
+    var t = byId(p.tid);
+    if (!t) { return ''; }
+    var rk = o.rank ? '<span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' : '';
+    var right = p.status !== 'approved' ? '<span class="status">' + pvStatus(p) + '</span>' : '<span class="rv tnum">' + fmt(pvLikeN(p, o.period || 'total')) + '♥</span>';
+    return '<li class="row">' + rk + '<button class="rowmain" data-act="pv-open" data-id="' + esc(p.id) + '" aria-label="' + esc(p.title) + 'のPVを見る">' + cover(t) +
+      '<span class="rt"><b>' + esc(p.title) + '</b><small>' + esc(t.title) + '・' + esc(t.artist) + '／PV：' + esc(p.cname) + '</small></span></button>' + right +
+      '<button class="pbtn" data-act="pv-open" data-id="' + esc(p.id) + '" aria-label="PVを見る">' + ICON.play + '</button></li>';
+  }
+  function viewPv() {
+    if (!PVOK) { return '<h2 class="ttl">みんなのPV</h2>' + empty('この機能の準備（schema_pv.sql）がまだ終わっていません。'); }
+    var list = pvRank(ui.pvp);
+    return '<h2 class="ttl">PVランキング</h2><div class="stack">' +
+      '<p class="sub">投稿された曲に、ほかのユーザーが作ったPVのランキングです。好きな曲の画面から、あなたもPVを投稿できます。</p>' +
+      '<div class="seg" role="group" aria-label="期間">' + [['w', '週間'], ['total', '総合']].map(function (x) {
+        return '<button data-act="pvp" data-v="' + x[0] + '" aria-pressed="' + (ui.pvp === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>' +
+      (list.length ? '<ul class="list">' + list.map(function (p, i) { return pvRow(p, i, { rank: true, period: ui.pvp }); }).join('') + '</ul>'
+        : empty('まだ公開されたPVがありません。好きな曲の詳細画面から「PVを投稿する」を押してみましょう。', '<a class="cta" href="#search">曲を探す</a>')) + '</div>';
+  }
   function searchBody() {
     var q = ui.q.trim().toLowerCase(), vs = visible();
     if (!q && ui.sg === 'all') {
@@ -980,13 +1025,18 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<p class="hint">無料プランやわからない場合は、審査で権利の確認が入ります。</p></div>' +
       '<div class="field"><label for="f-file">音源ファイル（mp3・wavなど、20MBまで）</label><input type="file" id="f-file" accept="audio/*">' +
       '<p class="hint">選ばない場合は、サンプル音で再生されます。</p></div>' +
+      (MEDIA ? '<div class="field"><label for="f-cover">曲のアイコン（任意・画像3MBまで）</label><input type="file" id="f-cover" accept="image/png,image/jpeg,image/webp,image/gif">' +
+      '<p class="hint">選ばない場合は、曲名の頭文字のアイコンになります。あとから変更できます。</p></div>' +
+      '<div class="field"><label for="f-video">PV（任意）</label><input type="file" id="f-video" accept="video/mp4,video/webm,video/quicktime">' +
+      '<input type="text" id="f-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
+      '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。大きい動画は、YouTubeのURLで登録してください。</p></div>' : '') +
       '<div class="evpick"><label class="check"><input type="checkbox" id="c-entry"><span><b>AI紅白歌合戦にエントリーする</b>（任意）<br><small>年末のイベントに、この曲で出場します。</small></span></label>' +
       '<div id="entry-team" hidden><div class="seg" role="radiogroup" aria-label="陣営">' +
       '<button type="button" data-act="s-team" data-v="red" data-team="red" aria-pressed="true">紅組</button>' +
       '<button type="button" data-act="s-team" data-v="ice" data-team="ice" aria-pressed="false">白組</button></div></div></div>' +
       '<div class="checks">' +
       '<label class="check"><input type="checkbox" id="c-ai"><span>この曲はAIで生成しました</span></label>' +
-      '<label class="check"><input type="checkbox" id="c-right"><span>この曲の権利は自分にあり、他人の曲や声をまねていません</span></label>' +
+      '<label class="check"><input type="checkbox" id="c-right"><span>この曲（アイコン画像・PVを含む）の権利は自分にあり、他人の曲や声をまねていません</span></label>' +
       '<label class="check"><input type="checkbox" id="c-term"><span>再生・共有・イベントでの利用を許可します（著作権は投稿者に残ります）。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label></div>' +
       '<p class="err" id="f-err" role="alert"></p>' +
       '<button class="cta" type="submit" id="f-go">審査に出す</button></form>';
@@ -1025,14 +1075,34 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div>' +
       '<div class="box"><small>今日の紅白の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div></div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
-      review + judgeSec + adminSec +
+      review + pvReview() + judgeSec + adminSec + myPvs() +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>アカウント</h3></div><div class="stack">' +
       '<button class="vbtn line" style="min-height:44px" data-act="chpw">パスワードを変更する</button>' +
       '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div></section></div>';
   }
 
-  var VIEWS = { home: viewHome, search: viewSearch, library: viewLibrary, event: viewEvent, my: viewMy, submit: viewSubmit, artist: viewArtist, playlist: viewPlaylist };
-  var TAB_OF = { home: 'home', search: 'search', library: 'library', event: 'event', my: 'my', submit: 'library', artist: 'home', playlist: 'library' };
+  function pvReview() {
+    if (!PVOK) { return ''; }
+    var mineT = {};
+    D.tracks.forEach(function (t) { if (t.mine) { mineT[t.id] = true; } });
+    var pend = D.pvs.filter(function (p) { return p.status === 'pending' && (D.admin || mineT[p.tid]) && byId(p.tid); });
+    if (!pend.length) { return ''; }
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>PVの承認待ち</h3></div><p class="sub">あなたの曲に届いたPVです。内容を確認して、公開するか選んでください。</p><ul class="list">' +
+      pend.map(function (p) {
+        var t = byId(p.tid);
+        return '<li class="row"><button class="rowmain" data-act="pv-open" data-id="' + esc(p.id) + '">' + cover(t) + '<span class="rt"><b>' + esc(p.title) + '</b><small>' + esc(t.title) + '／PV：' + esc(p.cname) + '</small></span></button>' +
+          '<button class="vbtn line" style="flex:none;padding:0 12px" data-act="pv-ng" data-id="' + esc(p.id) + '">却下</button>' +
+          '<button class="vbtn gold" style="flex:none;padding:0 14px" data-act="pv-ok" data-id="' + esc(p.id) + '">公開</button></li>';
+      }).join('') + '</ul></section>';
+  }
+  function myPvs() {
+    if (!PVOK) { return ''; }
+    var mine = D.pvs.filter(function (p) { return p.mine && byId(p.tid); });
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>作ったPV</h3></div>' +
+      (mine.length ? '<ul class="list">' + mine.map(function (p) { return pvRow(p, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだありません。好きな曲の詳細画面から、PVを投稿できます。</p>') + '</section>';
+  }
+  var VIEWS = { home: viewHome, search: viewSearch, library: viewLibrary, event: viewEvent, my: viewMy, pv: viewPv, submit: viewSubmit, artist: viewArtist, playlist: viewPlaylist };
+  var TAB_OF = { home: 'home', search: 'search', library: 'library', event: 'event', my: 'my', pv: 'home', submit: 'library', artist: 'home', playlist: 'library' };
 
   function viewSetup() {
     var why;
@@ -1068,7 +1138,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     drawSheet();
     var c = $('#sheet .x, #sheet input'); if (c) { c.focus(); }
   }
-  function closeSheet() { ui.sheet = null; $('#veil').hidden = true; }
+  function closeSheet() { ui.sheet = null; ui.pv = null; $('#veil').hidden = true; }
   function openLogin(msg) { openSheet({ k: 'login', msg: msg || '' }); }
   function sheetTop(label) {
     return '<div class="sheet-top"><span class="pill">' + esc(label) + '</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>';
@@ -1082,6 +1152,9 @@ a.rowmain { text-decoration: none; color: inherit; }
     else if (s.k === 'menu') { drawMenu(s); }
     else if (s.k === 'plpick' || s.k === 'plnew') { drawPl(s); }
     else if (s.k === 'track') { drawTrack(s); }
+    else if (s.k === 'media') { drawMedia(s); }
+    else if (s.k === 'pvnew') { drawPvNew(s); }
+    else if (s.k === 'pvplay') { drawPvPlay(s); }
   }
   function drawLogin(msg) {
     $('#sheet').innerHTML = sheetTop('ログイン・新規登録') +
@@ -1129,6 +1202,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="who" style="margin:4px 0 8px">' + cover(t, 'md') + '<span class="rt"><b style="color:var(--fg)">' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small></span></div>' +
       '<div class="menu">' + item('m-play', '再生する') + item('m-next', '次に再生') +
       (t.status === '公開' ? item('m-pl', 'プレイリストに追加') + item('m-like', lk ? 'お気に入りから外す' : 'お気に入りに追加') : '') +
+      (t.mine && MEDIA ? item('m-media', 'アイコン・PVを変更') : '') +
       (s.pl ? item('m-rm', 'このプレイリストから外す', ' data-v="' + esc(s.pl) + '"') : '') +
       item('m-artist', 'アーティストのページへ') + item('m-detail', '詳細・コメント') + item('m-share', '共有') + '</div>';
   }
@@ -1154,6 +1228,63 @@ a.rowmain { text-decoration: none; color: inherit; }
       sel('j1', '完成度', sc.c1) + sel('j2', '独創性', sc.c2) + sel('j3', '心に残る', sc.c3) + '</div>' +
       '<div class="field"><label for="j-text">講評（任意・200字まで）</label><input type="text" id="j-text" maxlength="200" value="' + esc(sc.comment || '') + '"></div>' +
       '<button class="cta" type="submit">評価を保存する</button></form></div>';
+  }
+  function pvBlock(t) {
+    if (!(t.video || t.yt)) { return ''; }
+    if (ui.pv !== t.id) { return '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:10px" data-act="pv-show" data-id="' + esc(t.id) + '">▶ PVを見る</button>'; }
+    return t.video
+      ? '<video class="pv" controls playsinline preload="metadata" src="' + esc(t.video) + '"' + (t.cover ? ' poster="' + esc(t.cover) + '"' : '') + '></video>'
+      : '<iframe class="pv" src="https://www.youtube-nocookie.com/embed/' + esc(t.yt) + '" title="PV" allow="encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  }
+  function pvSection(t) {
+    if (!PVOK || t.status !== '公開') { return ''; }
+    var list = pvsOf(t);
+    return '<div class="sec"><div class="sec-h"><h3>みんなのPV（' + list.length + '）</h3></div>' +
+      (list.length ? '<ul class="list">' + list.slice(0, 5).map(function (p) { return pvRow(p, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだPVがありません。最初のPVを作ってみませんか。</p>') +
+      '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:8px" data-act="pv-new" data-id="' + esc(t.id) + '">' + ICON.plus + 'この曲のPVを投稿する</button></div>';
+  }
+  function drawPvNew(s) {
+    var t = byId(s.id);
+    if (!t) { closeSheet(); return; }
+    $('#sheet').innerHTML = sheetTop('PVを投稿') +
+      '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんの曲のPVを投稿します。曲の投稿者（または運営）が承認すると公開されます。</p>' +
+      '<form id="pvnew-form" data-id="' + esc(t.id) + '">' +
+      '<div class="field"><label for="pv-title">PVのタイトル</label><input type="text" id="pv-title" maxlength="40" autocomplete="off" placeholder="例：夜の街ver."></div>' +
+      '<div class="field"><span class="lab">PVの動画</span><input type="file" id="pv-file" accept="video/mp4,video/webm,video/quicktime" aria-label="PVの動画ファイル">' +
+      '<input type="text" id="pv-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
+      '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。大きい動画は、YouTubeのURLで登録してください。</p></div>' +
+      '<label class="check"><input type="checkbox" id="pv-right"><span>このPV（映像・画像・音声）の権利は自分にあり、他人の作品や実在の人物をまねていません。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
+      '<p class="err" id="pv-err" role="alert"></p><button class="cta" type="submit" id="pv-go">承認に出す</button></form>';
+  }
+  function drawPvPlay(s) {
+    var p = pvById(s.id), t = p ? byId(p.tid) : null;
+    if (!p || !t) { closeSheet(); return; }
+    var lk = !!D.pvLikes[p.id];
+    $('#sheet').innerHTML = sheetTop('PV') +
+      (p.url ? '<video class="pv" controls playsinline autoplay preload="metadata" src="' + esc(p.url) + '"' + (t.cover ? ' poster="' + esc(t.cover) + '"' : '') + '></video>'
+        : '<iframe class="pv" src="https://www.youtube-nocookie.com/embed/' + esc(p.yt) + '" title="PV" allow="encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>') +
+      '<h2 style="font-size:20px">' + esc(p.title) + '</h2>' +
+      '<p class="sub">PV：' + esc(p.cname) + '／曲：' + esc(t.title) + '・' + esc(t.artist) + (p.status !== 'approved' ? '／' + pvStatus(p) : '') + '</p>' +
+      '<div class="acts" style="grid-template-columns:1fr 1fr 1fr"><button class="vbtn line' + (lk ? ' liked' : '') + '" data-act="pv-like" data-id="' + esc(p.id) + '" aria-pressed="' + lk + '"' + (p.status !== 'approved' || p.mine ? ' disabled' : '') + '>' + ICON.heart + (pvLikeN(p, 'total')) + '</button>' +
+      '<button class="vbtn line" data-act="m-detail" data-id="' + esc(t.id) + '">曲を見る</button>' +
+      '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
+      (p.mine || D.admin ? '<button class="vbtn line" style="width:100%;min-height:40px;margin-top:6px" data-act="pv-del" data-id="' + esc(p.id) + '">このPVを削除する</button>' : '');
+  }
+  function drawMedia(s) {
+    var t = byId(s.id);
+    if (!t) { closeSheet(); return; }
+    $('#sheet').innerHTML = sheetTop('アイコン・PVの変更') +
+      '<h2 style="font-size:20px">' + esc(t.title) + '</h2>' +
+      '<form id="media-form" data-id="' + esc(t.id) + '">' +
+      '<div class="field"><span class="lab">曲のアイコン</span><div class="thumbrow">' + cover(t, 'md') + '<input type="file" id="m-cover" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="アイコン画像"></div>' +
+      '<p class="hint">png・jpg・webp・gif、3MBまで。正方形がきれいに表示されます。</p>' +
+      (t.cover ? '<label class="check"><input type="checkbox" id="m-rmcover"><span>アイコンを初期（頭文字）に戻す</span></label>' : '') + '</div>' +
+      '<div class="field"><span class="lab">PV' + ((t.video || t.yt) ? '（登録済み）' : '') + '</span><input type="file" id="m-video" accept="video/mp4,video/webm,video/quicktime" aria-label="PVの動画ファイル">' +
+      '<input type="text" id="m-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
+      '<p class="hint">動画ファイルは50MBまで。新しく登録すると、今のPVと置き換わります。</p>' +
+      ((t.video || t.yt) ? '<label class="check"><input type="checkbox" id="m-rmpv"><span>PVを削除する</span></label>' : '') + '</div>' +
+      '<label class="check"><input type="checkbox" id="m-right"><span>アイコン画像・PVの権利は自分にあります。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
+      '<p class="err" id="m-err" role="alert"></p><button class="cta" type="submit" id="m-go">保存する</button></form>';
   }
   function drawTrack(s) {
     var t = byId(s.id);
@@ -1186,6 +1317,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'お気に入り</button>' +
       '<button class="vbtn line" data-act="m-pl" data-id="' + esc(t.id) + '"' + (votable ? '' : ' disabled') + '>' + ICON.plus + '追加</button>' +
       '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
+      pvBlock(t) + pvSection(t) +
       (t.team && votable
         ? '<div class="evbox"><span>' + badge(t.team) + ' <b>AI紅白歌合戦</b> エントリー曲</span><button class="vbtn gold" style="flex:none;padding:0 16px" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + ICON.vote + '投票</button></div>' +
           '<p class="hint">' + (D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます') + '</p>'
@@ -1211,7 +1343,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (!sb) { return; }
     try {
       var q = [
-        sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at').order('created_at', { ascending: false }).limit(500),
+        sb.from('tracks').select(MEDIA ? 'id,owner,title,artist,team,genre,tool,audio_path,cover_path,video_path,youtube_id,status,created_at' : 'id,owner,title,artist,team,genre,tool,audio_path,status,created_at').order('created_at', { ascending: false }).limit(500),
         sb.from('track_scores').select('track_id,d,w,m,y,likes'),
         sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500)
       ];
@@ -1220,6 +1352,7 @@ a.rowmain { text-decoration: none; color: inherit; }
         q.push(sb.rpc('my_votes_today'));
       }
       var r = await Promise.all(q), i;
+      if (r[0].error && MEDIA) { MEDIA = false; return load(); }
       for (i = 0; i < r.length; i++) { if (r[i].error) { throw r[i].error; } }
       var tracks = (r[0].data || []).map(makeTrack);
       var scores = {};
@@ -1269,13 +1402,35 @@ a.rowmain { text-decoration: none; color: inherit; }
           if (!er[5].error) { recent = (er[5].data || []).map(function (x) { return String(x.track_id); }); }
         }
       } catch (y) { /* schema_music.sql が未実行でも、曲を聴く機能は動かします */ }
-      var sig = JSON.stringify([tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var pvs = [], pvScore = {}, pvLikes = {};
+      if (PVOK) {
+        try {
+          var pq = [
+            sb.from('pvs').select('id,track_id,creator,title,video_path,youtube_id,status,created_at,profiles(name)').order('created_at', { ascending: false }).limit(500),
+            sb.from('pv_scores').select('pv_id,total,w')
+          ];
+          if (D.me) { pq.push(sb.from('pv_likes').select('pv_id')); }
+          var pr = await Promise.all(pq);
+          if (pr[0].error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(pr[0].error.message || '') + String(pr[0].error.code || ''))) { PVOK = false; }
+          } else {
+            pvs = (pr[0].data || []).map(function (r) {
+              return { id: String(r.id), tid: String(r.track_id), creator: r.creator, mine: !!D.me && r.creator === D.me, cname: (r.profiles && r.profiles.name) || 'リスナー',
+                title: String(r.title || 'PV'), path: r.video_path || '', url: audioUrl(r.video_path), yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '',
+                status: r.status, n: Date.parse(r.created_at) || 0 };
+            });
+            if (!pr[1].error) { (pr[1].data || []).forEach(function (x) { pvScore[String(x.pv_id)] = { total: num(x.total), w: num(x.w) }; }); }
+            if (D.me && pr[2] && !pr[2].error) { (pr[2].data || []).forEach(function (x) { pvLikes[String(x.pv_id)] = true; }); }
+          }
+        } catch (z) { /* PVの読み込みに失敗しても、ほかの機能は動かします */ }
+      }
+      var sig = JSON.stringify([pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.pls = pls; D.plt = plt; D.recent = recent;
+        D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -1291,7 +1446,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       var typing = !!(ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && ae.closest && ae.closest('#view'));
       if (ui.route !== 'submit' && !typing) { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
       var ci = $('#c-text'), editing = !!(ae && ae.closest && ae.closest('#sheet') && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName));
-      if (ui.sheet && ui.sheet.k !== 'login' && !(ci && ci.value) && !editing) { drawSheet(); }
+      if (ui.sheet && ui.sheet.k !== 'login' && !(ci && ci.value) && !editing && !$('#sheet video, #sheet iframe')) { drawSheet(); }
       if (ui.route === 'submit' && D.me && !$('#submit-form')) { render(); }
     }, 40);
   }
@@ -1307,6 +1462,29 @@ a.rowmain { text-decoration: none; color: inherit; }
     }
   }
   function reload() { D.sig = ''; return load(); }
+  function ytId(u) {
+    var m = String(u || '').trim().match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : '';
+  }
+  async function uploadFile(file, kind) {
+    var ext = (file.name.split('.').pop() || kind).toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || kind;
+    var path = D.me + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var up = await sb.storage.from('tracks').upload(path, file, { contentType: file.type || undefined });
+    if (up.error) { throw up.error; }
+    return path;
+  }
+  function checkImage(f) {
+    if (!f) { return ''; }
+    if (!/^image\/(png|jpe?g|webp|gif)$/.test(f.type)) { return 'アイコンは、png・jpg・webp・gif の画像にしてください'; }
+    if (f.size > 3 * 1024 * 1024) { return 'アイコン画像は3MB以下にしてください'; }
+    return '';
+  }
+  function checkVideo(f) {
+    if (!f) { return ''; }
+    if (!/^video\/(mp4|webm|quicktime)$/.test(f.type)) { return 'PVは、mp4・webm・mov の動画にしてください'; }
+    if (f.size > 50 * 1024 * 1024) { return 'PVの動画ファイルは50MB以下にしてください。大きい動画は、YouTubeのURLで登録できます'; }
+    return '';
+  }
 
   /* ---------- actions ---------- */
   function need(msg) {
@@ -1374,6 +1552,31 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (r.error) { toast(errText(r.error)); return; }
     toast('削除しました');
     location.hash = '#library';
+    await reload();
+  }
+  async function pvLike(id) {
+    if (!need('いいねするにはログインしてください')) { return; }
+    var was = !!D.pvLikes[id], r;
+    if (was) { r = await sb.from('pv_likes').delete().eq('pv_id', id).eq('user_id', D.me); }
+    else { r = await sb.from('pv_likes').insert({ pv_id: id, user_id: D.me }); }
+    if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '自分のPVにはいいねできません' : errText(r.error)); return; }
+    await reload();
+    if (ui.sheet && ui.sheet.k === 'pvplay') { drawPvPlay(ui.sheet); }
+  }
+  async function reviewPv(id, status) {
+    var r = await sb.rpc('review_pv', { p_pv: id, p_status: status });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast(status === 'approved' ? 'PVを公開しました' : 'PVを却下しました');
+    await reload();
+  }
+  async function deletePv(id) {
+    var p = pvById(id);
+    if (!p || !window.confirm('このPVを削除しますか？')) { return; }
+    var r = await sb.from('pvs').delete().eq('id', id);
+    if (r.error) { toast(errText(r.error)); return; }
+    if (p.path) { sb.storage.from('tracks').remove([p.path]).then(function () {}, function () {}); }
+    toast('削除しました');
+    closeSheet();
     await reload();
   }
   async function addComment(id, text) {
@@ -1485,6 +1688,15 @@ a.rowmain { text-decoration: none; color: inherit; }
       var ids = CTX[cx] || [];
       if (ids.length) { playQueue(ids, act === 'shufall' ? null : ids[0], act === 'shufall'); }
     }
+    else if (act === 'pv-open') { pausePlayback(); openSheet({ k: 'pvplay', id: id }); }
+    else if (act === 'pv-new') { if (need('PVを投稿するにはログインしてください')) { openSheet({ k: 'pvnew', id: id }); } }
+    else if (act === 'pv-like') { pvLike(id); }
+    else if (act === 'pv-del') { deletePv(id); }
+    else if (act === 'pv-ok') { reviewPv(id, 'approved'); }
+    else if (act === 'pv-ng') { reviewPv(id, 'rejected'); }
+    else if (act === 'pvp') { ui.pvp = v; render(); }
+    else if (act === 'm-media') { openSheet({ k: 'media', id: id }); }
+    else if (act === 'pv-show') { pausePlayback(); ui.pv = id; drawSheet(); }
     else if (act === 'stage') { stageStart(); }
     else if (act === 'st-close') { stageStop(); }
     else if (act === 'st-skip') { if (S.paused) { S.paused = false; } stageNext(); }
@@ -1572,6 +1784,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       if (res) { CTX = {}; res.innerHTML = searchBody(); }
     }
   });
+  document.addEventListener('play', function (e) { if (e.target && e.target.tagName === 'VIDEO' && P.playing) { pausePlayback(); } }, true);
   document.addEventListener('change', function (e) {
     if (e.target && e.target.id === 'c-entry') { $('#entry-team').hidden = !e.target.checked; }
   });
@@ -1601,6 +1814,59 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (f.id === 'login-form') { await authSubmit('login'); return; }
     if (f.id === 'forgot-form') { await forgotSubmit(); return; }
     if (f.id === 'newpass-form') { await newPassSubmit(); return; }
+    if (f.id === 'pvnew-form') {
+      var pt = byId(f.getAttribute('data-id')), pe = $('#pv-err'), pgo = $('#pv-go');
+      var ptitle = $('#pv-title').value.trim(), pf = $('#pv-file').files[0], praw = $('#pv-yt').value.trim(), pid = ytId(praw);
+      var perr = !ptitle ? 'PVのタイトルを入力してください' : checkVideo(pf) || (praw && !pid ? 'YouTubeのURLを確認してください' : '') ||
+        (pf && pid ? '動画ファイルかYouTubeのURLのどちらか1つにしてください' : '') || (!pf && !pid ? '動画ファイルか、YouTubeのURLを入れてください' : '') ||
+        (!$('#pv-right').checked ? '権利の確認にチェックしてください' : '');
+      if (!pt || perr) { pe.textContent = perr; return; }
+      pgo.disabled = true; pe.textContent = '';
+      try {
+        var ppath = pf ? await uploadFile(pf, 'mp4') : null;
+        var pins = { track_id: pt.id, creator: D.me, title: ptitle.slice(0, 40), rights_ack: true };
+        if (ppath) { pins.video_path = ppath; } else { pins.youtube_id = pid; }
+        var pir = await sb.from('pvs').insert(pins);
+        if (pir.error) { throw pir.error; }
+      } catch (ex) {
+        pgo.disabled = false;
+        pe.textContent = '投稿できませんでした。動画の形式・サイズと、承認待ちが5本以内かを確認してください（準備のSQL schema_pv.sql が未実行の場合も失敗します）';
+        return;
+      }
+      toast('PVを承認に出しました。曲の投稿者が承認すると公開されます');
+      closeSheet();
+      await reload();
+      return;
+    }
+    if (f.id === 'media-form') {
+      var mt = byId(f.getAttribute('data-id')), me = $('#m-err'), mgo = $('#m-go');
+      if (!mt) { return; }
+      var mc = $('#m-cover').files[0], mv = $('#m-video').files[0], my = ytId($('#m-yt').value), myRaw = $('#m-yt').value.trim();
+      var rmc = !!($('#m-rmcover') && $('#m-rmcover').checked), rmv = !!($('#m-rmpv') && $('#m-rmpv').checked);
+      var merr = checkImage(mc) || checkVideo(mv) || (myRaw && !my ? 'YouTubeのURLを確認してください' : '') || (mv && my ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
+      if (!merr && (mc || mv || my) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
+      if (!merr && !mc && !mv && !my && !rmc && !rmv) { merr = '変更する内容を選んでください'; }
+      if (merr) { me.textContent = merr; return; }
+      mgo.disabled = true; me.textContent = '';
+      try {
+        var np = mc ? await uploadFile(mc, 'img') : null, nv = mv ? await uploadFile(mv, 'mp4') : null;
+        var setC = !!(mc || rmc), setV = !!(mv || my || rmv);
+        var rr = await sb.rpc('update_track_media', { p_track: mt.id, p_set_cover: setC, p_cover: np, p_set_video: setV, p_video: nv, p_yt: my || null });
+        if (rr.error) { throw rr.error; }
+        var olds = [];
+        if (setC && mt.coverPath) { olds.push(mt.coverPath); }
+        if (setV && mt.videoPath) { olds.push(mt.videoPath); }
+        if (olds.length) { sb.storage.from('tracks').remove(olds).then(function () {}, function () {}); }
+      } catch (ex) {
+        mgo.disabled = false;
+        me.textContent = /update_track_media|function|schema cache/i.test(String((ex && ex.message) || '')) ? 'この機能の準備（schema_media.sql）がまだ終わっていません' : '保存できませんでした。ファイルの形式とサイズを確認してください';
+        return;
+      }
+      toast('保存しました');
+      closeSheet();
+      await reload();
+      return;
+    }
     if (f.id === 'pl-form') {
       var pn = $('#pl-name').value.trim();
       if (!pn) { return; }
@@ -1624,6 +1890,10 @@ a.rowmain { text-decoration: none; color: inherit; }
       if (!$('#c-ai').checked || !$('#c-right').checked || !$('#c-term').checked) { err.textContent = '3つの確認項目すべてにチェックしてください'; return; }
       var file = $('#f-file').files[0], path = null, go = $('#f-go');
       if (file && file.size > 20 * 1024 * 1024) { err.textContent = '音源は20MB以下にしてください'; return; }
+      var cf = MEDIA && $('#f-cover') ? $('#f-cover').files[0] : null, vf = MEDIA && $('#f-video') ? $('#f-video').files[0] : null;
+      var yurl = MEDIA && $('#f-yt') ? $('#f-yt').value.trim() : '', yid = ytId(yurl), cpath = null, vpath = null;
+      var mErr = checkImage(cf) || checkVideo(vf) || (yurl && !yid ? 'YouTubeのURLを確認してください（youtube.com か youtu.be のURL）' : '') || (vf && yid ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
+      if (mErr) { err.textContent = mErr; return; }
       go.disabled = true; err.textContent = '';
       var entered = $('#c-entry').checked;
       try {
@@ -1633,15 +1903,23 @@ a.rowmain { text-decoration: none; color: inherit; }
           var up = await sb.storage.from('tracks').upload(path, file, { contentType: file.type || 'audio/mpeg' });
           if (up.error) { throw up.error; }
         }
-        var ins = await sb.from('tracks').insert({
+        if (cf) { cpath = await uploadFile(cf, 'img'); }
+        if (vf) { vpath = await uploadFile(vf, 'mp4'); }
+        var rowIns = {
           owner: D.me, title: title.slice(0, 40), artist: artist.slice(0, 30), team: entered ? formTeam : null, genre: $('#f-genre').value,
           tool: $('#f-tool').value, plan: $('#f-plan').value, audio_path: path, rights_ack: true
-        });
+        };
+        if (cpath) { rowIns.cover_path = cpath; }
+        if (vpath) { rowIns.video_path = vpath; }
+        if (yid) { rowIns.youtube_id = yid; }
+        var ins = await sb.from('tracks').insert(rowIns);
         if (ins.error) { throw ins.error; }
       } catch (ex) {
         go.disabled = false;
         var em = String((ex && ex.message) || '');
-        err.textContent = /null value|not-null|team|check constraint|tracks_genre_check/i.test(em)
+        err.textContent = /cover_path|video_path|youtube_id|mime type|not supported/i.test(em)
+          ? '投稿できませんでした。アイコン・PV用の準備（schema_media.sql）がまだ終わっていない可能性があります'
+          : /null value|not-null|team|check constraint|tracks_genre_check/i.test(em)
           ? '投稿できませんでした。サーバー側の準備（schema_music.sql）がまだ終わっていない可能性があります'
           : '投稿できませんでした。音源の形式（音声ファイル・20MB以下）と、審査待ちが5曲以内かを確認してください';
         return;
