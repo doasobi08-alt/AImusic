@@ -296,6 +296,53 @@ a.rowmain { text-decoration: none; color: inherit; }
 .vbtn svg.s { width: 16px; height: 16px; }
 .acts .vbtn.liked svg { fill: var(--red); stroke: var(--red); }
 .mini .pbtn svg { fill: currentColor; }
+
+/* weekly countdown stage */
+#stage { position: fixed; inset: 0; z-index: 50; display: flex; justify-content: center; background: #0b0716; color: #f4f1fa; }
+.st-in { width: 100%; max-width: 520px; display: flex; flex-direction: column; padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)); position: relative; overflow: hidden;
+  background: radial-gradient(90% 60% at 50% 0%, rgba(255,200,61,0.28), transparent 65%), radial-gradient(80% 50% at 0% 100%, rgba(216,33,63,0.35), transparent 60%), radial-gradient(80% 50% at 100% 100%, rgba(120,170,255,0.3), transparent 60%), #0b0716; }
+.st-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.st-top b { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.04em; color: #ffc83d; font-size: 15px; }
+.st-top .x { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2); }
+.st-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; min-height: 0; }
+.st-rank { font-family: var(--font-display); font-size: 92px; line-height: 1; color: #ffc83d; text-shadow: 0 4px 0 rgba(0,0,0,0.35); }
+.st-rank small { font-size: 22px; margin-left: 2px; }
+.st-new { display: inline-block; font-size: 12px; font-weight: 700; background: #d8213f; color: #fff; border-radius: 99px; padding: 1px 10px; vertical-align: middle; margin-left: 8px; }
+.st-cover .cover { width: 168px; height: 168px; font-size: 72px; border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.st-t { font-size: 22px; font-weight: 700; line-height: 1.3; word-break: break-word; }
+.st-a { color: #c9c0e4; font-size: 15px; }
+.st-eq { display: flex; gap: 4px; height: 26px; align-items: flex-end; }
+.st-eq i { display: block; width: 6px; height: 6px; background: #ffc83d; border-radius: 3px; }
+.st-chara { display: flex; align-items: flex-end; gap: 10px; margin-top: 4px; }
+.mascot { width: 84px; height: 84px; flex: none; }
+.mascot .mouth { transform-box: fill-box; transform-origin: center; }
+.st-bubble { position: relative; background: #fff; color: #1c1530; border-radius: 16px; padding: 10px 14px; font-size: 14px; font-weight: 700; line-height: 1.5; text-align: left; min-height: 44px; flex: 1; }
+.st-bubble::before { content: ""; position: absolute; left: -8px; bottom: 16px; border: 8px solid transparent; border-right-color: #fff; border-left: 0; }
+.st-bar { display: flex; gap: 4px; margin: 8px 0; }
+.st-bar i { flex: 1; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.18); }
+.st-bar i.on { background: #ffc83d; }
+.st-ctl { display: flex; gap: 8px; }
+.st-ctl button { flex: 1; min-height: 46px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #fff; font-weight: 700; font-size: 14px; }
+.st-ctl button.main { background: #ffc83d; color: #2b1d00; border: 0; }
+.ctdn { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); text-align: left; background: radial-gradient(120% 140% at 100% 0%, rgba(255,200,61,0.28), transparent 60%), var(--surface); }
+.ctdn .n { font-family: var(--font-display); font-size: 30px; color: var(--gold-ink); line-height: 1; }
+.ctdn .t { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.ctdn .t b { font-size: 15px; } .ctdn .t small { color: var(--muted); font-size: 12px; }
+.ctdn .go { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: var(--on-gold); display: grid; place-items: center; }
+.ctdn .go svg { width: 18px; height: 18px; fill: currentColor; }
+@media (prefers-reduced-motion: no-preference) {
+  .st-rank.pop { animation: stpop 0.5s cubic-bezier(.2,1.6,.4,1); }
+  @keyframes stpop { from { transform: scale(0.3); opacity: 0; } }
+  .st-cover.in .cover { animation: stin 0.6s ease-out; }
+  @keyframes stin { from { transform: translateY(30px) rotate(-8deg); opacity: 0; } }
+  .talk .mouth { animation: mouth 0.22s infinite alternate; }
+  @keyframes mouth { from { transform: scaleY(0.6); } to { transform: scaleY(2.6); } }
+  .playing .st-eq i { animation: eq 0.5s infinite alternate; }
+  .playing .st-eq i:nth-child(2n) { animation-duration: 0.35s; } .playing .st-eq i:nth-child(3n) { animation-duration: 0.65s; }
+  @keyframes eq { to { height: 26px; } }
+  .st-chara .mascot { animation: bob 1.2s ease-in-out infinite alternate; }
+  @keyframes bob { to { transform: translateY(-4px); } }
+}
 </style>
 
 </head>
@@ -315,6 +362,7 @@ a.rowmain { text-decoration: none; color: inherit; }
 </div></div>
 
 <div class="veil" id="veil" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="楽曲の詳細"></div></div>
+<div id="stage" hidden role="dialog" aria-modal="true" aria-label="週間カウントダウン"><div class="st-in" id="st-in"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 
@@ -620,7 +668,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (i < 0) { i = Q.repeat === 'all' ? Q.ids.length - 1 : 0; }
     playAt(i);
   }
-  function onEnded() { nextTrack(true); }
+  function onEnded() { if (S.on) { stageNext(); return; } nextTrack(true); }
   function mediaMeta(t) {
     try {
       if ('mediaSession' in navigator && window.MediaMetadata) {
@@ -764,7 +812,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     var hot = vs.slice().sort(function (a, b) { return pop(b) - pop(a); }).slice(0, 5);
     var ars = artists().slice(0, 12);
     var recent = D.recent.map(byId).filter(function (t) { return t && t.status === '公開'; });
-    var h = head;
+    var h = head + '<section class="sec" style="margin-top:14px">' + countdownCard() + '</section>';
     if (recent.length) { h += '<section class="sec"><div class="sec-h"><h3>最近聴いた曲</h3></div>' + shelf(recent, 'recent') + '</section>'; }
     h += '<section class="sec"><div class="sec-h"><h3>新着</h3></div>' + shelf(fresh, 'fresh') + '</section>';
     h += '<section class="sec"><div class="sec-h"><h3>人気の曲</h3></div>' + listHtml(hot, 'hot', { rank: true, right: playsRight }) + '</section>';
@@ -1437,6 +1485,15 @@ a.rowmain { text-decoration: none; color: inherit; }
       var ids = CTX[cx] || [];
       if (ids.length) { playQueue(ids, act === 'shufall' ? null : ids[0], act === 'shufall'); }
     }
+    else if (act === 'stage') { stageStart(); }
+    else if (act === 'st-close') { stageStop(); }
+    else if (act === 'st-skip') { if (S.paused) { S.paused = false; } stageNext(); }
+    else if (act === 'st-pause') { stageToggle(); }
+    else if (act === 'st-mute') {
+      S.mute = !S.mute;
+      if (S.mute) { try { window.speechSynthesis.cancel(); } catch (e3) { /* なし */ } }
+      var tk = S.tok; el.textContent = S.mute ? '音声：オフ' : '音声：オン'; el.setAttribute('aria-pressed', String(S.mute)); void tk;
+    }
     else if (act === 'np') { if (P.t) { openSheet({ k: 'track', id: P.t.id }); } }
     else if (act === 'np-track') { openSheet({ k: 'track', id: id }); }
     else if (act === 'toggle') {
@@ -1507,7 +1564,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     }
   });
   $('#veil').addEventListener('click', function (e) { if (e.target === $('#veil')) { closeSheet(); } });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ui.sheet) { closeSheet(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (S.on) { stageStop(); } else if (ui.sheet) { closeSheet(); } } });
   document.addEventListener('input', function (e) {
     if (e.target && e.target.id === 's-q') {
       ui.q = e.target.value;
@@ -1595,6 +1652,143 @@ a.rowmain { text-decoration: none; color: inherit; }
       location.hash = '#library';
     }
   });
+
+  /* ---------- weekly countdown (カウントダウン風の週間ランキング。キャラが読み上げ) ---------- */
+  var S = { on: false, seq: [], i: 0, tok: 0, timer: null, paused: false, mute: false, entries: [], clipMs: Number(CFG.CLIP_MS) || 14000 };
+  function weekScore(t) {
+    var p = D.plays[t.id];
+    return (p ? num(p.w) * 2 : 0) + likesOf(t) + votesOf(t, 'w') * 3;
+  }
+  function weekTop() {
+    var now = Date.now();
+    return visible().slice().sort(function (a, b) { return (weekScore(b) - weekScore(a)) || (pop(b) - pop(a)) || (b.n - a.n); })
+      .slice(0, 10).map(function (t, i) { return { t: t, rank: i + 1, isNew: now - t.n < 7 * 864e5 }; });
+  }
+  function weekLabel() {
+    var d = new Date(), e = new Date(d.getTime() - 6 * 864e5);
+    return (e.getMonth() + 1) + '/' + e.getDate() + ' - ' + (d.getMonth() + 1) + '/' + d.getDate();
+  }
+  var MASCOT = '<svg class="mascot" viewBox="0 0 120 120" aria-hidden="true">' +
+    '<path d="M22 64a38 38 0 0 1 76 0" fill="none" stroke="#ffc83d" stroke-width="8" stroke-linecap="round"/>' +
+    '<rect x="11" y="58" width="17" height="30" rx="8" fill="#ffc83d"/><rect x="92" y="58" width="17" height="30" rx="8" fill="#ffc83d"/>' +
+    '<circle cx="60" cy="68" r="36" fill="#8f6bff"/><path d="M60 32v-12" stroke="#ffc83d" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="17" r="6" fill="#ff6a80"/>' +
+    '<circle cx="46" cy="62" r="7" fill="#fff"/><circle cx="74" cy="62" r="7" fill="#fff"/><circle cx="47" cy="63" r="3.5" fill="#1a1030"/><circle cx="75" cy="63" r="3.5" fill="#1a1030"/>' +
+    '<circle cx="36" cy="77" r="5" fill="#ff8fb0" opacity="0.7"/><circle cx="84" cy="77" r="5" fill="#ff8fb0" opacity="0.7"/>' +
+    '<ellipse class="mouth" cx="60" cy="80" rx="7" ry="3" fill="#1a1030"/></svg>';
+  function jaVoice() {
+    try {
+      var vs = window.speechSynthesis.getVoices(), i;
+      for (i = 0; i < vs.length; i++) { if (/^ja/i.test(vs[i].lang)) { return vs[i]; } }
+    } catch (e) { /* 声が選べない端末は標準の声 */ }
+    return null;
+  }
+  function stScript(item) {
+    if (item.k === 'intro') { return 'AI MUSIC、週間カウントダウン！今週のトップ' + S.entries.length + 'を、ご紹介します！'; }
+    if (item.k === 'outro') { return '以上、今週のランキングでした！気に入った曲は、お気に入りやプレイリストに入れてね。また来週！'; }
+    var t = item.e.t;
+    if (item.e.rank === 1) { return 'そして、今週の第1位は…！ ' + t.artist + 'の、「' + t.title + '」！ おめでとうございます！'; }
+    return '第' + item.e.rank + '位は、' + t.artist + 'の、「' + t.title + '」！' + (item.e.isNew ? ' 今週の新曲です！' : '');
+  }
+  function stageStart() {
+    S.entries = weekTop();
+    if (!S.entries.length) { toast('ランキングにする曲がまだありません'); return; }
+    S.seq = [{ k: 'intro' }].concat(S.entries.slice().reverse().map(function (e) { return { k: 'e', e: e }; })).concat([{ k: 'outro' }]);
+    S.on = true; S.i = 0; S.paused = false;
+    Q.ids = []; Q.i = -1;
+    stopPlayback(true);
+    $('#stage').hidden = false;
+    runSlide();
+  }
+  function stageStop() {
+    S.on = false; S.tok++;
+    clearTimeout(S.timer);
+    try { window.speechSynthesis.cancel(); } catch (e) { /* なし */ }
+    stopPlayback(true);
+    $('#stage').hidden = true;
+  }
+  function drawStage(item, talking, playing) {
+    var bars = S.seq.map(function (x, k) { return '<i class="' + (k <= S.i ? 'on' : '') + '"></i>'; }).join('');
+    var main;
+    if (item.k === 'e') {
+      var e = item.e;
+      main = '<div class="st-rank pop">' + e.rank + '<small>位</small>' + (e.isNew ? '<span class="st-new">NEW</span>' : '') + '</div>' +
+        '<div class="st-cover in">' + cover(e.t, 'lg') + '</div>' +
+        '<div class="st-t">' + esc(e.t.title) + '</div><div class="st-a">' + esc(e.t.artist) + '・' + esc(e.t.genre) + '</div>' +
+        '<div class="st-eq" aria-hidden="true">' + new Array(9).join('<i></i>') + '</div>';
+    } else {
+      main = '<div class="st-rank pop" style="font-size:40px">' + (item.k === 'intro' ? 'WEEKLY<br>COUNTDOWN' : 'SEE YOU<br>NEXT WEEK') + '</div><div class="st-a">' + esc(weekLabel()) + '</div>';
+    }
+    $('#st-in').className = 'st-in' + (talking ? ' talk' : '') + (playing ? ' playing' : '');
+    $('#st-in').innerHTML =
+      '<div class="st-top"><b>AI MUSIC COUNTDOWN</b><span class="st-a">' + esc(weekLabel()) + '</span><button class="x" data-act="st-close" aria-label="閉じる">×</button></div>' +
+      '<div class="st-main">' + main + '</div>' +
+      '<div class="st-chara">' + MASCOT + '<div class="st-bubble" id="st-say" aria-live="polite">' + esc(stScript(item)) + '</div></div>' +
+      '<div class="st-bar" aria-hidden="true">' + bars + '</div>' +
+      '<div class="st-ctl"><button data-act="st-pause">' + (S.paused ? '再開' : '一時停止') + '</button><button data-act="st-skip">次へ</button><button data-act="st-mute" aria-pressed="' + S.mute + '">' + (S.mute ? '音声：オフ' : '音声：オン') + '</button></div>';
+  }
+  function setTalk(on, playing) {
+    var el = $('#st-in');
+    if (!el) { return; }
+    el.classList.toggle('talk', !!on);
+    el.classList.toggle('playing', !!playing);
+  }
+  function runSlide() {
+    if (!S.on) { return; }
+    var item = S.seq[S.i], tok = ++S.tok, done = false;
+    clearTimeout(S.timer);
+    stopPlayback(true);
+    drawStage(item, true, false);
+    function after() {
+      if (done || tok !== S.tok) { return; }
+      done = true; setTalk(false, false);
+      if (item.k === 'e') {
+        loadTrack(item.e.t, true);
+        startPlayback();
+        setTalk(false, true);
+        S.timer = setTimeout(function () { if (tok === S.tok) { stageNext(); } }, S.clipMs);
+      } else {
+        S.timer = setTimeout(function () { if (tok === S.tok) { stageNext(); } }, item.k === 'outro' ? 1500 : 600);
+      }
+    }
+    var text = stScript(item);
+    if (S.mute || !('speechSynthesis' in window)) {
+      S.timer = setTimeout(after, Math.max(2200, text.length * 110));
+      return;
+    }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'ja-JP'; u.rate = 1.05; u.pitch = 1.3;
+      var v = jaVoice(); if (v) { u.voice = v; }
+      u.onend = after; u.onerror = after;
+      S.timer = setTimeout(after, Math.max(6000, text.length * 260));
+      window.speechSynthesis.speak(u);
+    } catch (e) { S.timer = setTimeout(after, 2500); }
+  }
+  function stageNext() {
+    if (!S.on) { return; }
+    if (S.i >= S.seq.length - 1) { stageStop(); toast('カウントダウンは以上です'); return; }
+    S.i++;
+    runSlide();
+  }
+  function stageToggle() {
+    if (!S.on) { return; }
+    if (!S.paused) {
+      S.paused = true; S.tok++;
+      clearTimeout(S.timer);
+      try { window.speechSynthesis.cancel(); } catch (e) { /* なし */ }
+      pausePlayback();
+      drawStage(S.seq[S.i], false, false);
+    } else {
+      S.paused = false;
+      runSlide();
+    }
+  }
+  function countdownCard() {
+    var top = weekTop();
+    if (!top.length) { return ''; }
+    return '<button class="ctdn" data-act="stage"><span class="n">TOP' + top.length + '</span><span class="t"><b>今週のカウントダウン</b><small>オンプちゃんが、' + esc(top[0].t.title) + ' ほか今週の人気曲を発表</small></span><span class="go">' + ICON.play + '</span></button>';
+  }
 
   /* ---------- connect ---------- */
   async function connect() {
