@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#0f0b1a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>AI MUSIC 紅白歌合戦</title>
+<title>AI MUSIC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;500;700&display=swap">
 <style>
-/* Layout concept: a phone-first festival stage. Dark house lights, red wash from the left, ice-white wash from the right, one gold action colour. */
+/* AI MUSIC: phone-first music streaming. Dark purple stage, one gold action colour; red/ice only for the Kouhaku event. */
 :root {
   --font-display: "Dela Gothic One", "Hiragino Sans", "Noto Sans JP", sans-serif;
   --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
@@ -74,8 +74,7 @@ a { color: inherit; }
 .wm-en { font-size: 11px; letter-spacing: 0.28em; color: var(--muted); font-weight: 700; }
 .wm-jp { font-family: var(--font-display); font-size: 30px; letter-spacing: 0.02em; margin-top: 4px; }
 .wm-jp i { font-style: normal; }
-.wm-jp i:first-child { color: var(--red); }
-.wm-jp i:nth-child(2) { color: var(--ice); }
+.wm-jp i { color: var(--gold-ink); }
 .pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
 
 /* hero */
@@ -245,13 +244,65 @@ button.pill { background: none; cursor: pointer; font-family: inherit; min-heigh
 .emptybox p { margin: 0; }
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
 body { margin: 0; }
+
+/* streaming additions */
+svg.s { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pbtn svg.s, .cbtn svg.s { width: 18px; height: 18px; fill: none; stroke: currentColor; }
+.pair { display: flex; gap: 8px; }
+.pair .vbtn { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.pair .vbtn svg.s { width: 16px; height: 16px; }
+.hero.home { background: radial-gradient(120% 100% at 0% 0%, rgba(255,200,61,0.22), transparent 60%), radial-gradient(120% 100% at 100% 0%, rgba(150,110,255,0.35), transparent 60%), var(--surface); }
+.hero.home .cta svg { width: 18px; height: 18px; }
+.ttl { margin: 0 0 12px; font-size: 20px; }
+.h3 { margin: 12px 0 4px; font-size: 16px; }
+.row.now { border-color: var(--gold); }
+.row.now .rt b { color: var(--gold-ink); }
+a.rowmain { text-decoration: none; color: inherit; }
+.shelf { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+.card { flex: none; width: 132px; display: flex; flex-direction: column; gap: 2px; background: none; border: 0; padding: 0; text-align: left; text-decoration: none; color: inherit; }
+.card .cover.lg { font-size: 44px; border-radius: 12px; margin-bottom: 6px; }
+.card b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card small { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cover.round { border-radius: 50%; }
+.cover.xl { width: 140px; height: 140px; font-size: 56px; }
+.sbox { width: 100%; min-height: 46px; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 9px 18px; color: var(--fg); }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { --h: 260; min-height: 78px; border-radius: 14px; border: 0; padding: 12px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; color: #fff; background: linear-gradient(145deg, hsl(var(--h) 65% 46%), hsl(calc(var(--h) + 45) 60% 26%)); }
+.tile b { font-size: 16px; } .tile small { opacity: 0.85; font-size: 12px; }
+.ahead { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; margin: 4px 0 8px; }
+.ahead h2 { margin: 6px 0 0; font-size: 24px; }
+.backbtn { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; color: var(--muted); font-weight: 700; padding: 6px 0; min-height: 36px; }
+.backbtn svg { width: 18px; height: 18px; }
+.evbanner { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; border-radius: 16px; text-decoration: none; border: 1px solid var(--line); background: radial-gradient(120% 120% at 0% 0%, var(--stage-a), transparent 60%), radial-gradient(120% 120% at 100% 100%, var(--stage-b), transparent 60%), var(--surface); }
+.evbanner .k { font-size: 11px; font-weight: 700; color: var(--gold-ink); letter-spacing: 0.1em; }
+.evbanner b { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
+.evbanner b i { font-style: normal; } .evbanner b i:first-of-type { color: var(--red); } .evbanner b i:last-of-type { color: var(--ice); }
+.evbanner small { color: var(--muted); font-size: 12px; }
+.evbox { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 14px; }
+.evpick { background: var(--surface); border: 1px dashed var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.ctrl { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 4px; }
+.cbtn { position: relative; width: 44px; height: 44px; border-radius: 50%; border: 0; background: none; display: grid; place-items: center; color: var(--fg); }
+.cbtn svg { width: 24px; height: 24px; fill: currentColor; }
+.cbtn svg.s { fill: none; }
+.cbtn[aria-pressed="true"] { color: var(--gold-ink); }
+.cbtn .one { position: absolute; font-style: normal; font-size: 9px; font-weight: 700; right: 8px; top: 8px; }
+.scrub { margin: 8px 0; }
+.track[data-seek] { height: 10px; cursor: pointer; }
+.menu { display: flex; flex-direction: column; gap: 2px; }
+.mitem { text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 14px 4px; font-size: 15px; font-weight: 500; }
+.mitem[disabled] { opacity: 0.5; }
+.linkbtn { background: none; border: 0; color: var(--muted); text-decoration: underline; font-size: 13px; padding: 6px 0; align-self: center; }
+.acts { grid-template-columns: 1fr 1fr 1fr; }
+.vbtn svg.s { width: 16px; height: 16px; }
+.acts .vbtn.liked svg { fill: var(--red); stroke: var(--red); }
+.mini .pbtn svg { fill: currentColor; }
 </style>
 
 </head>
 <body>
 <div class="app">
   <header class="top">
-    <div class="wm"><span class="wm-en">AI MUSIC</span><span class="wm-jp"><i>紅</i><i>白</i>歌合戦</span></div>
+    <div class="wm"><span class="wm-en">AI生成曲だけのストリーミング</span><span class="wm-jp">AI <i>MUSIC</i></span></div>
     <button class="pill" id="pill" data-act="auth" type="button">ログイン・登録</button>
   </header>
   <main id="view"></main>
@@ -273,21 +324,28 @@ body { margin: 0; }
 (function () {
   'use strict';
   var DAILY = 3;
-  var GENRES = ['J-POP', 'ロック', '演歌', 'バラード', 'アニソン'];
-  var PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['y', '年間'], ['gp', '年間GP']];
+  var GENRES = ['J-POP', 'ロック', '演歌', 'バラード', 'アニソン', 'ヒップホップ', 'EDM', 'ジャズ', 'R&B', 'ローファイ', 'クラシック', 'その他'];
+  var PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['y', '年間']];
   var TABS = [
     ['home', 'ホーム', '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>'],
-    ['ranking', 'ランキング', '<path d="M7 20V10M12 20V4M17 20v-7"/>'],
-    ['battle', '紅白対決', '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>'],
-    ['submit', '投稿', '<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>'],
+    ['search', '検索', '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/>'],
+    ['library', 'ライブラリ', '<path d="M5 4v16M10 4v16M15 5l4 15"/>'],
+    ['event', '紅白', '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>'],
     ['my', 'マイページ', '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>']
   ];
   var ICON = {
     play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
     pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
-    heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
-    vote: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>',
-    share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 14v5h14v-5"/></svg>'
+    next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5l9 7-9 7zM17 5h2v14h-2z"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5l-9 7 9 7zM5 5h2v14H5z"/></svg>',
+    heart: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>',
+    vote: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>',
+    share: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 14v5h14v-5"/></svg>',
+    shuffle: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h4c4 0 5 10 9 10h5M3 17h4c1.5 0 2.5-1.4 3.4-3M14 8c.8-.7 1.7-1 2.6-1H21M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>',
+    repeat: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3"/></svg>',
+    more: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>',
+    plus: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    back: '<svg class="s" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>'
   };
 
   /* ---------- helpers ---------- */
@@ -312,27 +370,39 @@ body { margin: 0; }
     for (i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; }
     return h;
   }
-  function fmt(n) {
-    return n >= 10000 ? (n / 10000).toFixed(1) + '万' : n.toLocaleString('ja-JP');
-  }
+  function fmt(n) { return n >= 10000 ? (n / 10000).toFixed(1) + '万' : n.toLocaleString('ja-JP'); }
   function full(n) { return n.toLocaleString('ja-JP'); }
   function mmss(s) {
     s = Math.max(0, Math.floor(s));
     return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   }
-  function today() {
-    var d = new Date();
-    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  function hueOf(s) {
+    var h = 0, k;
+    s = String(s);
+    for (k = 0; k < s.length; k++) { h = (h * 31 + s.charCodeAt(k)) % 360; }
+    return h;
+  }
+  function shuffled(a) {
+    var b = a.slice(), i, j, t;
+    for (i = b.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = b[i]; b[i] = b[j]; b[j] = t; }
+    return b;
   }
 
   /* ---------- state ---------- */
+  var RECOVERY = /type=recovery/.test(location.hash);
+  var HASH_ERR = /error_code=|error=access_denied/.test(location.hash);
   var CFG = window.APP_CONFIG || {};
   var sb = null;
   if (CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase && window.supabase.createClient) {
     try { sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY); } catch (e) { sb = null; }
   }
-  var D = { tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {}, reveal: false, final: [], ready: false, err: '', sig: '' };
-  var ui = { tab: 'home', team: 'all', period: 'w', genre: 'all', sheet: null };
+  var D = {
+    tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], ready: false, err: '', sig: ''
+  };
+  var ui = { tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
+  var CTX = {};
+  var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
   function num(x) { return typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0; }
   function audioUrl(path) {
@@ -340,12 +410,11 @@ body { margin: 0; }
     try { return sb.storage.from('tracks').getPublicUrl(path).data.publicUrl || ''; } catch (e) { return ''; }
   }
   function makeTrack(r) {
-    var title = String(r.title || '無題'), hue = 0, k;
-    for (k = 0; k < title.length; k++) { hue = (hue * 31 + title.charCodeAt(k)) % 360; }
+    var title = String(r.title || '無題'), hue = hueOf(title);
     return {
       id: String(r.id), uid: r.owner || null, mine: !!D.me && r.owner === D.me, n: Date.parse(r.created_at) || 0,
-      title: title, artist: String(r.artist || '名無し'), team: r.team === 'ice' ? 'ice' : 'red',
-      genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'J-POP', tool: String(r.tool || 'その他'),
+      title: title, artist: String(r.artist || '名無し'), team: r.team === 'red' ? 'red' : (r.team === 'ice' ? 'ice' : null),
+      genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'その他', tool: String(r.tool || 'その他'),
       status: r.status === 'approved' ? '公開' : (r.status === 'rejected' ? '非公開' : '審査中'),
       url: audioUrl(r.audio_path), hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
     };
@@ -356,9 +425,21 @@ body { margin: 0; }
   }
   function votesOf(t, period) { var s = D.scores[t.id]; return s ? num(s[period]) : 0; }
   function likesOf(t) { var s = D.scores[t.id]; return s ? num(s.likes) : 0; }
+  function playsOf(t) { var p = D.plays[t.id]; return p ? num(p.total) : 0; }
+  function pop(t) { var p = D.plays[t.id]; return (p ? num(p.w) * 2 + num(p.total) : 0) + likesOf(t) * 3 + votesOf(t, 'y') * 2; }
   function isLiked(id) { return !!D.myLikes[String(id)]; }
   function left() { return D.me ? D.left : DAILY; }
   function commentsFor(t) { return D.comments[t.id] || []; }
+  function visible() { return D.tracks.filter(function (t) { return t.status === '公開'; }); }
+  function artists() {
+    var m = {};
+    visible().forEach(function (t) {
+      var a = m[t.artist] || (m[t.artist] = { name: t.artist, ts: [], pop: 0 });
+      a.ts.push(t); a.pop += pop(t);
+    });
+    return Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return b.pop - a.pop; });
+  }
+  function ahref(name) { return '#artist/' + encodeURIComponent(name); }
 
   /* ---------- toast ---------- */
   var toastTimer = null;
@@ -366,11 +447,11 @@ body { margin: 0; }
     var el = $('#toast');
     el.textContent = msg; el.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.hidden = true; }, 2600);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 2800);
   }
 
-  /* ---------- audio: short generated sample tones (no real songs in this prototype) ---------- */
-  var P = { t: null, playing: false, ctx: null, el: null, timer: null, ui: null, step: 0, next: 0, start: 0, elapsed: 0, pat: null, stepDur: 0.25 };
+  /* ---------- audio engine (音源がない曲は、30秒のサンプル音で再生) ---------- */
+  var P = { t: null, playing: false, ctx: null, el: null, timer: null, step: 0, next: 0, start: 0, elapsed: 0, pat: null, stepDur: 0.25, counted: false };
   var DEMO_SEC = 30;
   function pattern(t) {
     var r = rng(seedOf(t.id) * 7919 + 13);
@@ -422,9 +503,7 @@ body { margin: 0; }
     if (P.el) { return isFinite(P.el.duration) ? P.el.duration : 0; }
     return DEMO_SEC;
   }
-  function halt() {
-    clearInterval(P.timer); P.timer = null;
-  }
+  function halt() { clearInterval(P.timer); P.timer = null; }
   function pausePlayback() {
     if (!P.t) { return; }
     P.elapsed = pos();
@@ -436,7 +515,7 @@ body { margin: 0; }
   function startPlayback() {
     if (!P.t) { return; }
     if (P.el) {
-      P.el.play().catch(function () { toast('この音源は再生できませんでした'); });
+      P.el.play().catch(function () { toast('この音源は再生できませんでした'); P.playing = false; syncPlayer(); });
       P.playing = true;
       syncPlayer();
       return;
@@ -459,20 +538,21 @@ body { margin: 0; }
     P.playing = true;
     halt();
     P.timer = setInterval(function () {
-      if (pos() >= DEMO_SEC) { stopPlayback(false); return; }
+      if (pos() >= DEMO_SEC) { onEnded(); return; }
       pump();
     }, 80);
     pump();
     syncPlayer();
   }
-  function loadTrack(t) {
-    if (P.t && String(P.t.id) === String(t.id)) { return; }
+  function loadTrack(t, force) {
+    if (!force && P.t && String(P.t.id) === String(t.id)) { return; }
     stopPlayback(true);
-    P.t = t; P.elapsed = 0;
+    P.t = t; P.elapsed = 0; P.counted = false;
     if (t.url) {
       P.el = new Audio(t.url);
-      P.el.addEventListener('ended', function () { stopPlayback(false); });
+      P.el.addEventListener('ended', onEnded);
     }
+    mediaMeta(t);
   }
   function stopPlayback(clear) {
     halt();
@@ -481,12 +561,90 @@ body { margin: 0; }
     if (clear) { P.t = null; }
     syncPlayer();
   }
-  function togglePlayback() {
-    if (P.playing) { pausePlayback(); } else { startPlayback(); }
+  function togglePlayback() { if (P.playing) { pausePlayback(); } else { startPlayback(); } }
+  function seekTo(ratio) {
+    if (!P.t) { return; }
+    ratio = Math.max(0, Math.min(1, ratio));
+    if (P.el) { if (dur()) { P.el.currentTime = ratio * dur(); } syncPlayer(); return; }
+    var was = P.playing;
+    if (was) { pausePlayback(); }
+    P.elapsed = ratio * DEMO_SEC;
+    if (was) { startPlayback(); } else { syncPlayer(); }
+  }
+
+  /* ---------- queue ---------- */
+  function playAt(i) {
+    var t = byId(Q.ids[i]);
+    if (!t) { return; }
+    Q.i = i;
+    loadTrack(t, true);
+    startPlayback();
+    if (ui.sheet && ui.sheet.k === 'track') { ui.sheet.id = t.id; drawSheet(); }
+  }
+  function playQueue(ids, startId, shuf) {
+    ids = ids.filter(function (id) { return !!byId(id); });
+    if (!ids.length) { return; }
+    if (typeof shuf === 'boolean') { Q.shuffle = shuf; }
+    if (Q.shuffle) {
+      var rest = shuffled(ids.filter(function (x) { return x !== startId; }));
+      Q.ids = startId ? [startId].concat(rest) : rest;
+      Q.i = 0;
+    } else {
+      Q.ids = ids.slice();
+      Q.i = Math.max(0, Q.ids.indexOf(startId));
+    }
+    playAt(Q.i);
+    if (ui.sheet && ui.sheet.k === 'track') { drawSheet(); }
+  }
+  function playNext(id) {
+    if (!byId(id)) { return; }
+    if (!P.t || Q.i < 0) { playQueue([id], id); return; }
+    Q.ids = Q.ids.filter(function (x, k) { return x !== id || k === Q.i; });
+    Q.i = Q.ids.indexOf(P.t.id) >= 0 ? Q.ids.indexOf(P.t.id) : Q.i;
+    Q.ids.splice(Q.i + 1, 0, id);
+    toast('次に再生します');
+  }
+  function nextTrack(auto) {
+    if (!Q.ids.length) { return; }
+    if (auto && Q.repeat === 'one' && P.t) { var t = P.t; loadTrack(t, true); startPlayback(); return; }
+    var i = Q.i + 1;
+    if (i >= Q.ids.length) {
+      if (Q.repeat === 'all') { i = 0; } else { stopPlayback(false); return; }
+    }
+    playAt(i);
+  }
+  function prevTrack() {
+    if (pos() > 3) { seekTo(0); return; }
+    if (!Q.ids.length) { return; }
+    var i = Q.i - 1;
+    if (i < 0) { i = Q.repeat === 'all' ? Q.ids.length - 1 : 0; }
+    playAt(i);
+  }
+  function onEnded() { nextTrack(true); }
+  function mediaMeta(t) {
+    try {
+      if ('mediaSession' in navigator && window.MediaMetadata) {
+        navigator.mediaSession.metadata = new MediaMetadata({ title: t.title, artist: t.artist, album: 'AI MUSIC' });
+      }
+    } catch (e) { /* 対応していない端末では何もしません */ }
+  }
+  try {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', function () { startPlayback(); });
+      navigator.mediaSession.setActionHandler('pause', function () { pausePlayback(); });
+      navigator.mediaSession.setActionHandler('nexttrack', function () { nextTrack(false); });
+      navigator.mediaSession.setActionHandler('previoustrack', function () { prevTrack(); });
+    }
+  } catch (e2) { /* 同上 */ }
+
+  function markNow() {
+    var li = document.querySelectorAll('li[data-tid]'), i;
+    for (i = 0; i < li.length; i++) {
+      li[i].classList.toggle('now', !!P.t && li[i].getAttribute('data-tid') === String(P.t.id));
+    }
   }
   function syncPlayer() {
-    var t = P.t;
-    var mini = $('#mini');
+    var t = P.t, mini = $('#mini');
     if (!t) { mini.hidden = true; mini.innerHTML = ''; }
     else {
       var pct = dur() ? Math.min(100, (pos() / dur()) * 100) : 0;
@@ -495,25 +653,33 @@ body { margin: 0; }
         mini.setAttribute('data-id', t.id);
         mini.innerHTML =
           '<div class="mini" style="flex-wrap:wrap">' +
-          '<button class="rowmain" data-act="open" data-id="' + t.id + '">' + cover(t, 'sm') +
-          '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・サンプル音</small></span></button>' +
+          '<button class="rowmain" data-act="np">' + cover(t) +
+          '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + (t.url ? '' : '・サンプル音') + '</small></span></button>' +
           '<button class="pbtn" data-act="toggle" id="mini-btn" aria-label="再生と一時停止"></button>' +
+          '<button class="pbtn" data-act="next" aria-label="次の曲">' + ICON.next + '</button>' +
           '<div class="prog"><i id="mini-prog" style="display:block;height:100%;background:var(--gold);width:0"></i></div></div>';
+        markNow();
       }
       $('#mini-btn').innerHTML = P.playing ? ICON.pause : ICON.play;
       $('#mini-prog').style.width = pct + '%';
     }
-    var pb = $('#sheet-play');
-    if (pb) {
-      var on = !!(P.t && ui.sheet !== null && String(ui.sheet) === String(P.t.id));
+    var pb = $('#sheet-play'), s = ui.sheet;
+    if (pb && s && s.k === 'track') {
+      var on = !!(P.t && String(P.t.id) === String(s.id));
       pb.innerHTML = (P.playing && on) ? ICON.pause : ICON.play;
-      var bar = $('#sheet-bar'), cur = $('#sheet-cur'), tot = $('#sheet-tot');
-      bar.style.width = (on && dur() ? Math.min(100, (pos() / dur()) * 100) : 0) + '%';
-      cur.textContent = mmss(on ? pos() : 0);
-      tot.textContent = mmss(on ? dur() : DEMO_SEC);
+      $('#sheet-bar').style.width = (on && dur() ? Math.min(100, (pos() / dur()) * 100) : 0) + '%';
+      $('#sheet-cur').textContent = mmss(on ? pos() : 0);
+      $('#sheet-tot').textContent = mmss(on ? dur() : DEMO_SEC);
     }
   }
-  setInterval(function () { if (P.t) { syncPlayer(); } }, 250);
+  setInterval(function () {
+    if (!P.t) { return; }
+    syncPlayer();
+    if (P.playing && !P.counted && pos() >= 5) {
+      P.counted = true;
+      if (D.me && sb) { sb.rpc('record_play', { p_track: P.t.id }).then(function () {}, function () {}); }
+    }
+  }, 250);
 
   /* ---------- components ---------- */
   function cover(t, size) {
@@ -523,25 +689,55 @@ body { margin: 0; }
   function badge(team) {
     return '<span class="badge ' + team + '" title="' + (team === 'red' ? '紅組' : '白組') + '">' + (team === 'red' ? '紅' : '白') + '</span>';
   }
-  function row(t, rank, period) {
-    var right = t.status !== '公開'
-      ? '<span class="status">' + esc(t.status) + '</span>'
-      : '<span class="rv tnum">' + fmt(votesOf(t, period)) + '票</span>';
-    return '<li class="row">' +
-      '<span class="rank ' + (rank <= 3 ? 'm' + rank : '') + '">' + (rank || '') + '</span>' +
-      '<button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
-      '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small></span></button>' +
-      badge(t.team) + right +
-      '<button class="pbtn" data-act="play" data-id="' + esc(t.id) + '" aria-label="' + esc(t.title) + 'を再生">' + ICON.play + '</button></li>';
+  function row(t, key, i, o) {
+    o = o || {};
+    var rk = o.rank ? '<span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' : '';
+    var right = t.status !== '公開' ? '<span class="status">' + esc(t.status) + '</span>' : (o.right ? '<span class="rv tnum">' + o.right(t) + '</span>' : '');
+    var cur = P.t && P.t.id === t.id;
+    return '<li class="row' + (cur ? ' now' : '') + '" data-tid="' + esc(t.id) + '">' + rk +
+      '<button class="rowmain" data-act="play" data-id="' + esc(t.id) + '" data-ctx="' + esc(key) + '" aria-label="' + esc(t.title) + 'を再生">' + cover(t) +
+      '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + (o.sub ? '・' + o.sub(t) : '') + '</small></span></button>' +
+      (t.team ? badge(t.team) : '') + right +
+      '<button class="pbtn" data-act="menu" data-id="' + esc(t.id) + '"' + (o.pl ? ' data-pl="' + esc(o.pl) + '"' : '') + ' aria-label="メニュー">' + ICON.more + '</button></li>';
   }
-  function visible() { return D.tracks.filter(function (t) { return t.status === '公開'; }); }
+  function listHtml(ts, key, o) {
+    CTX[key] = ts.map(function (t) { return t.id; });
+    return '<ul class="list">' + ts.map(function (t, i) { return row(t, key, i, o); }).join('') + '</ul>';
+  }
+  function playsRight(t) { return fmt(playsOf(t)) + '回'; }
+  function card(t, key) {
+    return '<button class="card" data-act="play" data-id="' + esc(t.id) + '" data-ctx="' + esc(key) + '">' + cover(t, 'lg') +
+      '<b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small></button>';
+  }
+  function shelf(ts, key) {
+    CTX[key] = ts.map(function (t) { return t.id; });
+    return '<div class="shelf">' + ts.map(function (t) { return card(t, key); }).join('') + '</div>';
+  }
+  function artistCard(a) {
+    return '<a class="card" href="' + ahref(a.name) + '"><span class="cover lg round" style="--h:' + hueOf(a.name) + '" aria-hidden="true">' + esc(Array.from(a.name)[0]) + '</span>' +
+      '<b>' + esc(a.name) + '</b><small>' + a.ts.length + '曲</small></a>';
+  }
+  function playBar(key) {
+    return '<div class="pair" style="margin:8px 0"><button class="vbtn gold" data-act="playall" data-ctx="' + key + '">' + ICON.play.replace('<svg', '<svg style="width:16px;height:16px;fill:currentColor"') + 'すべて再生</button>' +
+      '<button class="vbtn line" data-act="shufall" data-ctx="' + key + '">' + ICON.shuffle + 'シャッフル</button></div>';
+  }
+  function empty(msg, cta) {
+    return '<div class="emptybox"><p>' + msg + '</p>' + (cta || '') + '</div>';
+  }
+  function loginCta(msg) {
+    return empty(msg, '<button class="cta" data-act="login-open">ログイン・新規登録する</button>');
+  }
+  function backBtn() { return '<button class="backbtn" data-act="back" aria-label="戻る">' + ICON.back + '戻る</button>'; }
+
+  /* ---------- event helpers (紅白は、イベントとして独立) ---------- */
+  function teamed() { return visible().filter(function (t) { return !!t.team; }); }
   function tally() {
     var r = 0, w = 0;
-    visible().forEach(function (t) { var v = votesOf(t, 'y'); if (t.team === 'red') { r += v; } else { w += v; } });
+    teamed().forEach(function (t) { var v = votesOf(t, 'y'); if (t.team === 'red') { r += v; } else { w += v; } });
     return { r: r, w: w };
   }
   function topOf(team) {
-    return visible().filter(function (t) { return t.team === team; })
+    return teamed().filter(function (t) { return t.team === team; })
       .sort(function (a, b) { return votesOf(b, 'w') - votesOf(a, 'w'); }).slice(0, 3);
   }
   function pairs() {
@@ -549,59 +745,150 @@ body { margin: 0; }
     for (i = 0; i < Math.min(r.length, w.length); i++) { out.push([r[i], w[i]]); }
     return out;
   }
-  function empty(msg) {
-    return '<div class="emptybox"><p>' + msg + '</p><a class="cta" href="#submit">最初の1曲を投稿する</a></div>';
+  function eventBanner() {
+    var tl = tally();
+    return '<a class="evbanner" href="#event"><span class="k">開催中のイベント</span><b>AI<i>紅</i><i>白</i>歌合戦</b>' +
+      '<small>年末決戦まで あと <span class="tnum" data-cd="year">-</span>　紅 ' + full(tl.r) + '票 ／ 白 ' + full(tl.w) + '票</small></a>';
   }
 
   /* ---------- views ---------- */
   function viewHome() {
-    if (!visible().length) {
-      return '<section class="hero"><h2>AI音楽の頂点を決めるのは、あなた。</h2><p class="eyebrow">年末決戦まで あと <b class="tnum" data-cd="year">-</b></p></section>' +
-        empty('まだ公開されている曲がありません。審査を通った曲がここに並びます。');
+    var vs = visible();
+    var head = '<section class="hero home"><p class="eyebrow">AIが作った音楽だけの、ストリーミング</p><h2>今日も、新しい曲に出会おう。</h2>' +
+      (vs.length ? '<button class="cta" data-act="shufall" data-ctx="all">' + ICON.shuffle + 'おまかせシャッフル再生</button>' : '') + '</section>';
+    if (!vs.length) {
+      return head + empty('まだ公開されている曲がありません。最初の1曲を投稿してみませんか。', '<a class="cta" href="#submit">曲を投稿する</a>') + '<div class="sec">' + eventBanner() + '</div>';
     }
-    var tl = tally(), total = tl.r + tl.w, pr = total ? (tl.r / total) * 100 : 50;
-    var diff = Math.abs(tl.r - tl.w);
-    var lead = tl.r === tl.w ? '現在は同点です' : (tl.r > tl.w ? '現在の勝利：紅組リード +' : '現在の勝利：白組リード +') + full(diff) + '票';
-    var rising = visible().slice().sort(function (a, b) { return votesOf(b, 'w') - votesOf(a, 'w'); }).slice(0, 3);
-    var fresh = visible().slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 3);
-    var pr0 = pairs()[0];
-    return '<section class="hero">' +
-      '<p class="eyebrow">年末決戦まで あと <b class="tnum" data-cd="year">-</b></p>' +
-      '<h2>AI音楽の頂点を決めるのは、あなた。</h2>' +
-      '<div class="vs"><div class="side red"><span class="k">紅組</span><b class="tnum">' + full(tl.r) + '</b><small>票</small></div>' +
-      '<div class="vsmark">VS</div>' +
-      '<div class="side ice"><span class="k">白組</span><b class="tnum">' + full(tl.w) + '</b><small>票</small></div></div>' +
-      '<div class="bar" role="img" aria-label="紅組 ' + Math.round(pr) + '%、白組 ' + Math.round(100 - pr) + '%"><i style="width:' + pr.toFixed(1) + '%"></i></div>' +
-      '<p class="lead">' + lead + '</p>' +
-      '<a class="cta" href="#battle">今すぐ投票する</a></section>' +
-      '<section class="sec"><div class="sec-h"><h3>今週の急上昇</h3><a href="#ranking">もっと見る</a></div><ul class="list">' +
-      rising.map(function (t, i) { return row(t, i + 1, 'w'); }).join('') + '</ul></section>' +
-      (pr0 ? '<section class="sec"><div class="sec-h"><h3>注目の対戦カード</h3><a href="#battle">対決へ</a></div>' + matchCard(pr0[0], pr0[1], true) + '</section>' : '') +
-      '<section class="sec"><div class="sec-h"><h3>新着のAI楽曲</h3><a href="#submit">投稿する</a></div><ul class="list">' +
-      fresh.map(function (t) { return row(t, 0, 'y'); }).join('') + '</ul></section>';
+    CTX.all = vs.map(function (t) { return t.id; });
+    var fresh = vs.slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 12);
+    var hot = vs.slice().sort(function (a, b) { return pop(b) - pop(a); }).slice(0, 5);
+    var ars = artists().slice(0, 12);
+    var recent = D.recent.map(byId).filter(function (t) { return t && t.status === '公開'; });
+    var h = head;
+    if (recent.length) { h += '<section class="sec"><div class="sec-h"><h3>最近聴いた曲</h3></div>' + shelf(recent, 'recent') + '</section>'; }
+    h += '<section class="sec"><div class="sec-h"><h3>新着</h3></div>' + shelf(fresh, 'fresh') + '</section>';
+    h += '<section class="sec"><div class="sec-h"><h3>人気の曲</h3></div>' + listHtml(hot, 'hot', { rank: true, right: playsRight }) + '</section>';
+    h += '<section class="sec"><div class="sec-h"><h3>ジャンル</h3><a href="#search">すべて見る</a></div><div class="chips">' +
+      GENRES.map(function (g) { return '<button class="chip" data-act="sg-go" data-v="' + esc(g) + '">' + esc(g) + '</button>'; }).join('') + '</div></section>';
+    if (ars.length) { h += '<section class="sec"><div class="sec-h"><h3>注目のアーティスト</h3></div><div class="shelf">' + ars.map(artistCard).join('') + '</div></section>'; }
+    h += '<section class="sec">' + eventBanner() + '</section>';
+    return h;
   }
 
-  function viewRanking() {
-    var gp = ui.period === 'gp';
-    var list = gp ? [] : visible().filter(function (t) {
+  function searchBody() {
+    var q = ui.q.trim().toLowerCase(), vs = visible();
+    if (!q && ui.sg === 'all') {
+      return '<h3 class="h3">ジャンルから探す</h3><div class="tiles">' + GENRES.map(function (g, i) {
+        var n = vs.filter(function (t) { return t.genre === g; }).length;
+        return '<button class="tile" style="--h:' + (i * 29 + 10) + '" data-act="sg" data-v="' + esc(g) + '"><b>' + esc(g) + '</b><small>' + n + '曲</small></button>';
+      }).join('') + '</div>';
+    }
+    var ts = vs.filter(function (t) {
+      return (ui.sg === 'all' || t.genre === ui.sg) && (!q || (t.title + ' ' + t.artist).toLowerCase().indexOf(q) >= 0);
+    }).sort(function (a, b) { return pop(b) - pop(a); });
+    var ar = (ui.sg === 'all' && q) ? artists().filter(function (a) { return a.name.toLowerCase().indexOf(q) >= 0; }) : [];
+    return '<div class="chips" role="group" aria-label="ジャンル">' + ['all'].concat(GENRES).map(function (g) {
+      return '<button class="chip" data-act="sg" data-v="' + esc(g) + '" aria-pressed="' + (ui.sg === g) + '">' + (g === 'all' ? 'すべて' : esc(g)) + '</button>';
+    }).join('') + '</div>' +
+      (ar.length ? '<h3 class="h3">アーティスト</h3><div class="shelf">' + ar.map(artistCard).join('') + '</div>' : '') +
+      (ts.length ? '<h3 class="h3">曲</h3>' + listHtml(ts, 'search', { right: playsRight }) : '<p class="sub">見つかりませんでした。別の言葉で探してみてください。</p>');
+  }
+  function viewSearch() {
+    return '<div class="stack"><input type="search" class="sbox" id="s-q" placeholder="曲名・アーティスト名" value="' + esc(ui.q) + '" autocomplete="off" enterkeyhint="search" aria-label="検索">' +
+      '<div id="s-res" class="stack">' + searchBody() + '</div></div>';
+  }
+
+  function viewLibrary() {
+    if (!D.me) { return '<h2 class="ttl">ライブラリ</h2>' + loginCta('ログインすると、プレイリスト・お気に入り・フォロー中のアーティストがここに並びます。'); }
+    var tabs = [['pl', 'プレイリスト'], ['fav', 'お気に入り'], ['fol', 'フォロー中'], ['up', '投稿']];
+    var body = '';
+    if (ui.lib === 'pl') {
+      body = '<button class="vbtn line" style="min-height:44px;width:100%;display:flex;gap:6px;align-items:center;justify-content:center" data-act="pl-new">' + ICON.plus + '新しいプレイリスト</button>' +
+        (D.pls.length ? '<ul class="list">' + D.pls.map(function (p) {
+          var n = (D.plt[p.id] || []).length;
+          return '<li class="row"><a class="rowmain" href="#playlist/' + esc(p.id) + '"><span class="cover md" style="--h:' + hueOf(p.name) + '" aria-hidden="true">♪</span>' +
+            '<span class="rt"><b>' + esc(p.name) + '</b><small>' + n + '曲</small></span></a></li>';
+        }).join('') + '</ul>' : '<p class="sub">まだプレイリストがありません。好きな曲を集めて、自分だけの1枚をつくりましょう。</p>');
+    } else if (ui.lib === 'fav') {
+      var liked = visible().filter(function (t) { return isLiked(t.id); });
+      body = liked.length ? playBar('fav') + listHtml(liked, 'fav', { right: playsRight }) : '<p class="sub">曲のハートを押すと、ここに並びます。</p>';
+    } else if (ui.lib === 'fol') {
+      var names = Object.keys(D.follows);
+      body = names.length ? '<ul class="list">' + names.map(function (n) {
+        var cnt = visible().filter(function (t) { return t.artist === n; }).length;
+        return '<li class="row"><a class="rowmain" href="' + ahref(n) + '"><span class="cover round md" style="--h:' + hueOf(n) + '" aria-hidden="true">' + esc(Array.from(n)[0]) + '</span>' +
+          '<span class="rt"><b>' + esc(n) + '</b><small>' + cnt + '曲</small></span></a></li>';
+      }).join('') + '</ul>' : '<p class="sub">アーティストのページで「フォロー」を押すと、ここに並びます。</p>';
+    } else {
+      var mine = D.tracks.filter(function (t) { return t.mine; });
+      body = '<a class="cta" href="#submit">曲を投稿する</a>' +
+        (mine.length ? listHtml(mine, 'mine', { right: playsRight }) : '<p class="sub">まだ投稿がありません。</p>');
+    }
+    return '<h2 class="ttl">ライブラリ</h2><div class="stack"><div class="seg" role="group" aria-label="ライブラリ">' + tabs.map(function (x) {
+      return '<button data-act="lib" data-v="' + x[0] + '" aria-pressed="' + (ui.lib === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div>' + body + '</div>';
+  }
+
+  function viewArtist() {
+    var name = ui.arg, ts = visible().filter(function (t) { return t.artist === name; }).sort(function (a, b) { return pop(b) - pop(a); });
+    if (!ts.length) { return backBtn() + empty('このアーティストの公開曲は見つかりませんでした。'); }
+    var fol = !!D.follows[name], n = num(D.followers[name]);
+    return backBtn() + '<section class="ahead"><span class="cover round xl" style="--h:' + hueOf(name) + '" aria-hidden="true">' + esc(Array.from(name)[0]) + '</span>' +
+      '<h2>' + esc(name) + '</h2><p class="sub">' + ts.length + '曲・フォロワー ' + fmt(n) + '人・再生 ' + fmt(ts.reduce(function (s, t) { return s + playsOf(t); }, 0)) + '回</p>' +
+      '<button class="vbtn ' + (fol ? 'line' : 'gold') + '" style="min-height:44px;padding:0 28px" data-act="follow" data-v="' + esc(name) + '" aria-pressed="' + fol + '">' + (fol ? 'フォロー中' : 'フォロー') + '</button></section>' +
+      playBar('artist') + listHtml(ts, 'artist', { right: playsRight });
+  }
+
+  function viewPlaylist() {
+    var p = null, i;
+    for (i = 0; i < D.pls.length; i++) { if (D.pls[i].id === ui.arg) { p = D.pls[i]; } }
+    if (!p) { return backBtn() + empty(D.me ? 'プレイリストが見つかりませんでした。' : 'ログインすると見られます。'); }
+    var ts = (D.plt[p.id] || []).map(byId).filter(Boolean);
+    return backBtn() + '<section class="ahead"><span class="cover xl" style="--h:' + hueOf(p.name) + '" aria-hidden="true">♪</span><h2>' + esc(p.name) + '</h2>' +
+      '<p class="sub">' + ts.length + '曲</p><button class="vbtn line" style="min-height:40px;padding:0 20px" data-act="pl-del" data-id="' + esc(p.id) + '">プレイリストを削除</button></section>' +
+      (ts.length ? playBar('pl') + listHtml(ts, 'pl', { right: playsRight, pl: p.id }) : '<p class="sub" style="text-align:center">曲のメニュー「プレイリストに追加」で、曲を入れられます。</p>');
+  }
+
+  /* 紅白歌合戦（イベント） */
+  function viewEvent() {
+    var tl = tally(), total = tl.r + tl.w, pr = total ? (tl.r / total) * 100 : 50;
+    var lead = tl.r === tl.w ? '現在は同点です' : (tl.r > tl.w ? '現在：紅組リード +' : '現在：白組リード +') + full(Math.abs(tl.r - tl.w)) + '票';
+    var hero = '<section class="hero"><p class="eyebrow">年末決戦まで あと <b class="tnum" data-cd="year">-</b></p>' +
+      '<h2>AI紅白歌合戦</h2><p class="sub" style="margin:0 0 12px">AI MUSICで開かれる、年末のイベントです。曲を投稿するときに「エントリー」すると、紅組か白組で出場できます。</p>' +
+      '<div class="vs"><div class="side red"><span class="k">紅組</span><b class="tnum">' + full(tl.r) + '</b><small>票</small></div><div class="vsmark">VS</div>' +
+      '<div class="side ice"><span class="k">白組</span><b class="tnum">' + full(tl.w) + '</b><small>票</small></div></div>' +
+      '<div class="bar" role="img" aria-label="紅組 ' + Math.round(pr) + '%、白組 ' + Math.round(100 - pr) + '%"><i style="width:' + pr.toFixed(1) + '%"></i></div>' +
+      '<p class="lead">' + lead + '</p><a class="cta" href="#submit">この曲で紅白にエントリーする</a></section>';
+    var tabs = [['battle', '対決'], ['ranking', 'ランキング'], ['gp', '年間GP']];
+    var body = ui.ev === 'ranking' ? evRanking() : ui.ev === 'gp' ? gpBody() : evBattle();
+    return '<div class="stack">' + hero + '<div class="seg" role="group" aria-label="イベントの内容">' + tabs.map(function (x) {
+      return '<button data-act="ev-tab" data-v="' + x[0] + '" aria-pressed="' + (ui.ev === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div>' + body + '</div>';
+  }
+  function evBattle() {
+    var ps = pairs();
+    return '<div class="meta"><div class="box"><small>今週の対決 終了まで</small><b class="tnum" data-cd="round">-</b></div>' +
+      '<div class="box"><small>今日の残り投票</small><b class="tnum">' + (D.me ? left() + ' / ' + DAILY : 'ログインで' + DAILY + '票') + '</b></div></div>' +
+      '<p class="sub">1日' + DAILY + '票まで。同じ曲に何票でも使えます。対戦カードは、今週の得票が多い紅組と白組の曲から自動で組みます。</p>' +
+      (ps.length ? ps.map(function (m) { return matchCard(m[0], m[1]); }).join('') : empty('紅組と白組の曲がそろうと、対戦カードが表示されます。'));
+  }
+  function evRanking() {
+    var list = teamed().filter(function (t) {
       return (ui.team === 'all' || t.team === ui.team) && (ui.genre === 'all' || t.genre === ui.genre);
     }).sort(function (a, b) { return votesOf(b, ui.period) - votesOf(a, ui.period); });
     var teams = [['all', '総合', ''], ['red', '紅組', 'red'], ['ice', '白組', 'ice']];
-    return '<div class="stack">' +
-      '<div class="seg" role="group" aria-label="陣営">' + teams.map(function (x) {
-        return '<button data-act="f-team" data-v="' + x[0] + '" data-team="' + x[2] + '" aria-pressed="' + (ui.team === x[0]) + '">' + x[1] + '</button>';
-      }).join('') + '</div>' +
+    return '<div class="seg" role="group" aria-label="陣営">' + teams.map(function (x) {
+      return '<button data-act="f-team" data-v="' + x[0] + '" data-team="' + x[2] + '" aria-pressed="' + (ui.team === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div>' +
       '<div class="seg" role="group" aria-label="期間">' + PERIODS.map(function (x) {
         return '<button data-act="f-period" data-v="' + x[0] + '" aria-pressed="' + (ui.period === x[0]) + '">' + x[1] + '</button>';
       }).join('') + '</div>' +
       '<div class="chips" role="group" aria-label="ジャンル">' + ['all'].concat(GENRES).map(function (g) {
-        return '<button class="chip" data-act="f-genre" data-v="' + g + '" aria-pressed="' + (ui.genre === g) + '">' + (g === 'all' ? 'すべて' : g) + '</button>';
+        return '<button class="chip" data-act="f-genre" data-v="' + esc(g) + '" aria-pressed="' + (ui.genre === g) + '">' + (g === 'all' ? 'すべて' : esc(g)) + '</button>';
       }).join('') + '</div>' +
-      (gp ? gpBody() : list.length ? '<ul class="list">' + list.map(function (t, i) { return row(t, i + 1, ui.period); }).join('') + '</ul>'
-        : '<p class="sub">この条件に合う曲はまだありません。</p>') +
-      '</div>';
+      (list.length ? listHtml(list, 'evrank', { rank: true, right: function (t) { return fmt(votesOf(t, ui.period)) + '票'; } })
+        : '<p class="sub">この条件でエントリーしている曲はまだありません。</p>');
   }
-
   function gpBody() {
     if (!D.reveal && !D.admin) {
       return '<div class="emptybox"><p><b>年間グランプリの結果は、年末の発表までお待ちください</b></p>' +
@@ -611,55 +898,44 @@ body { margin: 0; }
     return (D.reveal ? '' : '<p class="hint">運営者にだけ表示しています。まだ全員には公開されていません。</p>') +
       '<ul class="list">' + D.final.map(function (f) {
         var t = byId(f.track_id);
-        if (!t) { return ''; }
+        if (!t || !t.team) { return ''; }
         var rk = num(f.rank);
-        return '<li class="row"><span class="rank ' + (rk <= 3 ? 'm' + rk : '') + '">' + rk + '</span>' +
-          '<button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
+        return '<li class="row" data-tid="' + esc(t.id) + '"><span class="rank ' + (rk <= 3 ? 'm' + rk : '') + '">' + rk + '</span>' +
+          '<button class="rowmain" data-act="play" data-id="' + esc(t.id) + '">' + cover(t) +
           '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・一般 ' + Number(f.pub_score).toFixed(1) + '／審査員 ' + Number(f.judge_score).toFixed(1) + '</small></span></button>' +
           badge(t.team) + '<span class="rv tnum">' + Number(f.total).toFixed(1) + '点</span></li>';
       }).join('') + '</ul><p class="hint">総合点は100点満点です。一般投票と審査員評価を合わせた点数で、割合は<a href="terms.html#grand">ルール</a>に書いてあります。</p>';
   }
-
-  function matchCard(a, b, compact) {
+  function matchCard(a, b) {
     var va = votesOf(a, 'w'), vb = votesOf(b, 'w'), sum = va + vb, pa = sum ? (va / sum) * 100 : 50;
     var dis = D.me && left() === 0 ? ' disabled' : '';
     function cand(t, cls) {
-      return '<div class="cand"><button class="rowmain" style="flex-direction:column" data-act="open" data-id="' + esc(t.id) + '" aria-label="' + esc(t.title) + 'の詳細">' + cover(t) + '</button>' +
+      return '<div class="cand"><button class="rowmain" style="flex-direction:column" data-act="play" data-id="' + esc(t.id) + '" aria-label="' + esc(t.title) + 'を再生">' + cover(t) + '</button>' +
         '<b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small>' +
         '<span class="votes tnum">' + full(votesOf(t, 'w')) + '票</span>' +
-        '<div class="pair"><button class="vbtn ' + cls + '" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + (compact ? '投票' : (t.team === 'red' ? '紅組に投票' : '白組に投票')) + '</button></div></div>';
+        '<div class="pair"><button class="vbtn ' + cls + '" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + (t.team === 'red' ? '紅組に投票' : '白組に投票') + '</button></div></div>';
     }
     return '<div class="match"><div class="duel">' + cand(a, 'red') + '<span class="vsc">VS</span>' + cand(b, 'ice') + '</div>' +
       '<div class="share-bar" role="img" aria-label="' + esc(a.title) + ' ' + Math.round(pa) + '%、' + esc(b.title) + ' ' + Math.round(100 - pa) + '%"><i style="width:' + pa.toFixed(1) + '%"></i></div></div>';
   }
 
-  function viewBattle() {
-    var ps = pairs();
-    return '<div class="stack"><div class="meta">' +
-      '<div class="box"><small>今週の対決 終了まで</small><b class="tnum" data-cd="round">-</b></div>' +
-      '<div class="box"><small>今日の残り投票</small><b class="tnum">' + (D.me ? left() + ' / ' + DAILY : 'ログインで' + DAILY + '票') + '</b></div></div>' +
-      '<p class="sub">1日' + DAILY + '票まで。同じ曲に何票でも使えます。対戦カードは、今週の得票が多い紅組と白組の曲から自動で組みます。</p>' +
-      (ps.length ? ps.map(function (m) { return matchCard(m[0], m[1], false); }).join('') : empty('紅組と白組の曲がそろうと、対戦カードが表示されます。')) +
-      '</div>';
-  }
-
+  var formTeam = 'red';
   function viewSubmit() {
-    if (!D.me) {
-      return '<div class="emptybox"><p>曲の投稿にはログインが必要です。</p><button class="cta" data-act="login-open">ログイン・新規登録する</button></div>';
-    }
-    return '<form id="submit-form" novalidate>' +
-      '<p class="sub">Suno・Udioなどで作った曲を登録します。運営の審査を通ると公開されます。</p>' +
+    if (!D.me) { return '<h2 class="ttl">曲を投稿</h2>' + loginCta('曲の投稿にはログインが必要です。'); }
+    return '<h2 class="ttl">曲を投稿</h2><form id="submit-form" novalidate>' +
+      '<p class="sub">Suno・Udioなどで作った曲を登録します。運営の審査を通ると、みんなが聴けるようになります。</p>' +
       '<div class="field"><label for="f-title">曲のタイトル</label><input type="text" id="f-title" maxlength="40" autocomplete="off"></div>' +
       '<div class="field"><label for="f-artist">アーティスト名</label><input type="text" id="f-artist" maxlength="30" autocomplete="off"></div>' +
-      '<div class="field"><label for="f-genre">ジャンル</label><select id="f-genre">' + GENRES.map(function (g) { return '<option>' + g + '</option>'; }).join('') + '</select></div>' +
-      '<fieldset class="field"><legend>出場する陣営</legend><div class="seg" role="radiogroup" aria-label="陣営">' +
-      '<button type="button" data-act="s-team" data-v="red" data-team="red" aria-pressed="true">紅組</button>' +
-      '<button type="button" data-act="s-team" data-v="ice" data-team="ice" aria-pressed="false">白組</button></div></fieldset>' +
+      '<div class="field"><label for="f-genre">ジャンル</label><select id="f-genre">' + GENRES.map(function (g) { return '<option>' + esc(g) + '</option>'; }).join('') + '</select></div>' +
       '<div class="field"><label for="f-tool">使った生成ツール</label><select id="f-tool"><option>Suno</option><option>Udio</option><option>その他</option></select></div>' +
       '<div class="field"><label for="f-plan">利用プラン</label><select id="f-plan"><option value="paid">有料プラン</option><option value="free">無料プラン</option><option value="unknown">わからない</option></select>' +
       '<p class="hint">無料プランやわからない場合は、審査で権利の確認が入ります。</p></div>' +
       '<div class="field"><label for="f-file">音源ファイル（mp3・wavなど、20MBまで）</label><input type="file" id="f-file" accept="audio/*">' +
       '<p class="hint">選ばない場合は、サンプル音で再生されます。</p></div>' +
+      '<div class="evpick"><label class="check"><input type="checkbox" id="c-entry"><span><b>AI紅白歌合戦にエントリーする</b>（任意）<br><small>年末のイベントに、この曲で出場します。</small></span></label>' +
+      '<div id="entry-team" hidden><div class="seg" role="radiogroup" aria-label="陣営">' +
+      '<button type="button" data-act="s-team" data-v="red" data-team="red" aria-pressed="true">紅組</button>' +
+      '<button type="button" data-act="s-team" data-v="ice" data-team="ice" aria-pressed="false">白組</button></div></div></div>' +
       '<div class="checks">' +
       '<label class="check"><input type="checkbox" id="c-ai"><span>この曲はAIで生成しました</span></label>' +
       '<label class="check"><input type="checkbox" id="c-right"><span>この曲の権利は自分にあり、他人の曲や声をまねていません</span></label>' +
@@ -669,24 +945,19 @@ body { margin: 0; }
   }
 
   function viewMy() {
-    if (!D.me) {
-      return '<div class="emptybox"><p>ログインすると、投票・いいね・投稿の記録がここに並びます。</p><button class="cta" data-act="login-open">ログイン・新規登録する</button></div>';
-    }
-    var all = D.tracks;
-    var liked = all.filter(function (t) { return isLiked(t.id); });
-    var mine = all.filter(function (t) { return t.mine; });
-    var pending = D.admin ? all.filter(function (t) { return t.status === '審査中'; }) : [];
+    if (!D.me) { return '<h2 class="ttl">マイページ</h2>' + loginCta('ログインすると、アカウントの設定ができます。'); }
+    var pending = D.admin ? D.tracks.filter(function (t) { return t.status === '審査中'; }) : [];
     var judgeSec = '';
     if (D.judge) {
-      var jl = visible();
+      var jl = teamed();
       judgeSec = '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>審査員：評価する曲</h3></div>' +
-        '<p class="sub">曲を開くと、3項目を5段階で評価できます。評価は他の人には見えません。</p>' +
+        '<p class="sub">年間グランプリの審査員です。曲を開くと、3項目を5段階で評価できます。評価は他の人には見えません。</p>' +
         (jl.length ? '<ul class="list">' + jl.map(function (t) {
           var sc = D.myScores[t.id];
-          return '<li class="row"><button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
+          return '<li class="row"><button class="rowmain" data-act="np-track" data-id="' + esc(t.id) + '">' + cover(t) +
             '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small></span></button>' +
             '<span class="status">' + (sc ? '評価済 ' + (sc.c1 + sc.c2 + sc.c3) + '/15' : '未評価') + '</span></li>';
-        }).join('') + '</ul>' : '<p class="sub">公開中の曲がまだありません。</p>') + '</section>';
+        }).join('') + '</ul>' : '<p class="sub">紅白にエントリーした曲がまだありません。</p>') + '</section>';
     }
     var adminSec = D.admin
       ? '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>年間グランプリ（運営用）</h3></div>' +
@@ -696,26 +967,24 @@ body { margin: 0; }
     var review = pending.length
       ? '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>審査待ち（運営用）</h3></div><ul class="list">' +
         pending.map(function (t) {
-          return '<li class="row"><button class="rowmain" data-act="open" data-id="' + esc(t.id) + '">' + cover(t) +
-            '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '・' + esc(t.tool) + '</small></span></button>' +
+          return '<li class="row"><button class="rowmain" data-act="np-track" data-id="' + esc(t.id) + '">' + cover(t) +
+            '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '・' + esc(t.tool) + (t.team ? '・紅白エントリー' : '') + '</small></span></button>' +
             '<button class="vbtn line" style="flex:none;padding:0 12px" data-act="reject" data-id="' + esc(t.id) + '">却下</button>' +
             '<button class="vbtn gold" style="flex:none;padding:0 14px" data-act="approve" data-id="' + esc(t.id) + '">承認</button></li>';
         }).join('') + '</ul></section>'
       : '';
-    return '<div class="stack"><div class="meta">' +
-      '<div class="box"><small>今日の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div>' +
-      '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div></div>' +
+    return '<h2 class="ttl">マイページ</h2><div class="stack"><div class="meta">' +
+      '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div>' +
+      '<div class="box"><small>今日の紅白の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div></div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
       review + judgeSec + adminSec +
-      '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>投稿した曲</h3></div>' +
-      (mine.length ? '<ul class="list">' + mine.map(function (t) { return row(t, 0, 'y'); }).join('') + '</ul>' : '<p class="sub">まだ投稿がありません。「投稿」から曲を登録できます。</p>') + '</section>' +
-      '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>いいねした曲</h3></div>' +
-      (liked.length ? '<ul class="list">' + liked.map(function (t) { return row(t, 0, 'y'); }).join('') + '</ul>' : '<p class="sub">曲の画面でハートを押すとここに並びます。</p>') + '</section>' +
-      '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div>';
+      '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>アカウント</h3></div><div class="stack">' +
+      '<button class="vbtn line" style="min-height:44px" data-act="chpw">パスワードを変更する</button>' +
+      '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div></section></div>';
   }
 
-  var VIEWS = { home: viewHome, ranking: viewRanking, battle: viewBattle, submit: viewSubmit, my: viewMy };
-  var TITLES = { home: '', ranking: 'ランキング', battle: '紅白対決', submit: '曲を投稿', my: 'マイページ' };
+  var VIEWS = { home: viewHome, search: viewSearch, library: viewLibrary, event: viewEvent, my: viewMy, submit: viewSubmit, artist: viewArtist, playlist: viewPlaylist };
+  var TAB_OF = { home: 'home', search: 'search', library: 'library', event: 'event', my: 'my', submit: 'library', artist: 'home', playlist: 'library' };
 
   function viewSetup() {
     var why;
@@ -730,79 +999,100 @@ body { margin: 0; }
   }
   function render() {
     var v = $('#view');
+    CTX = {};
     if (!sb) { v.innerHTML = viewSetup(); }
     else {
-      v.innerHTML = (TITLES[ui.tab] ? '<h2 style="margin:0 0 12px;font-size:20px">' + TITLES[ui.tab] + '</h2>' : '') +
-        (D.err ? '<p class="err">' + esc(D.err) + '</p>' : '') +
-        (D.ready || D.err ? VIEWS[ui.tab]() : '<p class="sub">読み込み中…</p>');
+      v.innerHTML = (D.err ? '<p class="err">' + esc(D.err) + '</p>' : '') +
+        (D.ready || D.err ? VIEWS[ui.route]() : '<p class="sub">読み込み中…</p>');
     }
     $('#tabs').innerHTML = TABS.map(function (t) {
       return '<a class="tab" href="#' + t[0] + '"' + (ui.tab === t[0] ? ' aria-current="page"' : '') + '><svg viewBox="0 0 24 24" aria-hidden="true">' + t[2] + '</svg>' + t[1] + '</a>';
     }).join('');
     $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録';
     tickCountdown();
+    markNow();
   }
-  function rerenderKeepForm() { if (ui.tab !== 'submit') { render(); } }
 
-  /* ---------- sheet ---------- */
-  function openSheet(id, autoplay) {
-    var t = byId(id);
-    if (!t) { return; }
-    ui.sheet = String(id);
-    loadTrack(t);
+  /* ---------- sheets ---------- */
+  function openSheet(s) {
+    ui.sheet = s;
     $('#veil').hidden = false;
     drawSheet();
-    if (autoplay) { startPlayback(); }
-    var c = $('#sheet .x'); if (c) { c.focus(); }
+    var c = $('#sheet .x, #sheet input'); if (c) { c.focus(); }
   }
-  function openLogin(msg) {
-    ui.sheet = 'login';
-    $('#veil').hidden = false;
-    drawLogin(msg || '');
-    var c = $('#sheet .x'); if (c) { c.focus(); }
+  function closeSheet() { ui.sheet = null; $('#veil').hidden = true; }
+  function openLogin(msg) { openSheet({ k: 'login', msg: msg || '' }); }
+  function sheetTop(label) {
+    return '<div class="sheet-top"><span class="pill">' + esc(label) + '</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>';
+  }
+  function drawSheet() {
+    var s = ui.sheet;
+    if (!s) { return; }
+    if (s.k === 'login') { drawLogin(s.msg); }
+    else if (s.k === 'forgot') { drawForgot(s); }
+    else if (s.k === 'newpass') { drawNewPass(s); }
+    else if (s.k === 'menu') { drawMenu(s); }
+    else if (s.k === 'plpick' || s.k === 'plnew') { drawPl(s); }
+    else if (s.k === 'track') { drawTrack(s); }
   }
   function drawLogin(msg) {
-    $('#sheet').innerHTML =
-      '<div class="sheet-top"><span class="pill">ログイン・新規登録</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>' +
+    $('#sheet').innerHTML = sheetTop('ログイン・新規登録') +
       '<h2>ログイン・新規登録</h2>' +
-      '<p class="sub">' + esc(msg || '投票・いいね・コメント・投稿にはログインが必要です。') + '</p>' +
+      '<p class="sub">' + esc(msg || 'いいね・プレイリスト・フォロー・投稿・投票には、ログインが必要です。曲を聴くだけならログインなしでOKです。') + '</p>' +
       '<form id="login-form" novalidate>' +
       '<div class="field"><label for="l-mail">メールアドレス</label><input type="text" id="l-mail" inputmode="email" autocomplete="email" autocapitalize="off"></div>' +
       '<div class="field"><label for="l-pass">パスワード（8文字以上）</label><input type="password" id="l-pass" autocomplete="current-password" minlength="8"></div>' +
       '<p class="err" id="l-err" role="alert"></p>' +
       '<button class="cta" type="submit">ログイン</button>' +
-      '<p class="hint" style="margin:4px 0 0">初めての方は、メールアドレスとパスワードを決めて、下の「新規登録」を押してください。</p>' +
+      '<button class="linkbtn" type="button" data-act="forgot">パスワードを忘れた方はこちら</button>' +
+      '<p class="hint" style="margin:4px 0 0">初めての方は、メールアドレスとパスワードを決めて、下の「新規登録」を押してください。確認メールが届きます。</p>' +
       '<button class="vbtn line" type="button" style="min-height:44px" data-act="signup">新規登録</button></form>' +
       (CFG.ENABLE_GOOGLE === true
-        ? '<p class="hint" style="margin:12px 0 8px">または</p>' +
-          '<button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>'
+        ? '<p class="hint" style="margin:12px 0 8px">または</p><button class="vbtn line" style="width:100%;min-height:44px" data-act="google">Googleでログイン・登録</button>'
         : '');
   }
-  function drawSheet() {
-    if (ui.sheet === 'login') { return; }
-    var t = byId(ui.sheet);
-    if (!t) { return; }
-    var liked = isLiked(t.id);
-    var dis = D.me && left() === 0 ? ' disabled' : '';
-    var cs = commentsFor(t);
-    var votable = t.status === '公開';
-    $('#sheet').innerHTML =
-      '<div class="sheet-top"><span class="pill">' + (t.url ? 'アップロード音源' : '30秒のサンプル音') + '</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>' +
-      cover(t, 'lg') +
-      '<h2>' + esc(t.title) + '</h2>' +
-      '<div class="who">' + badge(t.team) + '<span>' + esc(t.artist) + '</span><span>・' + esc(t.genre) + '・' + esc(t.tool) + '</span>' + (votable ? '' : '<span class="status">' + esc(t.status) + '</span>') + '</div>' +
-      '<div class="stats tnum"><span>投票 <b>' + full(votesOf(t, 'y')) + '</b></span><span>いいね <b>' + full(likesOf(t)) + '</b></span><span>コメント <b>' + cs.length + '</b></span></div>' +
-      '<div class="player"><button class="play" id="sheet-play" data-act="toggle" aria-label="再生と一時停止"></button>' +
-      '<div class="scrub"><div class="track"><i id="sheet-bar"></i></div><div class="times tnum"><span id="sheet-cur">0:00</span><span id="sheet-tot">0:30</span></div></div></div>' +
-      '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'いいね</button>' +
-      '<button class="vbtn gold" data-act="vote" data-id="' + esc(t.id) + '"' + dis + (votable ? '' : ' disabled') + '>' + ICON.vote + '投票する</button>' +
-      '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
-      '<p class="hint">' + (D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます') + '</p>' +
-      (D.judge && votable ? judgeForm(t) : '') +
-      '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
-      cs.map(function (c) { return '<li><small>' + esc(c.n) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
-      (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
-    syncPlayer();
+  function drawForgot(s) {
+    $('#sheet').innerHTML = sheetTop('パスワードの再設定') +
+      '<h2>パスワードを再設定</h2>' +
+      '<p class="sub">登録したメールアドレスを入れてください。新しいパスワードを決めるためのリンクを、メールでお送りします。</p>' +
+      '<form id="forgot-form" novalidate>' +
+      '<div class="field"><label for="r-mail">メールアドレス</label><input type="text" id="r-mail" inputmode="email" autocomplete="email" autocapitalize="off" value="' + esc(s.mail || '') + '"></div>' +
+      '<p class="err" id="r-err" role="alert"></p><p class="hint" id="r-ok" style="color:var(--fg)"></p>' +
+      '<button class="cta" type="submit">再設定のメールを送る</button>' +
+      '<button class="linkbtn" type="button" data-act="login-open">ログインにもどる</button></form>';
+  }
+  function drawNewPass(s) {
+    var change = s.mode === 'change';
+    $('#sheet').innerHTML = sheetTop(change ? 'パスワードの変更' : 'パスワードの再設定') +
+      '<h2>' + (change ? '新しいパスワード' : '新しいパスワードを決める') + '</h2>' +
+      '<p class="sub">' + (change ? '変更後のパスワードを入力してください。' : 'メールのリンクから戻ってきました。新しいパスワードを決めてください。') + '</p>' +
+      '<form id="newpass-form" novalidate>' +
+      '<div class="field"><label for="p-new">新しいパスワード（8文字以上）</label><input type="password" id="p-new" autocomplete="new-password" minlength="8"></div>' +
+      '<div class="field"><label for="p-new2">もう一度入力</label><input type="password" id="p-new2" autocomplete="new-password" minlength="8"></div>' +
+      '<p class="err" id="p-err" role="alert"></p>' +
+      '<button class="cta" type="submit">パスワードを保存する</button></form>';
+  }
+  function drawMenu(s) {
+    var t = byId(s.id);
+    if (!t) { closeSheet(); return; }
+    var lk = isLiked(t.id);
+    function item(act, label, extra) { return '<button class="mitem" data-act="' + act + '" data-id="' + esc(t.id) + '"' + (extra || '') + '>' + label + '</button>'; }
+    $('#sheet').innerHTML = sheetTop('曲のメニュー') +
+      '<div class="who" style="margin:4px 0 8px">' + cover(t, 'md') + '<span class="rt"><b style="color:var(--fg)">' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small></span></div>' +
+      '<div class="menu">' + item('m-play', '再生する') + item('m-next', '次に再生') +
+      (t.status === '公開' ? item('m-pl', 'プレイリストに追加') + item('m-like', lk ? 'お気に入りから外す' : 'お気に入りに追加') : '') +
+      (s.pl ? item('m-rm', 'このプレイリストから外す', ' data-v="' + esc(s.pl) + '"') : '') +
+      item('m-artist', 'アーティストのページへ') + item('m-detail', '詳細・コメント') + item('m-share', '共有') + '</div>';
+  }
+  function drawPl(s) {
+    var t = s.id ? byId(s.id) : null;
+    $('#sheet').innerHTML = sheetTop(s.k === 'plnew' ? '新しいプレイリスト' : 'プレイリストに追加') +
+      (t ? '<p class="sub">「' + esc(t.title) + '」を入れるプレイリストを選びます。</p>' : '') +
+      (s.k === 'plpick' && D.pls.length ? '<div class="menu">' + D.pls.map(function (p) {
+        var has = (D.plt[p.id] || []).indexOf(s.id) >= 0;
+        return '<button class="mitem" data-act="pl-add" data-id="' + esc(p.id) + '" data-v="' + esc(s.id) + '"' + (has ? ' disabled' : '') + '>' + esc(p.name) + (has ? '（追加済み）' : '') + '</button>';
+      }).join('') + '</div>' : '') +
+      '<form id="pl-form" class="cform" style="margin-top:12px" data-id="' + esc(s.id || '') + '"><input type="text" id="pl-name" maxlength="40" placeholder="新しいプレイリストの名前" aria-label="プレイリストの名前"><button class="vbtn gold" style="flex:none;padding:0 16px" type="submit">作成</button></form>';
   }
   function judgeForm(t) {
     var sc = D.myScores[t.id] || { c1: 3, c2: 3, c3: 3, comment: '' };
@@ -817,9 +1107,47 @@ body { margin: 0; }
       '<div class="field"><label for="j-text">講評（任意・200字まで）</label><input type="text" id="j-text" maxlength="200" value="' + esc(sc.comment || '') + '"></div>' +
       '<button class="cta" type="submit">評価を保存する</button></form></div>';
   }
-  function closeSheet() {
-    ui.sheet = null;
-    $('#veil').hidden = true;
+  function drawTrack(s) {
+    var t = byId(s.id);
+    if (!t) { closeSheet(); return; }
+    var liked = isLiked(t.id), cs = commentsFor(t), votable = t.status === '公開';
+    var dis = D.me && left() === 0 ? ' disabled' : '';
+    var upNext = '';
+    if (P.t && P.t.id === t.id && Q.ids.length > Q.i + 1) {
+      var nx = Q.ids.slice(Q.i + 1, Q.i + 4).map(byId).filter(Boolean);
+      if (nx.length) {
+        upNext = '<div class="sec"><div class="sec-h"><h3>次に再生</h3></div><ul class="list">' + nx.map(function (n) {
+          return '<li class="row"><button class="rowmain" data-act="play" data-id="' + esc(n.id) + '" data-ctx="queue">' + cover(n) +
+            '<span class="rt"><b>' + esc(n.title) + '</b><small>' + esc(n.artist) + '</small></span></button></li>';
+        }).join('') + '</ul></div>';
+        CTX.queue = Q.ids.slice();
+      }
+    }
+    $('#sheet').innerHTML = sheetTop(t.url ? 'アップロード音源' : '30秒のサンプル音') +
+      cover(t, 'lg') +
+      '<h2>' + esc(t.title) + '</h2>' +
+      '<div class="who"><a href="' + ahref(t.artist) + '" data-act="m-artist" data-id="' + esc(t.id) + '" style="color:var(--fg);font-weight:700">' + esc(t.artist) + '</a><span>・' + esc(t.genre) + '・' + esc(t.tool) + '</span>' +
+      (t.team ? badge(t.team) : '') + (votable ? '' : '<span class="status">' + esc(t.status) + '</span>') + '</div>' +
+      '<div class="stats tnum"><span>再生 <b>' + full(playsOf(t)) + '</b></span><span>いいね <b>' + full(likesOf(t)) + '</b></span><span>コメント <b>' + cs.length + '</b></span>' + (t.team ? '<span>紅白の票 <b>' + full(votesOf(t, 'y')) + '</b></span>' : '') + '</div>' +
+      '<div class="scrub"><div class="track" data-seek="1"><i id="sheet-bar"></i></div><div class="times tnum"><span id="sheet-cur">0:00</span><span id="sheet-tot">0:30</span></div></div>' +
+      '<div class="ctrl"><button class="cbtn" data-act="shuf" aria-label="シャッフル" aria-pressed="' + Q.shuffle + '">' + ICON.shuffle + '</button>' +
+      '<button class="cbtn" data-act="prev" aria-label="前の曲">' + ICON.prev + '</button>' +
+      '<button class="play" id="sheet-play" data-act="toggle" aria-label="再生と一時停止"></button>' +
+      '<button class="cbtn" data-act="next" aria-label="次の曲">' + ICON.next + '</button>' +
+      '<button class="cbtn" data-act="rep" aria-label="リピート" aria-pressed="' + (Q.repeat !== 'off') + '">' + ICON.repeat + (Q.repeat === 'one' ? '<i class="one">1</i>' : '') + '</button></div>' +
+      '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'お気に入り</button>' +
+      '<button class="vbtn line" data-act="m-pl" data-id="' + esc(t.id) + '"' + (votable ? '' : ' disabled') + '>' + ICON.plus + '追加</button>' +
+      '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
+      (t.team && votable
+        ? '<div class="evbox"><span>' + badge(t.team) + ' <b>AI紅白歌合戦</b> エントリー曲</span><button class="vbtn gold" style="flex:none;padding:0 16px" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + ICON.vote + '投票</button></div>' +
+          '<p class="hint">' + (D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます') + '</p>'
+        : '') +
+      upNext +
+      (D.judge && votable && t.team ? judgeForm(t) : '') +
+      '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
+      cs.map(function (c) { return '<li><small>' + esc(c.n) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
+      (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
+    syncPlayer();
   }
 
   /* ---------- data loading ---------- */
@@ -827,7 +1155,8 @@ body { margin: 0; }
     var m = String((e && (e.message || e.details)) || e || '');
     if (m.indexOf('daily_limit') >= 0) { return '今日の投票はここまでです。明日また投票できます'; }
     if (m.indexOf('login_required') >= 0) { return 'ログインしてください'; }
-    if (m.indexOf('track_unavailable') >= 0) { return 'この曲には投票できません'; }
+    if (m.indexOf('track_unavailable') >= 0) { return 'この曲には投票できません（紅白にエントリーしている曲だけ投票できます）'; }
+    if (/schema cache|does not exist|PGRST20[0-9]|42P01/.test(m + ' ' + String((e && e.code) || ''))) { return 'この機能の準備（schema_music.sql）がまだ終わっていません'; }
     return '処理できませんでした。しばらくしてからもう一度お試しください';
   }
   async function load() {
@@ -870,13 +1199,35 @@ body { margin: 0; }
           var fr = await sb.rpc('final_ranking');
           fin = fr.error ? [] : (fr.data || []);
         }
-      } catch (x) { /* 追加分のSQL(schema_judges.sql)が未実行でも、ほかの機能は動かします */ }
-      var sig = JSON.stringify([tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin]);
+      } catch (x) { /* schema_judges.sql が未実行でも、ほかの機能は動かします */ }
+      var plays = {}, followers = {}, follows = {}, pls = [], plt = {}, recent = [];
+      try {
+        var ex = [sb.from('track_plays').select('track_id,total,w'), sb.from('artist_followers').select('artist,n')];
+        if (D.me) {
+          ex.push(sb.from('follows').select('artist'));
+          ex.push(sb.from('playlists').select('id,name,created_at').eq('owner', D.me).order('created_at', { ascending: false }));
+          ex.push(sb.from('playlist_tracks').select('playlist_id,track_id,added_at').order('added_at', { ascending: true }).limit(5000));
+          ex.push(sb.rpc('my_recent_tracks', { p_limit: 20 }));
+        }
+        var er = await Promise.all(ex);
+        if (!er[0].error) { (er[0].data || []).forEach(function (p) { plays[String(p.track_id)] = { total: num(p.total), w: num(p.w) }; }); }
+        if (!er[1].error) { (er[1].data || []).forEach(function (a) { followers[a.artist] = num(a.n); }); }
+        if (D.me) {
+          if (!er[2].error) { (er[2].data || []).forEach(function (f) { follows[f.artist] = true; }); }
+          if (!er[3].error) { pls = (er[3].data || []).map(function (p) { return { id: String(p.id), name: String(p.name) }; }); }
+          var mine = {};
+          pls.forEach(function (p) { mine[p.id] = true; plt[p.id] = []; });
+          if (!er[4].error) { (er[4].data || []).forEach(function (x) { var k = String(x.playlist_id); if (mine[k]) { plt[k].push(String(x.track_id)); } }); }
+          if (!er[5].error) { recent = (er[5].data || []).map(function (x) { return String(x.track_id); }); }
+        }
+      } catch (y) { /* schema_music.sql が未実行でも、曲を聴く機能は動かします */ }
+      var sig = JSON.stringify([tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
-        D.reveal = reveal; D.myScores = myScores; D.final = fin;
+        D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
+        D.pls = pls; D.plt = plt; D.recent = recent;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -888,11 +1239,12 @@ body { margin: 0; }
   function changed() {
     clearTimeout(changeTimer);
     changeTimer = setTimeout(function () {
-      if (ui.tab !== 'submit') { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
-      var ci = $('#c-text'), li = $('#l-mail');
-      var ae = document.activeElement, editing = !!(ae && ae.closest && ae.closest('#jform'));
-      if (ui.sheet && ui.sheet !== 'login' && !(ci && ci.value) && !editing) { drawSheet(); }
-      if (!li && ui.tab === 'submit' && D.me && !$('#submit-form')) { render(); }
+      var ae = document.activeElement;
+      var typing = !!(ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && ae.closest && ae.closest('#view'));
+      if (ui.route !== 'submit' && !typing) { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
+      var ci = $('#c-text'), editing = !!(ae && ae.closest && ae.closest('#sheet') && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName));
+      if (ui.sheet && ui.sheet.k !== 'login' && !(ci && ci.value) && !editing) { drawSheet(); }
+      if (ui.route === 'submit' && D.me && !$('#submit-form')) { render(); }
     }, 40);
   }
   async function loadMe() {
@@ -906,6 +1258,7 @@ body { margin: 0; }
       D.judge = p[2].data === true;
     }
   }
+  function reload() { D.sig = ''; return load(); }
 
   /* ---------- actions ---------- */
   function need(msg) {
@@ -921,38 +1274,78 @@ body { margin: 0; }
     var r = await sb.rpc('cast_vote', { p_track: t.id });
     if (r.error) { toast(errText(r.error)); return; }
     toast(t.title + ' に投票しました（残り' + num(r.data) + '票）');
-    D.sig = '';
-    await load();
+    await reload();
   }
   async function like(id) {
-    if (!need('いいねするにはログインしてください')) { return; }
+    if (!need('お気に入りにするにはログインしてください')) { return; }
     var k = String(id), was = isLiked(k), r;
     if (was) { r = await sb.from('likes').delete().eq('track_id', k).eq('user_id', D.me); }
     else { r = await sb.from('likes').insert({ track_id: k, user_id: D.me }); }
     if (r.error) { toast(errText(r.error)); return; }
-    D.sig = '';
-    await load();
+    toast(was ? 'お気に入りから外しました' : 'お気に入りに追加しました');
+    await reload();
+  }
+  async function follow(name) {
+    if (!need('フォローするにはログインしてください')) { return; }
+    var was = !!D.follows[name], r;
+    if (was) { r = await sb.from('follows').delete().eq('user_id', D.me).eq('artist', name); }
+    else { r = await sb.from('follows').insert({ user_id: D.me, artist: name }); }
+    if (r.error) { toast(errText(r.error)); return; }
+    toast(was ? 'フォローをやめました' : name + ' をフォローしました');
+    await reload();
+  }
+  async function createPlaylist(name, trackId) {
+    if (!need('プレイリストを作るにはログインしてください')) { return; }
+    var r = await sb.from('playlists').insert({ owner: D.me, name: name.slice(0, 40) }).select('id').single();
+    if (r.error || !r.data) { toast(r.error && /row-level|policy/.test(String(r.error.message)) ? 'プレイリストは50個までです' : errText(r.error)); return; }
+    if (trackId) {
+      var a = await sb.from('playlist_tracks').insert({ playlist_id: r.data.id, track_id: trackId });
+      if (a.error) { toast(errText(a.error)); }
+    }
+    toast('「' + name + '」を作成しました');
+    closeSheet();
+    await reload();
+  }
+  async function addToPlaylist(plid, tid) {
+    var r = await sb.from('playlist_tracks').insert({ playlist_id: plid, track_id: tid });
+    if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '1つのプレイリストに入れられるのは500曲までです' : errText(r.error)); return; }
+    toast('プレイリストに追加しました');
+    closeSheet();
+    await reload();
+  }
+  async function removeFromPlaylist(plid, tid) {
+    var r = await sb.from('playlist_tracks').delete().eq('playlist_id', plid).eq('track_id', tid);
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('プレイリストから外しました');
+    closeSheet();
+    await reload();
+  }
+  async function deletePlaylist(plid) {
+    if (!window.confirm('このプレイリストを削除しますか？（曲そのものは消えません）')) { return; }
+    var r = await sb.from('playlists').delete().eq('id', plid);
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('削除しました');
+    location.hash = '#library';
+    await reload();
   }
   async function addComment(id, text) {
     if (!need('コメントするにはログインしてください')) { return; }
     var r = await sb.from('comments').insert({ track_id: String(id), user_id: D.me, body: text.slice(0, 80) });
     if (r.error) { toast(errText(r.error)); return; }
-    D.sig = '';
-    await load();
+    await reload();
   }
   async function setStatus(id, status, msg) {
     if (!D.admin) { return; }
     var r = await sb.from('tracks').update({ status: status }).eq('id', String(id));
     if (r.error) { toast(errText(r.error)); return; }
     toast(msg);
-    D.sig = '';
-    await load();
+    await reload();
   }
   function share(id) {
     var t = byId(id);
     if (!t) { return; }
-    var url = location.href.split('#')[0];
-    var text = t.title + ' / ' + t.artist + ' を応援しよう #AI紅白';
+    var url = location.href.split('#')[0] + ahref(t.artist);
+    var text = t.title + ' / ' + t.artist + ' #AIMUSIC';
     var ok = function () { toast('リンクをコピーしました'); };
     var ng = function () { toast('コピーできませんでした。' + text); };
     try { navigator.clipboard.writeText(text + ' ' + url).then(ok, ng); } catch (e) { ng(); }
@@ -960,12 +1353,14 @@ body { margin: 0; }
   function authError(er) {
     var m = String((er && er.message) || ''), c = String((er && er.code) || '');
     if (er && er.status === 429 || c.indexOf('rate_limit') >= 0) { return '短時間に試した回数が多すぎます。しばらく待ってから、もう一度お試しください。'; }
-    if (/invalid login credentials/i.test(m)) { return 'メールアドレスかパスワードが違います。初めての方は「新規登録」を押してください。'; }
+    if (/invalid login credentials/i.test(m)) { return 'メールアドレスかパスワードが違います。初めての方は「新規登録」を押してください。パスワードを忘れた場合は、下のリンクから再設定できます。'; }
     if (/already registered/i.test(m) || c === 'user_already_exists') { return 'このメールアドレスは登録済みです。「ログイン」を押してください。'; }
+    if (/different from the old/i.test(m) || c === 'same_password') { return '今までと違うパスワードにしてください。'; }
     if (/password/i.test(m) && /(weak|should|least|short)/i.test(m) || c === 'weak_password') { return 'パスワードが簡単すぎます。8文字以上で、英字と数字を混ぜてください。'; }
     if (/email not confirmed/i.test(m)) { return 'メールの確認が済んでいません。届いた確認メールのリンクを開いてください。'; }
     return '処理できませんでした。（' + (c || m || '原因不明').slice(0, 80) + '）';
   }
+  function redirectUrl() { return location.origin + location.pathname; }
   async function authSubmit(mode) {
     var mail = $('#l-mail').value.trim(), pass = $('#l-pass').value, le = $('#l-err');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { le.textContent = 'メールアドレスの形式を確認してください'; return; }
@@ -990,19 +1385,97 @@ body { margin: 0; }
       for (i = 0; i < btns.length; i++) { btns[i].disabled = false; }
     }
   }
-  var formTeam = 'red';
-  function redirectUrl() { return location.origin + location.pathname; }
+  async function forgotSubmit() {
+    var mail = $('#r-mail').value.trim(), er = $('#r-err'), ok = $('#r-ok'), btn = $('#forgot-form button[type="submit"]');
+    er.textContent = ''; ok.textContent = '';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { er.textContent = 'メールアドレスの形式を確認してください'; return; }
+    btn.disabled = true;
+    try {
+      var r = await sb.auth.resetPasswordForEmail(mail, { redirectTo: redirectUrl() });
+      if (r.error) { er.textContent = authError(r.error); }
+      else { ok.textContent = '再設定のメールを送りました。メールのリンクを開いて、新しいパスワードを決めてください。届かない場合は、迷惑メールフォルダも確認してください。'; }
+    } catch (ex) {
+      er.textContent = '通信できませんでした。もう一度お試しください。';
+    } finally { btn.disabled = false; }
+  }
+  async function newPassSubmit() {
+    var a = $('#p-new').value, b = $('#p-new2').value, er = $('#p-err'), btn = $('#newpass-form button[type="submit"]');
+    if (a.length < 8) { er.textContent = 'パスワードは8文字以上にしてください'; return; }
+    if (a !== b) { er.textContent = '2つの入力が一致しません'; return; }
+    er.textContent = ''; btn.disabled = true;
+    try {
+      var r = await sb.auth.updateUser({ password: a });
+      if (r.error) { er.textContent = authError(r.error); return; }
+      closeSheet();
+      toast('パスワードを変更しました');
+      if (/access_token|type=recovery/.test(location.hash)) { history.replaceState(null, '', location.pathname + location.search); }
+    } catch (ex) {
+      er.textContent = '通信できませんでした。もう一度お試しください。';
+    } finally { btn.disabled = false; }
+  }
+  var recoveryShown = false;
+  function recoveryNow() {
+    if (recoveryShown) { return; }
+    recoveryShown = true;
+    openSheet({ k: 'newpass', mode: 'recover' });
+  }
 
+  /* ---------- events ---------- */
   document.addEventListener('click', function (e) {
+    var tr = e.target.closest ? e.target.closest('.track[data-seek]') : null;
+    if (tr) {
+      var rc = tr.getBoundingClientRect();
+      if (ui.sheet && ui.sheet.k === 'track' && P.t && String(P.t.id) === String(ui.sheet.id)) { seekTo((e.clientX - rc.left) / rc.width); }
+      return;
+    }
     var el = e.target.closest ? e.target.closest('[data-act]') : null;
     if (!el || el.disabled) { return; }
-    var act = el.getAttribute('data-act'), id = el.getAttribute('data-id'), v = el.getAttribute('data-v');
-    if (act === 'open') { openSheet(id, false); }
-    else if (act === 'play') { openSheet(id, true); }
+    var act = el.getAttribute('data-act'), id = el.getAttribute('data-id'), v = el.getAttribute('data-v'), cx = el.getAttribute('data-ctx');
+    if (act === 'm-artist') { e.preventDefault(); }
+    if (act === 'play') { playQueue(CTX[cx] && CTX[cx].indexOf(id) >= 0 ? CTX[cx] : [id], id); }
+    else if (act === 'playall' || act === 'shufall') {
+      var ids = CTX[cx] || [];
+      if (ids.length) { playQueue(ids, act === 'shufall' ? null : ids[0], act === 'shufall'); }
+    }
+    else if (act === 'np') { if (P.t) { openSheet({ k: 'track', id: P.t.id }); } }
+    else if (act === 'np-track') { openSheet({ k: 'track', id: id }); }
+    else if (act === 'toggle') {
+      var s = ui.sheet;
+      if (s && s.k === 'track' && (!P.t || String(P.t.id) !== String(s.id))) { playQueue([s.id], s.id); } else { togglePlayback(); }
+    }
+    else if (act === 'next') { nextTrack(false); }
+    else if (act === 'prev') { prevTrack(); }
+    else if (act === 'shuf') {
+      Q.shuffle = !Q.shuffle;
+      if (Q.ids.length && P.t) {
+        var cur = P.t.id, base = Q.ids.slice();
+        if (Q.shuffle) { Q.ids = [cur].concat(shuffled(base.filter(function (x) { return x !== cur; }))); Q.i = 0; }
+      }
+      toast(Q.shuffle ? 'シャッフル：オン' : 'シャッフル：オフ');
+      drawSheet();
+    }
+    else if (act === 'rep') { Q.repeat = Q.repeat === 'off' ? 'all' : (Q.repeat === 'all' ? 'one' : 'off'); toast(Q.repeat === 'off' ? 'リピート：オフ' : Q.repeat === 'all' ? 'リピート：全曲' : 'リピート：1曲'); drawSheet(); }
+    else if (act === 'menu') { openSheet({ k: 'menu', id: id, pl: el.getAttribute('data-pl') || '' }); }
+    else if (act === 'm-play') { closeSheet(); playQueue([id], id); }
+    else if (act === 'm-next') { closeSheet(); playNext(id); }
+    else if (act === 'm-pl') { if (need('プレイリストに追加するにはログインしてください')) { openSheet({ k: 'plpick', id: id }); } }
+    else if (act === 'm-like') { closeSheet(); like(id); }
+    else if (act === 'm-rm') { removeFromPlaylist(v, id); }
+    else if (act === 'm-artist') { var t = byId(id); closeSheet(); if (t) { location.hash = ahref(t.artist); } }
+    else if (act === 'm-detail') { openSheet({ k: 'track', id: id }); }
+    else if (act === 'm-share') { closeSheet(); share(id); }
+    else if (act === 'pl-new') { if (need('プレイリストを作るにはログインしてください')) { openSheet({ k: 'plnew' }); } }
+    else if (act === 'pl-add') { addToPlaylist(id, v); }
+    else if (act === 'pl-del') { deletePlaylist(id); }
+    else if (act === 'follow') { follow(v); }
+    else if (act === 'lib') { ui.lib = v; render(); }
+    else if (act === 'ev-tab') { ui.ev = v; render(); }
+    else if (act === 'sg') { ui.sg = v; render(); }
+    else if (act === 'sg-go') { ui.sg = v; ui.q = ''; if (ui.route === 'search') { render(); } else { location.hash = '#search'; } }
+    else if (act === 'back') { if (history.length > 1) { history.back(); } else { location.hash = '#home'; } }
     else if (act === 'close') { closeSheet(); }
-    else if (act === 'toggle') { togglePlayback(); }
-    else if (act === 'vote') { vote(id); }
     else if (act === 'like') { like(id); }
+    else if (act === 'vote') { vote(id); }
     else if (act === 'share') { share(id); }
     else if (act === 'approve') { setStatus(id, 'approved', '承認しました。みんなの画面に公開されます'); }
     else if (act === 'reject') { setStatus(id, 'rejected', '却下しました'); }
@@ -1010,12 +1483,13 @@ body { margin: 0; }
       sb.rpc('set_reveal', { p_value: !D.reveal }).then(function (r) {
         if (r.error) { toast(errText(r.error)); return; }
         toast(D.reveal ? '結果を非公開に戻しました' : '結果を全員に公開しました');
-        D.sig = '';
-        load();
+        reload();
       });
     }
     else if (act === 'signup') { authSubmit('signup'); }
     else if (act === 'login-open') { openLogin(''); }
+    else if (act === 'forgot') { var lm = $('#l-mail'); openSheet({ k: 'forgot', mail: lm ? lm.value.trim() : '' }); }
+    else if (act === 'chpw') { openSheet({ k: 'newpass', mode: 'change' }); }
     else if (act === 'auth') { if (D.me) { location.hash = '#my'; } else { openLogin(''); } }
     else if (act === 'logout') { sb.auth.signOut().then(function () { toast('ログアウトしました'); }); }
     else if (act === 'google') {
@@ -1034,6 +1508,16 @@ body { margin: 0; }
   });
   $('#veil').addEventListener('click', function (e) { if (e.target === $('#veil')) { closeSheet(); } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ui.sheet) { closeSheet(); } });
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.id === 's-q') {
+      ui.q = e.target.value;
+      var res = $('#s-res');
+      if (res) { CTX = {}; res.innerHTML = searchBody(); }
+    }
+  });
+  document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'c-entry') { $('#entry-team').hidden = !e.target.checked; }
+  });
 
   document.addEventListener('submit', async function (e) {
     var f = e.target;
@@ -1046,19 +1530,26 @@ body { margin: 0; }
       return;
     }
     if (f.id === 'jform') {
-      var row = {
+      var jrow = {
         judge_id: D.me, track_id: f.getAttribute('data-id'),
         c1: Number($('#j1').value), c2: Number($('#j2').value), c3: Number($('#j3').value),
         comment: $('#j-text').value.trim().slice(0, 200) || null, updated_at: new Date().toISOString()
       };
-      var jr = await sb.from('judge_scores').upsert(row);
+      var jr = await sb.from('judge_scores').upsert(jrow);
       if (jr.error) { toast(errText(jr.error)); return; }
       toast('評価を保存しました');
-      D.sig = '';
-      await load();
+      await reload();
       return;
     }
     if (f.id === 'login-form') { await authSubmit('login'); return; }
+    if (f.id === 'forgot-form') { await forgotSubmit(); return; }
+    if (f.id === 'newpass-form') { await newPassSubmit(); return; }
+    if (f.id === 'pl-form') {
+      var pn = $('#pl-name').value.trim();
+      if (!pn) { return; }
+      await createPlaylist(pn, f.getAttribute('data-id') || null);
+      return;
+    }
     if (f.id === 'name-form') {
       var nm = $('#n-text').value.trim();
       if (!nm) { return; }
@@ -1066,8 +1557,7 @@ body { margin: 0; }
       if (nr.error) { toast(errText(nr.error)); return; }
       D.name = nm.slice(0, 20);
       toast('表示名を保存しました');
-      D.sig = '';
-      await load();
+      await reload();
       return;
     }
     if (f.id === 'submit-form') {
@@ -1078,6 +1568,7 @@ body { margin: 0; }
       var file = $('#f-file').files[0], path = null, go = $('#f-go');
       if (file && file.size > 20 * 1024 * 1024) { err.textContent = '音源は20MB以下にしてください'; return; }
       go.disabled = true; err.textContent = '';
+      var entered = $('#c-entry').checked;
       try {
         if (file) {
           var ext = (file.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'mp3';
@@ -1086,37 +1577,46 @@ body { margin: 0; }
           if (up.error) { throw up.error; }
         }
         var ins = await sb.from('tracks').insert({
-          owner: D.me, title: title.slice(0, 40), artist: artist.slice(0, 30), team: formTeam, genre: $('#f-genre').value,
+          owner: D.me, title: title.slice(0, 40), artist: artist.slice(0, 30), team: entered ? formTeam : null, genre: $('#f-genre').value,
           tool: $('#f-tool').value, plan: $('#f-plan').value, audio_path: path, rights_ack: true
         });
         if (ins.error) { throw ins.error; }
       } catch (ex) {
         go.disabled = false;
-        err.textContent = '投稿できませんでした。音源の形式（音声ファイル・20MB以下）と、審査待ちが5曲以内かを確認してください';
+        var em = String((ex && ex.message) || '');
+        err.textContent = /null value|not-null|team|check constraint|tracks_genre_check/i.test(em)
+          ? '投稿できませんでした。サーバー側の準備（schema_music.sql）がまだ終わっていない可能性があります'
+          : '投稿できませんでした。音源の形式（音声ファイル・20MB以下）と、審査待ちが5曲以内かを確認してください';
         return;
       }
       toast('「' + title + '」を審査に出しました');
-      D.sig = '';
-      await load();
-      location.hash = '#my';
+      await reload();
+      ui.lib = 'up';
+      location.hash = '#library';
     }
   });
 
   /* ---------- connect ---------- */
   async function connect() {
     if (!sb) { render(); return; }
-    try { await loadMe(); } catch (e) { D.me = null; }
-    sb.auth.onAuthStateChange(function () {
+    sb.auth.onAuthStateChange(function (ev) {
+      if (ev === 'PASSWORD_RECOVERY') { setTimeout(recoveryNow, 0); }
       setTimeout(async function () {
         try { await loadMe(); } catch (e) { D.me = null; }
-        D.sig = '';
-        load();
+        reload();
       }, 0);
     });
+    try { await loadMe(); } catch (e) { D.me = null; }
+    if (RECOVERY) {
+      if (D.me) { recoveryNow(); }
+      else { toast('リンクの有効期限が切れています。もう一度、再設定のメールを送ってください'); openSheet({ k: 'forgot', mail: '' }); }
+    } else if (HASH_ERR) {
+      toast('リンクの有効期限が切れているか、すでに使われています。もう一度お試しください');
+      history.replaceState(null, '', location.pathname + location.search);
+    }
     await load();
     setInterval(function () { if (!document.hidden) { load(); } }, 20000);
   }
-
 
   /* ---------- countdowns ---------- */
   function roundEnd() {
@@ -1138,9 +1638,13 @@ body { margin: 0; }
 
   /* ---------- routing ---------- */
   function route() {
-    var h = location.hash.replace('#', '');
-    ui.tab = VIEWS[h] ? h : 'home';
+    var raw = location.hash.replace(/^#/, ''), parts = raw.split('/'), r = parts[0], arg = parts.slice(1).join('/');
+    if (r === 'ranking' || r === 'battle') { ui.ev = r === 'ranking' ? 'ranking' : 'battle'; r = 'event'; }
+    try { arg = decodeURIComponent(arg); } catch (e) { /* そのまま使います */ }
+    if (!VIEWS[r]) { r = 'home'; }
+    ui.route = r; ui.arg = arg; ui.tab = TAB_OF[r];
     render();
+    window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
   route();

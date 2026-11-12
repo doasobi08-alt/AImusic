@@ -1,7 +1,7 @@
 {
-  "name": "AI MUSIC 紅白歌合戦",
-  "short_name": "AI紅白",
-  "description": "AIで生まれた名曲を聴いて、応援して、投票して。みんなで創るAI音楽の祭典。",
+  "name": "AI MUSIC",
+  "short_name": "AI MUSIC",
+  "description": "AIで生まれた音楽だけを、いつでも。聴いて、集めて、応援して。年末にはAI紅白歌合戦も。",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
