@@ -481,11 +481,11 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, seasons: [], sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
   };
   var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
-  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true;
+  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true, SEASONOK = true;
   var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0, fx: 'echo', wet: 0.35, mon: false };
   var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
@@ -510,6 +510,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     return null;
   }
   function votesOf(t, period) { var s = D.scores[t.id]; return s ? num(s[period]) : 0; }
+  function sv(t) { var s = D.scores[t.id]; return SEASONOK && s && s.s !== undefined ? num(s.s) : votesOf(t, 'y'); }
   function likesOf(t) { var s = D.scores[t.id]; return s ? num(s.likes) : 0; }
   function playsOf(t) { var p = D.plays[t.id]; return p ? num(p.total) : 0; }
   function playsIn(t, per) { var p = D.plays[t.id]; return p ? num(p[per]) : 0; }
@@ -844,7 +845,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   function teamed() { return visible().filter(function (t) { return !!t.team; }); }
   function tally() {
     var r = 0, w = 0;
-    compete().forEach(function (t) { var v = votesOf(t, 'y'); if (t.team === 'red') { r += v; } else { w += v; } });
+    compete().forEach(function (t) { var v = sv(t); if (t.team === 'red') { r += v; } else { w += v; } });
     return { r: r, w: w };
   }
   function topOf(team) {
@@ -1136,7 +1137,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
 
   /* 紅白歌合戦（イベント） */
-  function evTabs() {
+  function evTabs() { var t = evTabs0(); return D.seasons.length ? t.concat([['history', '過去の回']]) : t; }
+  function evTabs0() {
     var p = phase();
     if (p === 'entry') { return [['entrants', 'エントリー曲']]; }
     if (p === 'qualifying') { return [['qual', '予選投票'], ['entrants', 'エントリー曲']]; }
@@ -1159,11 +1161,11 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       entry: '曲を投稿するときに「紅白にエントリー」を選ぶと、予選に出られます。出場者は、予選のユーザー投票で決まります。',
       qualifying: '紅組・白組それぞれ、予選の得票が多い上位' + slots + '曲が、本番の出場者になります。気に入ったエントリー曲を応援しましょう。',
       main: '予選を勝ち抜いた出場者による本番です。1日' + DAILY + '票で、応援する曲に投票できます。',
-      closed: '今年のイベントは終了しました。'
+      closed: '今回のイベントは終了しました。'
     }[p] || 'AI MUSICで開かれる、年末のイベントです。曲を投稿するときに「エントリー」すると、紅組か白組で出場できます。';
     var showTally = !p || p === 'main' || p === 'closed';
     var hero = '<section class="hero"><p class="eyebrow">' + (tag ? '<b>' + tag + '</b>　' : '') + '年末決戦まで あと <b class="tnum" data-cd="year">-</b></p>' +
-      '<h2>' + esc((D.evt && D.evt.name) || 'AI紅白歌合戦') + '</h2><p class="sub" style="margin:0 0 12px">' + blurb + '</p>' +
+      '<h2>' + esc((D.evt && D.evt.name) || 'AI紅白歌合戦') + (SEASONOK && D.evt && D.evt.season ? ' 第' + D.evt.season + '回' : '') + '</h2><p class="sub" style="margin:0 0 12px">' + blurb + '</p>' +
       (p === 'qualifying' ? '<p class="sub" style="margin:0 0 10px"><b style="color:var(--fg)">' + (D.me ? 'あなたの予選の票：残り ' + (10 - Object.keys(D.myQual).length) + ' / 10' : 'ログインすると、10曲まで応援できます') + '</b>' + (qualEndText() ? '　' + qualEndText() : '') + '</p>' : '') +
       '<div class="vs"><div class="side red"><span class="k">紅組</span><b class="tnum">' + (showTally ? full(tl.r) : nr) + '</b><small>' + (showTally ? '票' : '曲がエントリー') + '</small></div><div class="vsmark">VS</div>' +
       '<div class="side ice"><span class="k">白組</span><b class="tnum">' + (showTally ? full(tl.w) : nw) + '</b><small>' + (showTally ? '票' : '曲がエントリー') + '</small></div></div>' +
@@ -1172,7 +1174,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     var tabs = evTabs();
     if (ui.evSeen !== p) { ui.evSeen = p; ui.ev = tabs[0][0]; }
     if (!tabs.some(function (x) { return x[0] === ui.ev; })) { ui.ev = tabs[0][0]; }
-    var body = ui.ev === 'ranking' ? evRanking() : ui.ev === 'gp' ? gpBody() : ui.ev === 'qual' ? evQual() : ui.ev === 'entrants' ? evEntrants() : ui.ev === 'finalists' ? evFinalists() : evBattle();
+    var body = ui.ev === 'ranking' ? evRanking() : ui.ev === 'gp' ? gpBody() : ui.ev === 'qual' ? evQual() : ui.ev === 'entrants' ? evEntrants() : ui.ev === 'finalists' ? evFinalists() : ui.ev === 'history' ? evHistory() : evBattle();
     return '<div class="stack">' + hero + '<p class="hint" style="text-align:center">応援ルーム：<a href="#chat/red">紅組</a>・<a href="#chat/ice">白組</a></p>' + (tabs.length > 1 ? '<div class="seg" role="group" aria-label="イベントの内容">' + tabs.map(function (x) {
       return '<button data-act="ev-tab" data-v="' + x[0] + '" aria-pressed="' + (ui.ev === x[0]) + '">' + x[1] + '</button>';
     }).join('') + '</div>' : '') + body + '</div>';
@@ -1346,7 +1348,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="meta" style="margin-top:8px"><div class="field box"><label for="ev-slots">各組の出場枠</label><input type="text" id="ev-slots" inputmode="numeric" value="' + D.evt.slots + '"></div>' +
       '<div class="field box"><label for="ev-end">予選の締め切り（表示用）</label><input type="datetime-local" id="ev-end" value="' + esc(endv) + '" style="width:100%;min-height:44px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 8px;color:var(--fg)"></div></div>' +
       '<p class="hint">段階のボタンを押すと、上の出場枠と締め切りも一緒に保存されます。</p>' +
-      (p === 'qualifying' ? '<button class="vbtn gold" style="min-height:44px;width:100%;margin-top:8px" data-act="ev-final">予選を締め切って、出場者を決定する</button>' : '') + '</section>';
+      (p === 'qualifying' ? '<button class="vbtn gold" style="min-height:44px;width:100%;margin-top:8px" data-act="ev-final">予選を締め切って、出場者を決定する</button>' : '') +
+      (SEASONOK && D.evt.season && (p === 'closed' || p === 'main') ? '<button class="vbtn line" style="min-height:44px;width:100%;margin-top:8px" data-act="ev-archive">第' + (D.evt.season || 1) + '回を記録して、次の回を始める</button><p class="hint">出場者と票を「過去の回」に残し、出場者の印と予選の票をリセットして、エントリー受付に戻します。曲・票・年間GPは消えません。</p>' : '') + '</section>';
   }
   function grantReview() {
     if (!SRC || !SRCOK) { return ''; }
@@ -1640,7 +1643,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<h2>' + esc(t.title) + '</h2>' +
       '<div class="who"><a href="' + ahref(t.artist) + '" data-act="m-artist" data-id="' + esc(t.id) + '" style="color:var(--fg);font-weight:700">' + esc(t.artist) + '</a><span>・' + esc(t.genre) + '・' + esc(t.tool) + '</span>' +
       (t.team ? badge(t.team) : '') + (votable ? '' : '<span class="status">' + esc(t.status) + '</span>') + '</div>' +
-      '<div class="stats tnum"><span>再生 <b>' + full(playsOf(t)) + '</b></span><span>いいね <b>' + full(likesOf(t)) + '</b></span><span>コメント <b>' + cs.length + '</b></span>' + (t.team ? '<span>紅白の票 <b>' + full(votesOf(t, 'y')) + '</b></span>' : '') + '</div>' +
+      '<div class="stats tnum"><span>再生 <b>' + full(playsOf(t)) + '</b></span><span>いいね <b>' + full(likesOf(t)) + '</b></span><span>コメント <b>' + cs.length + '</b></span>' + (t.team ? '<span>紅白の票 <b>' + full(sv(t)) + '</b></span>' : '') + '</div>' +
       '<div class="scrub"><div class="track" data-seek="1"><i id="sheet-bar"></i></div><div class="times tnum"><span id="sheet-cur">0:00</span><span id="sheet-tot">0:30</span></div></div>' +
       '<div class="ctrl"><button class="cbtn" data-act="shuf" aria-label="シャッフル" aria-pressed="' + Q.shuffle + '">' + ICON.shuffle + '</button>' +
       '<button class="cbtn" data-act="prev" aria-label="前の曲">' + ICON.prev + '</button>' +
@@ -1991,7 +1994,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     try {
       var q = [
         sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at' + (MEDIA ? ',cover_path,video_path,youtube_id' : '') + (MEDIA && SRC ? ',source_path' : '') + (LYR ? ',lyrics' : '')).order('created_at', { ascending: false }).limit(500),
-        sb.from('track_scores').select('track_id,d,w,m,y,likes'),
+        sb.from('track_scores').select('track_id,d,w,m,y,likes' + (SEASONOK ? ',s' : '')),
         sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500)
       ];
       if (D.me) {
@@ -1999,6 +2002,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
         q.push(sb.rpc('my_votes_today'));
       }
       var r = await Promise.all(q), i;
+      if (r[1].error && SEASONOK) { SEASONOK = false; return load(); }
       if (r[0].error && LYR && /lyrics/.test(String(r[0].error.message || ''))) { LYR = false; return load(); }
       if (r[0].error && MEDIA && SRC) { SRC = false; return load(); }
       if (r[0].error && MEDIA) { MEDIA = false; return load(); }
@@ -2108,29 +2112,34 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           }
         } catch (z2) { /* 音源の許可の読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var evt = null, fin = {}, qual = {}, myQual = {};
+      var evt = null, fin = {}, qual = {}, myQual = {}, seasons = [];
       if (EVOK) {
         try {
-          var eq = [sb.from('kouhaku_event').select('phase,name,slots,qual_ends_at').maybeSingle(), sb.from('qual_scores').select('track_id,n'), sb.from('tracks').select('id').eq('finalist', true)];
+          var eq = [sb.from('kouhaku_event').select('phase,name,slots,qual_ends_at' + (SEASONOK ? ',season' : '')).maybeSingle(), sb.from('qual_scores').select('track_id,n'), sb.from('tracks').select('id').eq('finalist', true)];
           if (D.me) { eq.push(sb.from('qual_votes').select('track_id')); }
           var ee = await Promise.all(eq);
+          if (ee[0].error && SEASONOK && /season/.test(String(ee[0].error.message || ''))) { SEASONOK = false; return load(); }
           if (ee[0].error) {
             if (/schema cache|does not exist|PGRST20|42P01/.test(String(ee[0].error.message || '') + String(ee[0].error.code || ''))) { EVOK = false; }
           } else if (ee[0].data) {
-            evt = { phase: ee[0].data.phase, name: ee[0].data.name || 'AI紅白歌合戦', slots: num(ee[0].data.slots) || 10, qualEnd: ee[0].data.qual_ends_at || '' };
+            evt = { phase: ee[0].data.phase, name: ee[0].data.name || 'AI紅白歌合戦', slots: num(ee[0].data.slots) || 10, qualEnd: ee[0].data.qual_ends_at || '', season: num(ee[0].data.season) || 0 };
+            if (SEASONOK) {
+              var sr2 = await sb.from('event_seasons').select('season,name,started_at,ended_at,red_votes,white_votes,entrants').order('season', { ascending: false });
+              if (!sr2.error) { seasons = sr2.data || []; }
+            }
             if (!ee[1].error) { (ee[1].data || []).forEach(function (x) { qual[String(x.track_id)] = num(x.n); }); }
             if (!ee[2].error) { (ee[2].data || []).forEach(function (x) { fin[String(x.id)] = true; }); }
             if (D.me && ee[3] && !ee[3].error) { (ee[3].data || []).forEach(function (x) { myQual[String(x.track_id)] = true; }); }
           }
         } catch (z3) { /* イベントの読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var sig = JSON.stringify([sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var sig = JSON.stringify([seasons, sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
+        D.seasons = seasons; D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -2297,6 +2306,32 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     ui.ev = 'finalists';
     await reload();
   }
+  async function archiveEvent() {
+    var nm = window.prompt('この回の名前（記録に残ります）', ((D.evt && D.evt.name) || 'AI紅白歌合戦') + ' 第' + ((D.evt && D.evt.season) || 1) + '回');
+    if (nm === null) { return; }
+    if (!window.confirm('この回を記録して、次の回を「エントリー受付」から始めます。よろしいですか？')) { return; }
+    var r = await sb.rpc('archive_event', { p_name: nm.trim().slice(0, 60) });
+    if (r.error) { toast(/already_archived/.test(String(r.error.message)) ? 'この回は、すでに記録されています' : errText(r.error)); return; }
+    toast('第' + num(r.data) + '回を記録しました。次の回のエントリー受付が始まります');
+    ui.ev = 'entrants';
+    await reload();
+  }
+  function evHistory() {
+    if (!D.seasons.length) { return empty('まだ過去の回はありません。', ''); }
+    return D.seasons.map(function (z) {
+      var dt = new Date(z.ended_at), ds = isNaN(dt) ? '' : dt.getFullYear() + '年' + (dt.getMonth() + 1) + '月' + dt.getDate() + '日に終了';
+      var red = num(z.red_votes), wh = num(z.white_votes);
+      var res = red === wh ? '引き分け' : (red > wh ? '紅組の勝ち' : '白組の勝ち');
+      var en = Array.isArray(z.entrants) ? z.entrants : [];
+      function side(team, label) {
+        var l = en.filter(function (x) { return (team === 'red') === (x.team === 'red'); });
+        return l.length ? '<p class="sub" style="margin:8px 0 2px"><b style="color:var(--fg)">' + label + '</b></p><ul class="list">' + l.map(function (x) {
+          return '<li class="row"><span class="rank ' + (num(x.rank) <= 3 ? 'm' + num(x.rank) : '') + '">' + num(x.rank) + '</span><span class="rt"><b>' + esc(x.title) + '</b><small>' + esc(x.artist) + '</small></span><span class="rv tnum">' + fmt(num(x.votes)) + '票</span></li>';
+        }).join('') + '</ul>' : '';
+      }
+      return '<section class="sec"><div class="sec-h"><h3>' + esc(z.name) + '</h3></div><p class="sub">' + esc(ds) + '／' + res + '（紅 ' + fmt(red) + '票・白 ' + fmt(wh) + '票）</p>' + side('red', '紅組') + side('ice', '白組') + '</section>';
+    }).join('');
+  }
   async function pvLike(id) {
     if (!need('いいねするにはログインしてください')) { return; }
     var was = !!D.pvLikes[id], r;
@@ -2456,6 +2491,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (act === 'qt') { ui.qt = v; render(); }
     else if (act === 'ev-phase') { setEventPhase(v); }
     else if (act === 'ev-final') { finalizeEvent(); }
+    else if (act === 'ev-archive') { archiveEvent(); }
     else if (act === 'rk') { ui.rk = v; render(); }
     else if (act === 'rp') { ui.rp = v; render(); }
     else if (act === 'rs') { ui.rs = v; render(); }
