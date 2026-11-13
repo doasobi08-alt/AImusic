@@ -377,6 +377,32 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
 .recdot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #e5484d; margin-right: 6px; animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: .25; } }
 .pa { width: 100%; margin: 10px 0; }
+.plist { margin: 6px 0 10px; padding-left: 20px; color: var(--fg); font-size: 14px; line-height: 1.7; }
+.cover svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.av { display: inline-block; flex: none; width: 20px; height: 20px; border-radius: 50%; overflow: hidden; vertical-align: middle; margin-right: 5px; background: var(--surface-2); text-align: center; line-height: 20px; font-size: 11px; color: var(--muted); }
+.av svg { width: 100%; height: 100%; display: block; }
+.av.lg { width: 64px; height: 64px; margin: 0; }
+button.pill { display: inline-flex; align-items: center; }
+.pn { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
+.pgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 6px; }
+.pitem { padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden; aspect-ratio: 1; background: none; cursor: pointer; }
+.pitem[aria-pressed="true"] { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold) inset; }
+.pitem svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+.st { font-size: 11px; color: var(--muted); }
+.qlike { flex: none; min-height: 36px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); display: inline-flex; align-items: center; gap: 3px; padding: 0 9px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.qlike svg { width: 14px; height: 14px; fill: none; stroke: currentColor; }
+.qlike[aria-pressed="true"] { color: #ff4d79; border-color: #ff4d79; }
+.qlike[aria-pressed="true"] svg { fill: currentColor; }
+.rkc { flex: none; display: flex; flex-direction: column; align-items: center; }
+.mv { flex: none; font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2; }
+.mv.up { color: #1f9d55; }
+.mv.dn { color: #d64545; }
+.mv.eq { color: var(--muted); }
+.mv.new { color: var(--gold-ink); }
+.rk1 .mv { position: absolute; top: 10px; right: 12px; font-size: 12px; background: var(--surface); border-radius: 99px; padding: 2px 8px; }
+.macts { display: flex; gap: 8px; margin-top: 2px; align-items: center; }
+.mrep { background: none; border: 0; padding: 4px 2px; min-height: 28px; color: var(--muted); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: inherit; }
+.mrc { font-size: 11px; color: #d64545; }
 </style>
 
 </head>
@@ -481,13 +507,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, seasons: [], sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, avatar: '', plus: {}, mySub: null, conn: null, tipReady: {}, tipN: {}, myTips: [], seasons: [], sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
   };
   var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
-  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true, SEASONOK = true;
+  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true, SEASONOK = true, PAYDB = true, PAY, AVOK = true, MOVEOK = true;
   var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0, fx: 'echo', wet: 0.35, mon: false };
-  var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false };
+  var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false, mod: true, bans: [], banned: null, rc: {} };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
   function num(x) { return typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0; }
@@ -502,7 +528,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       title: title, artist: String(r.artist || '名無し'), team: r.team === 'red' ? 'red' : (r.team === 'ice' ? 'ice' : null),
       genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'その他', tool: String(r.tool || 'その他'),
       status: r.status === 'approved' ? '公開' : (r.status === 'rejected' ? '非公開' : '審査中'),
-      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', srcPath: r.source_path || '', lyrics: String(r.lyrics || ''), hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
+      url: audioUrl(r.audio_path), cover: /^preset:/.test(r.cover_path || '') ? '' : audioUrl(r.cover_path), coverPath: /^preset:/.test(r.cover_path || '') ? '' : (r.cover_path || ''), preset: (/^preset:([a-z0-9-]{1,20})$/.exec(r.cover_path || '') || [])[1] || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', srcPath: r.source_path || '', lyrics: String(r.lyrics || ''), hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
     };
   }
   function byId(id) {
@@ -783,8 +809,127 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }, 250);
 
   /* ---------- components ---------- */
+  /* ---------- 見本のアイコン画像（アプリに入っている、オリジナルのイラスト） ---------- */
+  var PRE_DEFS = [
+    ['b-sunset', '夕焼け'], ['b-night', '星空'], ['b-ocean', '海'], ['b-forest', '森'], ['b-sakura', '桜'], ['b-neon', 'ネオン'],
+    ['b-desert', '砂漠'], ['b-snow', '雪山'], ['b-space', '宇宙'], ['b-rainbow', '虹'], ['b-city', '夜の街'], ['b-aurora', 'オーロラ'],
+    ['c-cat', 'ねこ'], ['c-bunny', 'うさぎ'], ['c-bear', 'くま'], ['c-fox', 'きつね'], ['c-robot', 'ロボット'], ['c-ghost', 'おばけ'],
+    ['c-penguin', 'ペンギン'], ['c-alien', '宇宙人'], ['c-star', 'おほしさま'], ['c-frog', 'かえる'], ['c-panda', 'パンダ'], ['c-chick', 'ひよこ']
+  ];
+  var PRE_NAME = {}, PRE_CACHE = {};
+  PRE_DEFS.forEach(function (d) { PRE_NAME[d[0]] = d[1]; });
+  function preOk(id) { return Object.prototype.hasOwnProperty.call(PRE_NAME, id); }
+  function preWrap(id, c1, c2, body) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="g-' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs><rect width="100" height="100" fill="url(#g-' + id + ')"/>' + body + '</svg>';
+  }
+  function preFace(y, dx, r, col) {
+    return '<circle cx="' + (50 - dx) + '" cy="' + y + '" r="' + r + '" fill="' + (col || '#2b2330') + '"/><circle cx="' + (50 + dx) + '" cy="' + y + '" r="' + r + '" fill="' + (col || '#2b2330') + '"/>';
+  }
+  function presetSvg(id) {
+    if (PRE_CACHE[id]) { return PRE_CACHE[id]; }
+    var s = '', i, b;
+    switch (id) {
+      case 'b-sunset':
+        s = preWrap(id, '#ffb36b', '#b8267a', '<circle cx="50" cy="58" r="22" fill="#ffe08a"/><path d="M0 70 Q25 58 50 68 T100 64 V100 H0z" fill="#5b1a5e"/><path d="M0 82 Q30 72 60 82 T100 78 V100 H0z" fill="#33113f"/>'); break;
+      case 'b-night':
+        b = '<circle cx="70" cy="30" r="12" fill="#fff3c4"/><circle cx="75" cy="27" r="10" fill="#2a2a78"/>';
+        [[15, 20], [30, 40], [48, 15], [85, 55], [20, 65], [60, 60], [40, 78], [90, 15], [8, 45]].forEach(function (p) { b += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.6" fill="#fff"/>'; });
+        s = preWrap(id, '#0b1b4d', '#4b2f8c', b + '<path d="M0 88 Q30 76 55 86 T100 82 V100 H0z" fill="#150f33"/>'); break;
+      case 'b-ocean':
+        b = '';
+        for (i = 0; i < 4; i++) { b += '<path d="M0 ' + (50 + i * 12) + ' Q12 ' + (42 + i * 12) + ' 25 ' + (50 + i * 12) + ' T50 ' + (50 + i * 12) + ' T75 ' + (50 + i * 12) + ' T100 ' + (50 + i * 12) + ' V100 H0z" fill="#ffffff" fill-opacity="' + (0.12 + i * 0.08) + '"/>'; }
+        s = preWrap(id, '#6fd3ff', '#0a4d94', '<circle cx="72" cy="26" r="10" fill="#fff6c8"/>' + b); break;
+      case 'b-forest':
+        b = '';
+        [[15, 62, 16], [38, 55, 20], [62, 60, 18], [84, 56, 20]].forEach(function (t) {
+          b += '<polygon points="' + t[0] + ',' + (t[1] - t[2]) + ' ' + (t[0] - t[2] * 0.6) + ',' + t[1] + ' ' + (t[0] + t[2] * 0.6) + ',' + t[1] + '" fill="#1d6b35"/><polygon points="' + t[0] + ',' + (t[1] - t[2] * 0.5) + ' ' + (t[0] - t[2] * 0.75) + ',' + (t[1] + t[2] * 0.5) + ' ' + (t[0] + t[2] * 0.75) + ',' + (t[1] + t[2] * 0.5) + '" fill="#2e8b47"/><rect x="' + (t[0] - 1.5) + '" y="' + (t[1] + t[2] * 0.5) + '" width="3" height="10" fill="#4a2c17"/>';
+        });
+        s = preWrap(id, '#bfeaa0', '#0d3d22', '<circle cx="78" cy="20" r="8" fill="#fffbd0"/>' + b + '<rect y="86" width="100" height="14" fill="#0a2d18"/>'); break;
+      case 'b-sakura':
+        b = '';
+        [[20, 25, 20], [70, 18, -30], [45, 50, 40], [80, 62, 10], [25, 74, -20], [58, 84, 30], [10, 48, 0]].forEach(function (p) { b += '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7" ry="4" fill="#fff" fill-opacity="0.85" transform="rotate(' + p[2] + ' ' + p[0] + ' ' + p[1] + ')"/>'; });
+        s = preWrap(id, '#ffe0ee', '#f06fa4', '<path d="M100 0 Q60 10 40 40" stroke="#6b3b2b" stroke-width="5" fill="none"/>' + b); break;
+      case 'b-neon':
+        b = '';
+        for (i = 0; i < 6; i++) { b += '<line x1="0" y1="' + (60 + i * 8) + '" x2="100" y2="' + (60 + i * 8) + '" stroke="#ff2bd6" stroke-opacity="0.6" stroke-width="0.8"/>'; }
+        for (i = -3; i <= 3; i++) { b += '<line x1="' + (50 + i * 6) + '" y1="60" x2="' + (50 + i * 28) + '" y2="100" stroke="#ff2bd6" stroke-opacity="0.6" stroke-width="0.8"/>'; }
+        s = preWrap(id, '#12002b', '#5a0a6e', '<circle cx="50" cy="46" r="22" fill="#ff7bd9"/><circle cx="50" cy="46" r="22" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="1"/><rect y="44" width="100" height="3" fill="#12002b"/><rect y="52" width="100" height="4" fill="#12002b"/>' + b); break;
+      case 'b-desert':
+        s = preWrap(id, '#ffe3a0', '#e07a3a', '<circle cx="70" cy="30" r="13" fill="#fff4cf"/><path d="M0 70 Q30 50 60 68 T100 60 V100 H0z" fill="#d9692f"/><path d="M0 86 Q35 70 70 86 T100 80 V100 H0z" fill="#b1501f"/>'); break;
+      case 'b-snow':
+        b = '';
+        [[20, 15], [40, 30], [70, 12], [85, 40], [55, 50], [12, 50]].forEach(function (p) { b += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.8" fill="#fff"/>'; });
+        s = preWrap(id, '#d3ecff', '#6c9bd2', b + '<polygon points="10,100 40,40 70,100" fill="#8fb0d8"/><polygon points="40,100 72,34 100,100" fill="#a9c4e6"/><polygon points="72,34 64,52 72,48 80,54" fill="#fff"/><polygon points="40,40 33,54 40,50 47,55" fill="#fff"/>'); break;
+      case 'b-space':
+        s = preWrap(id, '#02020f', '#4a148c', '<circle cx="28" cy="30" r="3" fill="#fff"/><circle cx="80" cy="18" r="2" fill="#fff"/><circle cx="85" cy="70" r="2.4" fill="#fff"/><circle cx="14" cy="76" r="1.6" fill="#fff"/><circle cx="55" cy="56" r="18" fill="#ff9d57"/><ellipse cx="55" cy="56" rx="30" ry="6" fill="none" stroke="#ffe1b8" stroke-width="3" transform="rotate(-18 55 56)"/><circle cx="76" cy="30" r="6" fill="#6fd0ff"/>'); break;
+      case 'b-rainbow':
+        b = '';
+        ['#ff6b6b', '#ffb36b', '#ffe56b', '#7be07b', '#6bb8ff', '#b78bff'].forEach(function (c, k) { b += '<path d="M' + (10 + k * 5) + ' 80 A' + (40 - k * 5) + ' ' + (40 - k * 5) + ' 0 0 1 ' + (90 - k * 5) + ' 80" fill="none" stroke="' + c + '" stroke-width="5"/>'; });
+        s = preWrap(id, '#cfeaff', '#f4f9ff', b + '<ellipse cx="16" cy="82" rx="14" ry="7" fill="#fff"/><ellipse cx="84" cy="82" rx="14" ry="7" fill="#fff"/>'); break;
+      case 'b-city':
+        b = '';
+        [[4, 50, 14], [20, 40, 16], [38, 56, 12], [52, 34, 18], [72, 48, 14], [88, 42, 14]].forEach(function (r) {
+          b += '<rect x="' + r[0] + '" y="' + r[1] + '" width="' + r[2] + '" height="' + (100 - r[1]) + '" fill="#141a4a"/>';
+          for (var y = r[1] + 5; y < 96; y += 8) { b += '<rect x="' + (r[0] + 3) + '" y="' + y + '" width="3" height="3" fill="#ffd978"/><rect x="' + (r[0] + r[2] - 7) + '" y="' + y + '" width="3" height="3" fill="#ffd978" fill-opacity="0.6"/>'; }
+        });
+        s = preWrap(id, '#1a237e', '#ff8a5b', '<circle cx="75" cy="28" r="9" fill="#ffe9b0"/>' + b); break;
+      case 'b-aurora':
+        s = preWrap(id, '#021a2b', '#0a3d3a', '<path d="M0 60 Q25 20 50 45 T100 25 V50 Q75 70 50 62 T0 84z" fill="#3cf5b0" fill-opacity="0.55"/><path d="M0 70 Q30 40 55 62 T100 48 V66 Q75 84 50 78 T0 92z" fill="#7a6bff" fill-opacity="0.5"/><circle cx="20" cy="20" r="1.5" fill="#fff"/><circle cx="64" cy="12" r="1.2" fill="#fff"/><circle cx="88" cy="40" r="1.5" fill="#fff"/><path d="M0 92 L20 82 L40 90 L65 78 L100 90 V100 H0z" fill="#06121c"/>'); break;
+      case 'c-cat':
+        s = preWrap(id, '#ffe4a8', '#ffb86b', '<polygon points="26,44 30,16 46,34" fill="#f6efe4"/><polygon points="74,44 70,16 54,34" fill="#f6efe4"/><polygon points="31,38 33,24 41,33" fill="#f4a8b8"/><polygon points="69,38 67,24 59,33" fill="#f4a8b8"/><ellipse cx="50" cy="58" rx="28" ry="24" fill="#f6efe4"/>' + preFace(55, 11, 2.8) + '<polygon points="47,62 53,62 50,66" fill="#f08a9d"/><path d="M50 66 Q46 71 42 68 M50 66 Q54 71 58 68" stroke="#2b2330" stroke-width="1.4" fill="none"/><path d="M30 62 L16 59 M30 66 L16 68 M70 62 L84 59 M70 66 L84 68" stroke="#2b2330" stroke-width="1" opacity="0.6"/>'); break;
+      case 'c-bunny':
+        s = preWrap(id, '#d8f0ff', '#9ed0ff', '<ellipse cx="38" cy="26" rx="7" ry="19" fill="#fff"/><ellipse cx="62" cy="26" rx="7" ry="19" fill="#fff"/><ellipse cx="38" cy="27" rx="3.4" ry="13" fill="#f6b3c6"/><ellipse cx="62" cy="27" rx="3.4" ry="13" fill="#f6b3c6"/><circle cx="50" cy="64" r="26" fill="#fff"/>' + preFace(62, 10, 2.8) + '<ellipse cx="50" cy="69" rx="3" ry="2.2" fill="#f08a9d"/><path d="M50 71 L50 74 M50 74 Q46 77 43 75 M50 74 Q54 77 57 75" stroke="#2b2330" stroke-width="1.3" fill="none"/><circle cx="35" cy="70" r="4" fill="#f9b8c8" fill-opacity="0.7"/><circle cx="65" cy="70" r="4" fill="#f9b8c8" fill-opacity="0.7"/>'); break;
+      case 'c-bear':
+        s = preWrap(id, '#d9f5d0', '#8fd694', '<circle cx="29" cy="36" r="10" fill="#a8693a"/><circle cx="71" cy="36" r="10" fill="#a8693a"/><circle cx="29" cy="36" r="5" fill="#e0a77a"/><circle cx="71" cy="36" r="5" fill="#e0a77a"/><circle cx="50" cy="58" r="28" fill="#b9794a"/><ellipse cx="50" cy="67" rx="13" ry="10" fill="#ecd0aa"/>' + preFace(52, 12, 2.8) + '<ellipse cx="50" cy="63" rx="4" ry="3" fill="#3b2a1e"/><path d="M50 66 L50 70 M50 70 Q46 74 43 71 M50 70 Q54 74 57 71" stroke="#3b2a1e" stroke-width="1.3" fill="none"/>'); break;
+      case 'c-fox':
+        s = preWrap(id, '#ffe9d6', '#ffb78a', '<path d="M18 40 L30 12 L47 33 Q50 32 53 33 L70 12 L82 40 Q86 72 50 86 Q14 72 18 40z" fill="#f08a3c"/><polygon points="26,36 31,22 40,32" fill="#4a2a18"/><polygon points="74,36 69,22 60,32" fill="#4a2a18"/><path d="M22 58 Q50 54 78 58 Q70 82 50 86 Q30 82 22 58z" fill="#fff"/>' + preFace(52, 13, 2.8) + '<ellipse cx="50" cy="72" rx="4" ry="3" fill="#2b2330"/>'); break;
+      case 'c-robot':
+        s = preWrap(id, '#cfe0ff', '#7a9cff', '<line x1="50" y1="22" x2="50" y2="34" stroke="#5a6b8c" stroke-width="3"/><circle cx="50" cy="20" r="5" fill="#ff5a6b"/><rect x="24" y="34" width="52" height="42" rx="10" fill="#dfe6f0" stroke="#5a6b8c" stroke-width="2.5"/><rect x="31" y="44" width="38" height="16" rx="6" fill="#16223f"/><circle cx="41" cy="52" r="4" fill="#5ff3ff"/><circle cx="59" cy="52" r="4" fill="#5ff3ff"/><rect x="38" y="66" width="24" height="5" rx="2" fill="#5a6b8c"/><rect x="18" y="48" width="6" height="14" rx="3" fill="#5a6b8c"/><rect x="76" y="48" width="6" height="14" rx="3" fill="#5a6b8c"/>'); break;
+      case 'c-ghost':
+        s = preWrap(id, '#2b1f4e', '#6a4bb5', '<path d="M25 82 V50 Q25 20 50 20 Q75 20 75 50 V82 L66 75 L58 83 L50 75 L42 83 L34 75z" fill="#fdfcff"/>' + preFace(46, 10, 3.4) + '<ellipse cx="50" cy="58" rx="4" ry="5" fill="#2b2330"/><circle cx="34" cy="56" r="4" fill="#f9b8c8" fill-opacity="0.8"/><circle cx="66" cy="56" r="4" fill="#f9b8c8" fill-opacity="0.8"/>'); break;
+      case 'c-penguin':
+        s = preWrap(id, '#bfe9ff', '#5fb3e8', '<ellipse cx="50" cy="58" rx="27" ry="31" fill="#263238"/><ellipse cx="50" cy="64" rx="18" ry="22" fill="#fff"/><circle cx="41" cy="46" r="5" fill="#fff"/><circle cx="59" cy="46" r="5" fill="#fff"/><circle cx="42" cy="47" r="2.4" fill="#111"/><circle cx="58" cy="47" r="2.4" fill="#111"/><polygon points="44,54 56,54 50,62" fill="#ff9a2e"/><ellipse cx="38" cy="90" rx="9" ry="4" fill="#ff9a2e"/><ellipse cx="62" cy="90" rx="9" ry="4" fill="#ff9a2e"/>'); break;
+      case 'c-alien':
+        s = preWrap(id, '#1b0f3a', '#00a884', '<line x1="38" y1="22" x2="34" y2="12" stroke="#7be07b" stroke-width="2.5"/><circle cx="34" cy="11" r="3.4" fill="#ffe56b"/><line x1="62" y1="22" x2="66" y2="12" stroke="#7be07b" stroke-width="2.5"/><circle cx="66" cy="11" r="3.4" fill="#ffe56b"/><ellipse cx="50" cy="56" rx="30" ry="32" fill="#7be07b"/><ellipse cx="38" cy="52" rx="8" ry="11" fill="#13241a" transform="rotate(-18 38 52)"/><ellipse cx="62" cy="52" rx="8" ry="11" fill="#13241a" transform="rotate(18 62 52)"/><circle cx="36" cy="48" r="2.4" fill="#fff"/><circle cx="60" cy="48" r="2.4" fill="#fff"/><path d="M42 74 Q50 80 58 74" stroke="#13241a" stroke-width="2" fill="none"/>'); break;
+      case 'c-star':
+        s = preWrap(id, '#1a1f4e', '#ff7eb3', '<polygon points="50,12 60,38 88,40 66,58 74,86 50,70 26,86 34,58 12,40 40,38" fill="#ffe36b" stroke="#ffb400" stroke-width="2.5" stroke-linejoin="round"/>' + preFace(52, 9, 2.8) + '<path d="M44 62 Q50 68 56 62" stroke="#2b2330" stroke-width="2" fill="none"/><circle cx="38" cy="60" r="3.4" fill="#ff9db8" fill-opacity="0.8"/><circle cx="62" cy="60" r="3.4" fill="#ff9db8" fill-opacity="0.8"/>'); break;
+      case 'c-frog':
+        s = preWrap(id, '#e3f9c4', '#9bdc6a', '<ellipse cx="50" cy="62" rx="32" ry="24" fill="#5fc24b"/><circle cx="34" cy="38" r="12" fill="#5fc24b"/><circle cx="66" cy="38" r="12" fill="#5fc24b"/><circle cx="34" cy="38" r="8" fill="#fff"/><circle cx="66" cy="38" r="8" fill="#fff"/><circle cx="35" cy="39" r="4" fill="#2b2330"/><circle cx="65" cy="39" r="4" fill="#2b2330"/><path d="M28 66 Q50 82 72 66" stroke="#2b5d22" stroke-width="2.4" fill="none"/><circle cx="26" cy="64" r="4" fill="#ff9db8" fill-opacity="0.7"/><circle cx="74" cy="64" r="4" fill="#ff9db8" fill-opacity="0.7"/>'); break;
+      case 'c-panda':
+        s = preWrap(id, '#f2f4f6', '#c9d6df', '<circle cx="28" cy="34" r="11" fill="#222"/><circle cx="72" cy="34" r="11" fill="#222"/><circle cx="50" cy="58" r="28" fill="#fff"/><ellipse cx="38" cy="54" rx="7" ry="9" fill="#222" transform="rotate(20 38 54)"/><ellipse cx="62" cy="54" rx="7" ry="9" fill="#222" transform="rotate(-20 62 54)"/><circle cx="39" cy="53" r="2.4" fill="#fff"/><circle cx="61" cy="53" r="2.4" fill="#fff"/><ellipse cx="50" cy="66" rx="4" ry="3" fill="#222"/><path d="M50 69 Q45 74 41 71 M50 69 Q55 74 59 71" stroke="#222" stroke-width="1.4" fill="none"/>'); break;
+      case 'c-chick':
+        s = preWrap(id, '#cdeeff', '#ffe9a8', '<circle cx="50" cy="58" r="28" fill="#ffd93d"/><path d="M46 30 Q44 20 50 18 Q50 26 54 30 Q58 22 62 24 Q58 32 56 32z" fill="#ffd93d"/>' + preFace(54, 12, 3) + '<polygon points="44,62 56,62 50,70" fill="#ff8a2e"/><circle cx="33" cy="64" r="4.4" fill="#ff9db8" fill-opacity="0.7"/><circle cx="67" cy="64" r="4.4" fill="#ff9db8" fill-opacity="0.7"/>'); break;
+      default: s = '';
+    }
+    PRE_CACHE[id] = s;
+    return s;
+  }
+  // 見本の選択欄（タップで選ぶ／もう一度タップで外す。選んだ名前は aria-pressed が true のボタンから読む）
+  function prePicker(gid, only, sel) {
+    var defs = only ? PRE_DEFS.filter(function (d) { return d[0].charAt(0) === only; }) : PRE_DEFS;
+    return '<div class="pgrid" id="' + gid + '" role="group" aria-label="見本のアイコン">' + defs.map(function (d) {
+      return '<button type="button" class="pitem" data-act="pre-pick" data-v="' + d[0] + '" aria-pressed="' + (sel === d[0]) + '" aria-label="' + esc(d[1]) + '">' + presetSvg(d[0]) + '</button>';
+    }).join('') + '</div>';
+  }
+  function preSel(gid) {
+    var b = document.querySelector('#' + gid + ' [aria-pressed="true"]');
+    return b ? b.getAttribute('data-v') : '';
+  }
+  function avatarHtml(id, size) {
+    var ok = id && /^preset:/.test(id) && preOk(id.slice(7));
+    return '<span class="av' + (size ? ' ' + size : '') + '" aria-hidden="true">' + (ok ? presetSvg(id.slice(7)) : '') + '</span>';
+  }
+  function setPill() {
+    var el = $('#pill');
+    if (!el) { return; }
+    if (!D.me) { el.textContent = 'ログイン・登録'; return; }
+    el.innerHTML = avatarHtml(D.avatar) + '<span class="pn">' + esc(Array.from(D.name || 'ログイン中').slice(0, 8).join('')) + '</span>';
+    el.setAttribute('aria-label', 'マイページ（' + (D.name || 'ログイン中') + '）');
+  }
+
   function cover(t, size) {
     var cls = size === 'lg' ? 'lg' : size === 'md' ? 'md' : '';
+    if (t.preset && preOk(t.preset)) { return '<span class="cover ' + cls + '" style="--h:' + t.hue + '" aria-hidden="true">' + presetSvg(t.preset) + '</span>'; }
     return '<span class="cover ' + cls + '" style="--h:' + t.hue + '" aria-hidden="true">' + esc(Array.from(t.title)[0]) +
       (t.cover ? '<img src="' + esc(t.cover) + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</span>';
   }
@@ -793,13 +938,14 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   function row(t, key, i, o) {
     o = o || {};
-    var rk = o.rank ? '<span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' : '';
+    var rk = o.rank ? '<span class="rkc"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' + (o.mv || '') + '</span>' : '';
     var right = t.status !== '公開' ? '<span class="status">' + esc(t.status) + '</span>' : (o.right ? '<span class="rv tnum">' + o.right(t) + '</span>' : '');
     var cur = P.t && P.t.id === t.id;
     return '<li class="row' + (cur ? ' now' : '') + '" data-tid="' + esc(t.id) + '">' + rk +
       '<button class="rowmain" data-act="play" data-id="' + esc(t.id) + '" data-ctx="' + esc(key) + '" aria-label="' + esc(t.title) + 'を再生">' + cover(t) +
-      '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + (o.sub ? '・' + o.sub(t) : '') + '</small></span></button>' +
+      '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + (o.sub ? '・' + o.sub(t) : '') + '</small>' + (t.status === '公開' ? '<small class="st tnum">▶ ' + fmt(playsOf(t)) + '回</small>' : '') + '</span></button>' +
       (t.team ? badge(t.team) : '') + right +
+      (t.status === '公開' ? '<button class="qlike" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + isLiked(t.id) + '" aria-label="お気に入り（' + fmt(likesOf(t)) + '件）">' + ICON.heart + '<span class="tnum">' + fmt(likesOf(t)) + '</span></button>' : '') +
       '<button class="pbtn" data-act="menu" data-id="' + esc(t.id) + '"' + (o.pl ? ' data-pl="' + esc(o.pl) + '"' : '') + ' aria-label="メニュー">' + ICON.more + '</button></li>';
   }
   function listHtml(ts, key, o) {
@@ -809,7 +955,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   function playsRight(t) { return fmt(playsOf(t)) + '回'; }
   function card(t, key) {
     return '<button class="card" data-act="play" data-id="' + esc(t.id) + '" data-ctx="' + esc(key) + '">' + cover(t, 'lg') +
-      '<b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small></button>';
+      '<b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '</small><small class="st tnum">♥ ' + fmt(likesOf(t)) + '　▶ ' + fmt(playsOf(t)) + '</small></button>';
   }
   function shelf(ts, key) {
     CTX[key] = ts.map(function (t) { return t.id; });
@@ -911,14 +1057,36 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     return list;
   }
   function plabel() { var l = RK_PERIODS.filter(function (x) { return x[0] === ui.rp; })[0]; return l ? l[1] : ''; }
+  // 順位の上下：ひとつ前の期間（前日・前の週・前の月）の順位と比べる
+  function rkMoves(list) {
+    var pk = { d: 'pd', w: 'pw', m: 'pm' }[ui.rp];
+    if (!MOVEOK || ui.rs === 'likes' || !pk) { return null; }
+    var prev = list.filter(function (t) { return num((D.plays[t.id] || {})[pk]) > 0; }).sort(function (a, b) {
+      return num(D.plays[b.id][pk]) - num(D.plays[a.id][pk]) || b.n - a.n;
+    }), pr = {};
+    prev.forEach(function (t, i) { pr[t.id] = i + 1; });
+    var mv = {};
+    list.forEach(function (t, i) {
+      if (playsIn(t, ui.rp) <= 0) { return; }
+      mv[t.id] = pr[t.id] ? pr[t.id] - (i + 1) : 'new';
+    });
+    return mv;
+  }
+  function mvHtml(v) {
+    if (v === undefined) { return ''; }
+    if (v === 'new') { return '<span class="mv new" aria-label="初登場">NEW</span>'; }
+    if (v > 0) { return '<span class="mv up" aria-label="' + v + '位上昇">▲' + v + '</span>'; }
+    if (v < 0) { return '<span class="mv dn" aria-label="' + (-v) + '位下降">▼' + (-v) + '</span>'; }
+    return '<span class="mv eq" aria-label="変わらず">－</span>';
+  }
   function rkSongs() {
     var vs = visible().filter(function (t) { return ui.rg === 'all' || t.genre === ui.rg; });
     var key = ui.rs === 'likes' ? function (t) { return likesOf(t); } : function (t) { return playsIn(t, ui.rp); };
     return vs.sort(function (a, b) { return key(b) - key(a) || likesOf(b) - likesOf(a) || playsOf(b) - playsOf(a) || b.n - a.n; });
   }
-  function rkHero(t) {
+  function rkHero(t, mvs) {
     var val = ui.rs === 'likes' ? fmt(likesOf(t)) + '♥' : fmt(playsIn(t, ui.rp)) + '回';
-    return '<div class="rk1"><span class="crown">1位</span>' + cover(t, 'lg') + '<div class="rk1b"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small><span class="tnum">' + val + '</span></div>' +
+    return '<div class="rk1"><span class="crown">1位</span>' + (mvs ? mvHtml(mvs[t.id]) : '') + cover(t, 'lg') + '<div class="rk1b"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small><span class="tnum">' + val + '</span></div>' +
       '<button class="pbtn" style="width:48px;height:48px;background:var(--gold);color:var(--on-gold);border:0" data-act="play" data-id="' + esc(t.id) + '" data-ctx="rk" aria-label="' + esc(t.title) + 'を再生">' + ICON.play + '</button></div>';
   }
   function viewRanking() {
@@ -947,10 +1115,11 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       else {
         var shown = list.slice(0, 50);
         CTX.rk = shown.map(function (t) { return t.id; });
-        h += rkHero(shown[0]);
+        var mvs = rkMoves(shown);
+        h += rkHero(shown[0], mvs);
         if (shown.length > 1) {
           h += '<ul class="list">' + shown.slice(1).map(function (t, i) {
-            return row(t, 'rk', i + 1, { rank: true, right: function (x) { return ui.rs === 'likes' ? fmt(likesOf(x)) + '♥' : fmt(playsIn(x, ui.rp)) + '回'; } })
+            return row(t, 'rk', i + 1, { rank: true, mv: mvs ? mvHtml(mvs[t.id]) : '', right: function (x) { return ui.rs === 'likes' ? fmt(likesOf(x)) + '♥' : fmt(playsIn(x, ui.rp)) + '回'; } })
               ;
           }).join('') + '</ul>';
         }
@@ -999,9 +1168,16 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     if (!CH.msgs.length) { return '<p class="sub">まだ発言がありません。最初のひとことをどうぞ。</p>'; }
     return '<ul class="chatlist">' + CH.msgs.map(function (m) {
       var mine = !!D.me && m.uid === D.me;
-      return '<li class="msg' + (mine ? ' me' : '') + '"><small>' + esc(mine ? 'あなた' : m.name) + '・' + ago(m.n) + '</small><span>' + esc(m.body) + '</span>' +
-        (mine || D.admin ? '<button class="mdel" data-act="chat-del" data-id="' + esc(m.id) + '" aria-label="この発言を削除">×</button>' : '') + '</li>';
+      return '<li class="msg' + (mine ? ' me' : '') + '"><small>' + esc(mine ? 'あなた' : pn(m.uid, m.name)) + '・' + ago(m.n) + '</small><span>' + esc(m.body) + '</span>' +
+        (mine || D.admin ? '<button class="mdel" data-act="chat-del" data-id="' + esc(m.id) + '" aria-label="この発言を削除">×</button>' : '') +
+        (CH.mod && D.me && !mine ? '<span class="macts"><button class="mrep" data-act="chat-rep" data-id="' + esc(m.id) + '">報告</button>' + (D.admin ? '<button class="mrep" data-act="chat-ban" data-id="' + esc(m.uid) + '" data-v="' + esc(m.name) + '">停止</button>' + (CH.rc[m.id] ? '<b class="mrc">報告' + CH.rc[m.id] + '</b>' : '') : '') + '</span>' : '') + '</li>';
     }).join('') + '</ul>';
+  }
+  function chatBansHtml() {
+    if (!D.admin || !CH.mod || !CH.bans.length) { return ''; }
+    return '<section class="sec"><div class="sec-h"><h3>停止中のユーザー</h3></div><ul class="list">' + CH.bans.map(function (b) {
+      return '<li class="row"><span class="rt"><b>' + esc(b.name) + '</b><small>' + (b.until ? new Date(b.until).toLocaleDateString('ja-JP') + 'まで' : '期限なし') + (b.reason ? '・' + esc(b.reason) : '') + '</small></span><button class="vbtn line" style="flex:none;padding:0 14px" data-act="chat-unban" data-id="' + esc(b.uid) + '">解除</button></li>';
+    }).join('') + '</ul></section>';
   }
   function viewChat() {
     var r = ROOMS.filter(function (x) { return x[0] === ui.arg; })[0];
@@ -1011,9 +1187,10 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       return '<a class="segl" href="#chat/' + x[0] + '" data-team="' + x[2] + '" aria-pressed="' + (CH.room === x[0]) + '">' + x[1] + '</a>';
     }).join('') + '</div>' +
       '<p class="sub">' + (CH.room === 'lounge' ? 'AI音楽の話を、気軽にどうぞ。' : (CH.room === 'red' ? '紅組を応援するルームです。' : '白組を応援するルームです。')) + 'この画面は、数秒ごとに自動で更新されます。' + esc(cur ? '' : '') + '</p>' +
-      (D.me ? '<form class="cform" id="chat-form"><input type="text" id="chat-text" maxlength="200" autocomplete="off" placeholder="メッセージを書く（200字まで）" aria-label="メッセージ"><button class="vbtn gold" style="flex:none;padding:0 16px" type="submit">送信</button></form>'
-        : '<button class="vbtn line" style="min-height:44px" data-act="login-open">ログインして参加する</button>') +
-      '<div id="chat-list">' + chatListHtml() + '</div>' +
+      (D.me && CH.banned ? '<p class="err" role="status">チャットの利用を停止しています' + (CH.banned.until ? '（' + new Date(CH.banned.until).getFullYear() + '年' + (new Date(CH.banned.until).getMonth() + 1) + '月' + new Date(CH.banned.until).getDate() + '日まで）' : '') + '。ルールに反する発言があったためです。</p>' : '') +
+      (D.me && !CH.banned ? '<form class="cform" id="chat-form"><input type="text" id="chat-text" maxlength="200" autocomplete="off" placeholder="メッセージを書く（200字まで）" aria-label="メッセージ"><button class="vbtn gold" style="flex:none;padding:0 16px" type="submit">送信</button></form>'
+        : '') + (!D.me ? '<button class="vbtn line" style="min-height:44px" data-act="login-open">ログインして参加する</button>' : '') +
+      '<div id="chat-list">' + chatListHtml() + '</div>' + '<div id="chat-bans">' + chatBansHtml() + '</div>' +
       '<p class="hint">発言は、全員に表示されます。個人情報は書かないでください。<a href="terms.html#terms">利用規約</a>に反する発言は、運営が削除します。</p></div>';
   }
   async function chatLoad() {
@@ -1030,8 +1207,26 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       }).sort(function (a, b) { return b.n - a.n; });
       CH.loaded = true;
     }
+    if (CH.mod) {
+      try {
+        var mq = [sb.from('chat_bans').select('user_id,reason,until,profiles(name)')];
+        if (D.admin) { mq.push(sb.from('chat_reports').select('message_id')); }
+        var mr = await Promise.all(mq);
+        if (mr[0].error) { if (/schema cache|does not exist|PGRST20|42P01/.test(String(mr[0].error.message || '') + String(mr[0].error.code || ''))) { CH.mod = false; } }
+        else {
+          var now = Date.now(), act = (mr[0].data || []).filter(function (b) { return !b.until || Date.parse(b.until) > now; });
+          CH.bans = act.map(function (b) { return { uid: b.user_id, reason: b.reason || '', until: b.until, name: (b.profiles && b.profiles.name) || 'リスナー' }; });
+          CH.banned = D.me ? (act.filter(function (b) { return b.user_id === D.me; })[0] || null) : null;
+          CH.rc = {};
+          if (mr[1] && !mr[1].error) { (mr[1].data || []).forEach(function (x) { CH.rc[String(x.message_id)] = (CH.rc[String(x.message_id)] || 0) + 1; }); }
+        }
+      } catch (zz) { /* 通報・停止の読み込みに失敗しても、チャットは使えます */ }
+    }
     var el = $('#chat-list');
     if (el) { el.innerHTML = chatListHtml(); }
+    var eb = $('#chat-bans');
+    if (eb) { eb.innerHTML = chatBansHtml(); }
+    if (!!CH.banned !== !!ui.chatBannedShown) { ui.chatBannedShown = !!CH.banned; if (ui.route === 'chat') { render(); } }
   }
   function chatStart() {
     clearInterval(CH.timer); CH.timer = null;
@@ -1045,6 +1240,29 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '送信が早すぎます。少し待ってから送ってください' : errText(r.error)); return false; }
     await chatLoad();
     return true;
+  }
+  var REP_REASONS = ['迷惑・宣伝', '悪口・攻撃', '個人情報', 'その他'];
+  async function chatReport(id, reason) {
+    var r = await sb.from('chat_reports').insert({ message_id: id, reason: reason });
+    closeSheet();
+    if (r.error) { toast(/duplicate|unique/i.test(String(r.error.message)) ? 'この発言は、すでに報告済みです' : errText(r.error)); return; }
+    toast('報告しました。運営が確認します');
+  }
+  async function chatBan(uid, name) {
+    var d = window.prompt(name + ' さんのチャットを停止します。日数を入れてください（0＝期限なし）', '7');
+    if (d === null) { return; }
+    var days = Math.max(0, Math.min(3650, parseInt(d, 10) || 0));
+    var reason = window.prompt('理由（任意・60字まで）', '') || '';
+    var r = await sb.rpc('ban_chat_user', { p_user: uid, p_days: days, p_reason: reason.slice(0, 60) });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('停止しました');
+    await chatLoad();
+  }
+  async function chatUnban(uid) {
+    var r = await sb.rpc('unban_chat_user', { p_user: uid });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('解除しました');
+    await chatLoad();
   }
   async function chatDel(id) {
     var r = await sb.from('chat_messages').delete().eq('id', id);
@@ -1278,7 +1496,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="field"><label for="f-file">音源ファイル（mp3・wavなど、20MBまで）</label><input type="file" id="f-file" accept="audio/*">' +
       '<p class="hint">選ばない場合は、サンプル音で再生されます。</p></div>' +
       (MEDIA ? '<div class="field"><label for="f-cover">曲のアイコン（任意・画像3MBまで）</label><input type="file" id="f-cover" accept="image/png,image/jpeg,image/webp,image/gif">' +
-      '<p class="hint">選ばない場合は、曲名の頭文字のアイコンになります。あとから変更できます。</p></div>' +
+      '<p class="hint">画像を選ばない場合は、下の見本（アプリのイラスト）から選べます。何も選ばないと、曲名の頭文字のアイコンになります。あとから変更できます。</p>' + prePicker('pre-cover', '', '') + '</div>' +
       '<div class="field"><label for="f-video">PV（任意）</label><input type="file" id="f-video" accept="video/mp4,video/webm,video/quicktime">' +
       '<input type="text" id="f-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
       '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。大きい動画は、YouTubeのURLで登録してください。</p></div>' : '') +
@@ -1328,8 +1546,9 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     return '<h2 class="ttl">マイページ</h2><div class="stack"><div class="meta">' +
       '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div>' +
       '<div class="box"><small>今日の紅白の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div></div>' +
+      '<div class="box" style="margin-top:8px"><small>アイコン</small><div style="display:flex;align-items:center;gap:12px;margin:6px 0">' + avatarHtml(D.avatar, 'lg') + '<button class="vbtn line" style="flex:none;padding:0 14px" data-act="av-edit">変更する</button></div>' + (ui.avEdit ? prePicker('pre-my', 'c', (D.avatar || '').slice(7)) + '<button class="vbtn gold" style="width:100%;min-height:44px;margin-top:8px" data-act="av-save">このアイコンにする</button>' : '') + '</div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
-      review + grantReview() + pvReview() + singReview() + eventAdmin() + judgeSec + adminSec + myPvs() + mySings() +
+      review + payBlock() + grantReview() + pvReview() + singReview() + eventAdmin() + judgeSec + adminSec + myPvs() + mySings() +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>アカウント</h3></div><div class="stack">' +
       '<button class="vbtn line" style="min-height:44px" data-act="chpw">パスワードを変更する</button>' +
       '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div></section></div>';
@@ -1409,7 +1628,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     $('#tabs').innerHTML = TABS.map(function (t) {
       return '<a class="tab" href="#' + t[0] + '"' + (ui.tab === t[0] ? ' aria-current="page"' : '') + '><svg viewBox="0 0 24 24" aria-hidden="true">' + t[2] + '</svg>' + t[1] + '</a>';
     }).join('');
-    $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録';
+    setPill();
     tickCountdown();
     markNow();
   }
@@ -1440,6 +1659,11 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (s.k === 'srcreq') { drawSrcReq(s); }
     else if (s.k === 'pvplay') { drawPvPlay(s); }
     else if (s.k === 'karaoke') { drawKaraoke(); }
+    else if (s.k === 'tip') { drawTip(s); }
+    else if (s.k === 'chatrep') {
+      $('#sheet').innerHTML = sheetTop('発言を報告') + '<h2 style="font-size:20px">この発言を報告する</h2><p class="sub">理由を選んでください。運営が確認して、必要なら発言の削除や、利用の停止をします。</p><div class="stack">' +
+        REP_REASONS.map(function (x) { return '<button class="vbtn line" style="min-height:44px" data-act="chat-rep-go" data-id="' + esc(s.id) + '" data-v="' + esc(x) + '">' + esc(x) + '</button>'; }).join('') + '</div>';
+    }
     else if (s.k === 'singplay') { drawSingPlay(s); }
   }
   function drawLogin(msg) {
@@ -1452,6 +1676,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<p class="err" id="l-err" role="alert"></p>' +
       '<button class="cta" type="submit">ログイン</button>' +
       '<button class="linkbtn" type="button" data-act="forgot">パスワードを忘れた方はこちら</button>' +
+      '<details class="newbox"><summary>新規登録のとき：表示名とアイコン（任意）</summary><div class="field" style="margin-top:8px"><label for="l-name">表示名（20文字まで）</label><input type="text" id="l-name" maxlength="20" autocomplete="nickname" placeholder="あとから変えられます"></div><span class="lab">アイコン</span>' + prePicker('pre-av', 'c', '') + '</details>' +
       '<p class="hint" style="margin:4px 0 0">初めての方は、メールアドレスとパスワードを決めて、下の「新規登録」を押してください。確認メールが届きます。</p>' +
       '<button class="vbtn line" type="button" style="min-height:44px" data-act="signup">新規登録</button></form>' +
       (CFG.ENABLE_GOOGLE === true
@@ -1608,8 +1833,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<h2 style="font-size:20px">' + esc(t.title) + '</h2>' +
       '<form id="media-form" data-id="' + esc(t.id) + '">' +
       '<div class="field"><span class="lab">曲のアイコン</span><div class="thumbrow">' + cover(t, 'md') + '<input type="file" id="m-cover" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="アイコン画像"></div>' +
-      '<p class="hint">png・jpg・webp・gif、3MBまで。正方形がきれいに表示されます。</p>' +
-      (t.cover ? '<label class="check"><input type="checkbox" id="m-rmcover"><span>アイコンを初期（頭文字）に戻す</span></label>' : '') + '</div>' +
+      '<p class="hint">png・jpg・webp・gif、3MBまで。正方形がきれいに表示されます。画像のかわりに、下の見本からも選べます。</p>' + prePicker('pre-media', '', t.preset) +
+      ((t.cover || t.preset) ? '<label class="check"><input type="checkbox" id="m-rmcover"><span>アイコンを初期（頭文字）に戻す</span></label>' : '') + '</div>' +
       '<div class="field"><span class="lab">PV' + ((t.video || t.yt) ? '（登録済み）' : '') + '</span><input type="file" id="m-video" accept="video/mp4,video/webm,video/quicktime" aria-label="PVの動画ファイル">' +
       '<input type="text" id="m-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
       '<p class="hint">動画ファイルは50MBまで。新しく登録すると、今のPVと置き換わります。</p>' +
@@ -1653,12 +1878,12 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'お気に入り</button>' +
       '<button class="vbtn line" data-act="m-pl" data-id="' + esc(t.id) + '"' + (votable ? '' : ' disabled') + '>' + ICON.plus + '追加</button>' +
       '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
-      lyrBlock(t, 'lyr-box') + pvBlock(t) + srcBlock(t) + pvSection(t) + singSection(t) +
+      lyrBlock(t, 'lyr-box') + pvBlock(t) + srcBlock(t) + pvSection(t) + singSection(t) + tipSection(t) +
       (t.team && votable ? evBox(t, dis) : '') +
       upNext +
       (D.judge && votable && t.team ? judgeForm(t) : '') +
       '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
-      cs.map(function (c) { return '<li><small>' + esc(c.n) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
+      cs.map(function (c) { return '<li><small>' + esc(c.u === D.me ? c.n : pn(c.u, c.n)) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
       (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
     syncPlayer();
   }
@@ -1908,7 +2133,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     var rk = o.rank ? '<span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' : '';
     var right = g.status !== 'approved' ? '<span class="status">' + singStatus(g) + '</span>' : '<span class="rv tnum">' + fmt(singLikeN(g, o.period || 'total')) + '♥</span>';
     return '<li class="row">' + rk + '<button class="rowmain" data-act="sing-open" data-id="' + esc(g.id) + '" aria-label="' + esc(g.title) + 'を聴く">' + cover(t) +
-      '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '・' + esc(t.artist) + '／歌：' + esc(g.sname) + '</small></span></button>' + right +
+      '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '・' + esc(t.artist) + '／歌：' + esc(pn(g.singer, g.sname)) + '</small></span></button>' + right +
       '<button class="pbtn" data-act="sing-open" data-id="' + esc(g.id) + '" aria-label="聴く">' + ICON.play + '</button></li>';
   }
   function singSection(t) {
@@ -1925,7 +2150,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     $('#sheet').innerHTML = sheetTop('歌ってみた') +
       '<audio class="pa" controls autoplay preload="metadata" src="' + esc(g.url) + '"></audio>' +
       '<h2 style="font-size:20px">' + esc(g.title) + '</h2>' +
-      '<p class="sub">歌：' + esc(g.sname) + '／曲：' + esc(t.title) + '・' + esc(t.artist) + (g.status !== 'approved' ? '／' + singStatus(g) : '') + '</p>' +
+      '<p class="sub">歌：' + esc(pn(g.singer, g.sname)) + '／曲：' + esc(t.title) + '・' + esc(t.artist) + (g.status !== 'approved' ? '／' + singStatus(g) : '') + '</p>' +
       '<div class="acts" style="grid-template-columns:1fr 1fr 1fr"><button class="vbtn line' + (lk ? ' liked' : '') + '" data-act="sing-like" data-id="' + esc(g.id) + '" aria-pressed="' + lk + '"' + (g.status !== 'approved' || g.mine ? ' disabled' : '') + '>' + ICON.heart + singLikeN(g, 'total') + '</button>' +
       '<button class="vbtn line" data-act="m-detail" data-id="' + esc(t.id) + '">曲を見る</button>' +
       '<button class="vbtn line" data-act="ka-open" data-id="' + esc(t.id) + '">自分も歌う</button></div>' +
@@ -1965,7 +2190,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>歌ってみたの承認待ち</h3></div><p class="sub">あなたの曲を歌ってくれた録音です。聴いて、公開するか選んでください。</p><ul class="list">' +
       pend.map(function (g) {
         var t = byId(g.tid);
-        return '<li class="row"><button class="rowmain" data-act="sing-open" data-id="' + esc(g.id) + '">' + cover(t) + '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '／歌：' + esc(g.sname) + '</small></span></button>' +
+        return '<li class="row"><button class="rowmain" data-act="sing-open" data-id="' + esc(g.id) + '">' + cover(t) + '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '／歌：' + esc(pn(g.singer, g.sname)) + '</small></span></button>' +
           '<button class="vbtn line" style="flex:none;padding:0 12px" data-act="sing-ng" data-id="' + esc(g.id) + '">却下</button>' +
           '<button class="vbtn gold" style="flex:none;padding:0 14px" data-act="sing-ok" data-id="' + esc(g.id) + '">公開</button></li>';
       }).join('') + '</ul></section>';
@@ -1975,6 +2200,88 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     var mine = D.sings.filter(function (g) { return g.mine && byId(g.tid); });
     return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>歌ってみた</h3></div>' +
       (mine.length ? '<ul class="list">' + mine.map(function (g) { return singRow(g, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだありません。好きな曲の詳細画面から、歌ってみた録音を投稿できます。</p>') + '</section>';
+  }
+
+  /* ---------- 有料プラン（Plus）と投げ銭 ---------- */
+  var PERKS = ['名前の横に「★」が付きます（コメント・チャット・歌ってみた）', '歌ってみたの承認待ちを、5本から20本まで出せます', 'ほかの特典も、順次増やしていきます'];
+  function pn(uid, name) { return uid && D.plus[uid] ? '★' + name : name; }
+  async function payCfg() {
+    try {
+      var r = await fetch('/api/config', { cache: 'no-store' });
+      if (!r.ok || !/json/.test(r.headers.get('content-type') || '')) { return null; }
+      var j = await r.json();
+      return j && j.pay ? j : null;
+    } catch (e) { return null; }
+  }
+  async function apiPost(path, body) {
+    var s = (await sb.auth.getSession()).data.session;
+    if (!s) { return { error: 'login_required' }; }
+    try {
+      var r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + s.access_token }, body: JSON.stringify(body || {}) });
+      var j = await r.json().catch(function () { return {}; });
+      return r.ok ? j : { error: j.error || 'server_error' };
+    } catch (e) { return { error: 'network' }; }
+  }
+  function payErr(c) {
+    return ({ login_required: 'ログインしてください', already_subscribed: 'すでに加入しています', bad_amount: '金額は100円〜50,000円で入れてください', self_tip: '自分の曲には投げ銭できません',
+      not_ready: 'この投稿者は、まだ投げ銭を受け取る設定をしていません', track_unavailable: 'この曲には投げ銭できません', no_customer: '契約が見つかりません', network: '通信できませんでした。電波を確認してください',
+      not_configured: '決済の準備中です', plan_unavailable: '決済の準備中です' })[c] || '処理できませんでした。しばらくしてからもう一度お試しください';
+  }
+  async function payGo(path, body, btn) {
+    if (!need('ログインしてください')) { return; }
+    if (btn) { btn.disabled = true; }
+    var r = await apiPost(path, body);
+    if (r.url) { location.href = r.url; return; }
+    if (btn) { btn.disabled = false; }
+    toast(payErr(r.error));
+  }
+  function payBlock() {
+    if (!PAY || !PAYDB || !D.me) { return ''; }
+    var h = '';
+    if (PAY.plan) {
+      var on = !!D.plus[D.me];
+      h += '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>AI MUSIC Plus ★</h3></div>';
+      if (on) {
+        var d = D.mySub && D.mySub.end ? new Date(D.mySub.end) : null;
+        h += '<p class="sub">加入中です。ありがとうございます。' + (d && !isNaN(d) ? '次の更新日：' + d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日' : '') + '</p>' +
+          '<button class="vbtn line" style="width:100%;min-height:44px" data-act="pay-portal">支払い方法・解約はこちら</button>';
+      } else {
+        h += '<ul class="plist">' + PERKS.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+          '<p class="sub">月額 <b style="color:var(--fg)">' + fmt(PAY.planPrice) + '円</b>（税込）。いつでも解約できます。支払いは決済会社 Stripe の画面で行います。</p>' +
+          '<button class="cta" data-act="pay-plan">Plusに加入する</button>';
+      }
+      h += '</section>';
+    }
+    if (PAY.tip) {
+      var ready = !!(D.conn && D.conn.ready), got = D.myTips.filter(function (x) { return x.to === D.me; }), sum = got.reduce(function (s, x) { return s + x.amount; }, 0);
+      h += '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>投げ銭</h3></div>';
+      if (ready) {
+        h += '<p class="sub">あなたの曲は、投げ銭を受け取れます。受け取り ' + got.length + '件（合計 ' + fmt(sum) + '円。運営の手数料 ' + PAY.feePct + '%を引いた額が、登録した口座に振り込まれます）。</p>';
+      } else {
+        h += '<p class="sub">自分の曲に投げ銭を受け取るには、決済会社 Stripe で、本人確認と振込先の口座の登録をします（数分かかります）。運営の手数料は ' + PAY.feePct + '%です。</p>' +
+          '<button class="vbtn gold" style="width:100%;min-height:44px" data-act="pay-connect">' + (D.conn ? '受け取り設定の続きをする' : '受け取り設定をする') + '</button>' +
+          (D.conn ? '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:6px" data-act="pay-refresh">設定が終わったので、確認する</button>' : '');
+      }
+      var gave = D.myTips.filter(function (x) { return x.from === D.me; });
+      if (gave.length) { h += '<p class="hint">あなたが送った投げ銭：' + gave.length + '件</p>'; }
+      h += '</section>';
+    }
+    return h;
+  }
+  function tipSection(t) {
+    if (!PAY || !PAY.tip || !PAYDB || t.status !== '公開' || !t.uid || t.mine || !D.tipReady[t.uid]) { return ''; }
+    var n = D.tipN[t.id] || 0;
+    return '<div class="sec"><button class="vbtn gold" style="width:100%;min-height:44px" data-act="tip-open" data-id="' + esc(t.id) + '">♥ 投げ銭で応援する</button>' + (n ? '<p class="hint">この曲への投げ銭：' + n + '件</p>' : '') + '</div>';
+  }
+  function drawTip(s) {
+    var t = byId(s.id);
+    if (!t || !PAY) { closeSheet(); return; }
+    var amts = [100, 300, 500, 1000, 3000];
+    $('#sheet').innerHTML = sheetTop('投げ銭') + '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんに、投げ銭で応援します。</p>' +
+      '<div class="seg" role="group" aria-label="金額">' + amts.map(function (a) { return '<button data-act="tip-amt" data-v="' + a + '" aria-pressed="' + (ui.tipAmt === a) + '">' + fmt(a) + '円</button>'; }).join('') + '</div>' +
+      '<div class="field" style="margin-top:8px"><label for="tip-amt">金額（円・' + full(PAY.tipMin) + '〜' + full(PAY.tipMax) + '）</label><input type="text" id="tip-amt" inputmode="numeric" value="' + ui.tipAmt + '"></div>' +
+      '<p class="hint">支払いは、決済会社 Stripe の画面で行います（カード等）。投げ銭は、あとから取り消せません。運営の手数料 ' + PAY.feePct + '%を引いた額が、曲の投稿者に届きます。<a href="terms.html#tokusho" target="_blank" rel="noopener">特定商取引法に基づく表記</a></p>' +
+      '<button class="cta" data-act="tip-go" data-id="' + esc(t.id) + '">決済画面へ進む</button>';
   }
 
   /* ---------- data loading ---------- */
@@ -2014,7 +2321,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       (r[2].data || []).forEach(function (c) {
         var k = String(c.track_id);
         var nm = c.user_id === D.me ? 'あなた' : ((c.profiles && c.profiles.name) || 'リスナー');
-        (comments[k] = comments[k] || []).push({ n: nm, t: String(c.body || '').slice(0, 80) });
+        (comments[k] = comments[k] || []).push({ u: c.user_id, n: nm, t: String(c.body || '').slice(0, 80) });
       });
       var likes = {}, leftNow = DAILY;
       if (D.me) {
@@ -2036,7 +2343,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       } catch (x) { /* schema_judges.sql が未実行でも、ほかの機能は動かします */ }
       var plays = {}, followers = {}, follows = {}, pls = [], plt = {}, recent = [];
       try {
-        var ex = [sb.from('track_plays').select(PERIODS_OK ? 'track_id,total,w,d,m' : 'track_id,total,w'), sb.from('artist_followers').select('artist,n')];
+        var ex = [sb.from('track_plays').select(PERIODS_OK ? 'track_id,total,w,d,m' + (MOVEOK ? ',pd,pw,pm' : '') : 'track_id,total,w'), sb.from('artist_followers').select('artist,n')];
         if (D.me) {
           ex.push(sb.from('follows').select('artist'));
           ex.push(sb.from('playlists').select('id,name,created_at').eq('owner', D.me).order('created_at', { ascending: false }));
@@ -2044,8 +2351,9 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           ex.push(sb.rpc('my_recent_tracks', { p_limit: 20 }));
         }
         var er = await Promise.all(ex);
+        if (er[0].error && MOVEOK && PERIODS_OK) { MOVEOK = false; return load(); }
         if (er[0].error && PERIODS_OK) { PERIODS_OK = false; return load(); }
-        if (!er[0].error) { (er[0].data || []).forEach(function (p) { plays[String(p.track_id)] = { total: num(p.total), w: num(p.w), d: num(p.d), m: num(p.m) }; }); }
+        if (!er[0].error) { (er[0].data || []).forEach(function (p) { plays[String(p.track_id)] = { total: num(p.total), w: num(p.w), d: num(p.d), m: num(p.m), pd: num(p.pd), pw: num(p.pw), pm: num(p.pm) }; }); }
         if (!er[1].error) { (er[1].data || []).forEach(function (a) { followers[a.artist] = num(a.n); }); }
         if (D.me) {
           if (!er[2].error) { (er[2].data || []).forEach(function (f) { follows[f.artist] = true; }); }
@@ -2077,6 +2385,27 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
             if (D.me && pr[2] && !pr[2].error) { (pr[2].data || []).forEach(function (x) { pvLikes[String(x.pv_id)] = true; }); }
           }
         } catch (z) { /* PVの読み込みに失敗しても、ほかの機能は動かします */ }
+      }
+      if (PAY === undefined) { PAY = await payCfg(); }
+      var plus = {}, mySub = null, conn = null, tipReady = {}, tipN = {}, myTips = [];
+      if (PAYDB) {
+        try {
+          var pq = [sb.from('plus_members').select('user_id'), sb.from('tip_ready').select('user_id'), sb.from('track_tips').select('track_id,n')];
+          if (D.me) { pq.push(sb.from('subscriptions').select('status,current_period_end').maybeSingle(), sb.from('connect_accounts').select('ready').maybeSingle(), sb.from('tips').select('from_user,to_user,amount').limit(500)); }
+          var pr = await Promise.all(pq);
+          if (pr[0].error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(pr[0].error.message || '') + String(pr[0].error.code || ''))) { PAYDB = false; }
+          } else {
+            (pr[0].data || []).forEach(function (x) { plus[x.user_id] = true; });
+            if (!pr[1].error) { (pr[1].data || []).forEach(function (x) { tipReady[x.user_id] = true; }); }
+            if (!pr[2].error) { (pr[2].data || []).forEach(function (x) { tipN[String(x.track_id)] = num(x.n); }); }
+            if (D.me) {
+              if (pr[3] && !pr[3].error && pr[3].data) { mySub = { status: pr[3].data.status, end: pr[3].data.current_period_end }; }
+              if (pr[4] && !pr[4].error && pr[4].data) { conn = { ready: !!pr[4].data.ready }; }
+              if (pr[5] && !pr[5].error) { myTips = (pr[5].data || []).map(function (x) { return { from: x.from_user, to: x.to_user, amount: num(x.amount) }; }); }
+            }
+          }
+        } catch (z5) { /* 課金まわりの読み込みに失敗しても、ほかの機能は動かします */ }
       }
       var sings = [], singScore = {}, singLikes = {};
       if (SINGOK) {
@@ -2133,13 +2462,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           }
         } catch (z3) { /* イベントの読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var sig = JSON.stringify([seasons, sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var sig = JSON.stringify([D.avatar, plus, mySub, conn, tipReady, tipN, myTips, seasons, sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.seasons = seasons; D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
+        D.plus = plus; D.mySub = mySub; D.conn = conn; D.tipReady = tipReady; D.tipN = tipN; D.myTips = myTips; D.seasons = seasons; D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -2153,7 +2482,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     changeTimer = setTimeout(function () {
       var ae = document.activeElement;
       var typing = !!(ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && ae.closest && ae.closest('#view'));
-      if (ui.route !== 'submit' && !typing) { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
+      if (ui.route !== 'submit' && !typing) { render(); } else { setPill(); }
       var ci = $('#c-text'), editing = !!(ae && ae.closest && ae.closest('#sheet') && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName));
       if (ui.sheet && ui.sheet.k !== 'login' && ui.sheet.k !== 'karaoke' && !(ci && ci.value) && !editing && !$('#sheet video, #sheet iframe, #sheet audio')) { drawSheet(); }
       if (ui.route === 'submit' && D.me && !$('#submit-form')) { render(); }
@@ -2162,10 +2491,14 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   async function loadMe() {
     var s = await sb.auth.getSession();
     var u = s && s.data && s.data.session ? s.data.session.user : null;
-    D.me = u ? u.id : null; D.name = ''; D.admin = false; D.judge = false;
+    D.me = u ? u.id : null; D.name = ''; D.avatar = ''; D.admin = false; D.judge = false;
     if (D.me) {
-      var p = await Promise.all([sb.from('profiles').select('name').eq('id', D.me).maybeSingle(), sb.rpc('is_admin'), sb.rpc('is_judge')]);
+      var p = await Promise.all([sb.from('profiles').select(AVOK ? 'name,avatar' : 'name').eq('id', D.me).maybeSingle(), sb.rpc('is_admin'), sb.rpc('is_judge')]);
+      if (p[0].error && AVOK) { AVOK = false; p[0] = await sb.from('profiles').select('name').eq('id', D.me).maybeSingle(); }
       D.name = (p[0].data && p[0].data.name) || '';
+      D.avatar = (p[0].data && p[0].data.avatar) || '';
+      var mav = u && u.user_metadata && u.user_metadata.avatar;
+      if (AVOK && !D.avatar && /^preset:[a-z0-9-]{1,20}$/.test(mav || '')) { D.avatar = mav; sb.from('profiles').update({ avatar: mav }).eq('id', D.me).then(function () {}, function () {}); }
       D.admin = p[1].data === true;
       D.judge = p[2].data === true;
     }
@@ -2332,6 +2665,12 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       return '<section class="sec"><div class="sec-h"><h3>' + esc(z.name) + '</h3></div><p class="sub">' + esc(ds) + '／' + res + '（紅 ' + fmt(red) + '票・白 ' + fmt(wh) + '票）</p>' + side('red', '紅組') + side('ice', '白組') + '</section>';
     }).join('');
   }
+  async function payRefresh() {
+    var r = await apiPost('/api/connect-refresh', {});
+    if (r.error) { toast(payErr(r.error)); return; }
+    toast(r.ready ? '受け取り設定が完了しました' : 'まだ設定が終わっていません。Stripeの画面の続きをお願いします');
+    await reload();
+  }
   async function pvLike(id) {
     if (!need('いいねするにはログインしてください')) { return; }
     var was = !!D.pvLikes[id], r;
@@ -2399,7 +2738,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     for (i = 0; i < btns.length; i++) { btns[i].disabled = true; }
     try {
       var r = mode === 'signup'
-        ? await sb.auth.signUp({ email: mail, password: pass, options: { emailRedirectTo: redirectUrl() } })
+        ? await sb.auth.signUp({ email: mail, password: pass, options: { emailRedirectTo: redirectUrl(), data: signupMeta() } })
         : await sb.auth.signInWithPassword({ email: mail, password: pass });
       if (r.error) { le.textContent = authError(r.error); return; }
       if (mode === 'signup' && !(r.data && r.data.session)) {
@@ -2413,6 +2752,21 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     } finally {
       for (i = 0; i < btns.length; i++) { btns[i].disabled = false; }
     }
+  }
+  async function saveAvatar() {
+    var a = preSel('pre-my');
+    if (!a) { toast('アイコンを選んでください'); return; }
+    var r = await sb.from('profiles').update({ avatar: 'preset:' + a }).eq('id', D.me);
+    if (r.error) { toast(AVOK ? errText(r.error) : 'アイコンを使うには、schema_presets.sql の実行が必要です'); return; }
+    D.avatar = 'preset:' + a; ui.avEdit = false;
+    toast('アイコンを変えました');
+    await reload();
+  }
+  function signupMeta() {
+    var nm = ($('#l-name') ? $('#l-name').value.trim() : '').slice(0, 20), av = preSel('pre-av'), d = {};
+    if (nm) { d.name = nm; }
+    if (av) { d.avatar = 'preset:' + av; }
+    return d;
   }
   async function forgotSubmit() {
     var mail = $('#r-mail').value.trim(), er = $('#r-err'), ok = $('#r-ok'), btn = $('#forgot-form button[type="submit"]');
@@ -2477,6 +2831,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (act === 'pv-ok') { reviewPv(id, 'approved'); }
     else if (act === 'pv-ng') { reviewPv(id, 'rejected'); }
     else if (act === 'ka-open') { kaOpen(id); }
+    else if (act === 'pay-plan') { payGo('/api/checkout', { kind: 'plan' }, el); }
+    else if (act === 'pay-portal') { payGo('/api/portal', {}, el); }
+    else if (act === 'pay-connect') { payGo('/api/connect', {}, el); }
+    else if (act === 'pay-refresh') { payRefresh(); }
+    else if (act === 'tip-open') { if (need('投げ銭するにはログインしてください')) { ui.tipAmt = ui.tipAmt || 300; openSheet({ k: 'tip', id: id }); } }
+    else if (act === 'tip-amt') { ui.tipAmt = Number(v); if (ui.sheet && ui.sheet.k === 'tip') { drawTip(ui.sheet); } }
+    else if (act === 'tip-go') { payGo('/api/checkout', { kind: 'tip', track_id: id, amount: Number(String(($('#tip-amt') || {}).value || '').replace(/[,，円\s]/g, '')) || 0 }, el); }
     else if (act === 'ka-start') { kaStart(); }
     else if (act === 'ka-stop') { kaStop(); }
     else if (act === 'ka-fx') { KA.fx = v; drawKaraoke(); }
@@ -2487,6 +2848,10 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (act === 'sing-ok') { reviewSing(id, 'approved'); }
     else if (act === 'sing-ng') { reviewSing(id, 'rejected'); }
     else if (act === 'chat-del') { chatDel(id); }
+    else if (act === 'chat-rep') { openSheet({ k: 'chatrep', id: id }); }
+    else if (act === 'chat-rep-go') { chatReport(el.getAttribute('data-id'), v); }
+    else if (act === 'chat-ban') { chatBan(id, v); }
+    else if (act === 'chat-unban') { chatUnban(id); }
     else if (act === 'qual') { qualVote(id); }
     else if (act === 'qt') { ui.qt = v; render(); }
     else if (act === 'ev-phase') { setEventPhase(v); }
@@ -2558,6 +2923,9 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       });
     }
     else if (act === 'signup') { authSubmit('signup'); }
+    else if (act === 'pre-pick') { var pg = el.closest('.pgrid'), on = el.getAttribute('aria-pressed') === 'true'; Array.prototype.forEach.call(pg.querySelectorAll('.pitem'), function (b) { b.setAttribute('aria-pressed', 'false'); }); el.setAttribute('aria-pressed', on ? 'false' : 'true'); }
+    else if (act === 'av-edit') { ui.avEdit = !ui.avEdit; render(); }
+    else if (act === 'av-save') { saveAvatar(); }
     else if (act === 'login-open') { openLogin(''); }
     else if (act === 'forgot') { var lm = $('#l-mail'); openSheet({ k: 'forgot', mail: lm ? lm.value.trim() : '' }); }
     else if (act === 'chpw') { openSheet({ k: 'newpass', mode: 'change' }); }
@@ -2689,17 +3057,17 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       var mt = byId(f.getAttribute('data-id')), me = $('#m-err'), mgo = $('#m-go');
       if (!mt) { return; }
       var mc = $('#m-cover').files[0], mv = $('#m-video').files[0], my = ytId($('#m-yt').value), myRaw = $('#m-yt').value.trim();
-      var rmc = !!($('#m-rmcover') && $('#m-rmcover').checked), rmv = !!($('#m-rmpv') && $('#m-rmpv').checked);
+      var mp = preSel('pre-media'), rmc = !!($('#m-rmcover') && $('#m-rmcover').checked), rmv = !!($('#m-rmpv') && $('#m-rmpv').checked);
       var lyNew = $('#m-lyr') ? $('#m-lyr').value.trim() : null, lyCh = lyNew !== null && lyNew !== String(mt.lyrics || '').trim();
       var ms = $('#m-src') ? $('#m-src').files[0] : null, rms = !!($('#m-rmsrc') && $('#m-rmsrc').checked);
       var merr = (ms && !/^audio\//.test(ms.type) ? '配布用の音源は、音声ファイルにしてください' : '') || (ms && ms.size > 20 * 1024 * 1024 ? '配布用の音源は20MB以下にしてください' : '') || checkImage(mc) || checkVideo(mv) || (myRaw && !my ? 'YouTubeのURLを確認してください' : '') || (mv && my ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
       if (!merr && (mc || mv || my || ms || (lyCh && lyNew)) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
-      if (!merr && !mc && !mv && !my && !rmc && !rmv && !ms && !rms && !lyCh) { merr = '変更する内容を選んでください'; }
+      if (!merr && !mc && !mp && !mv && !my && !rmc && !rmv && !ms && !rms && !lyCh) { merr = '変更する内容を選んでください'; }
       if (merr) { me.textContent = merr; return; }
       mgo.disabled = true; me.textContent = '';
       try {
-        var np = mc ? await uploadFile(mc, 'img') : null, nv = mv ? await uploadFile(mv, 'mp4') : null;
-        var setC = !!(mc || rmc), setV = !!(mv || my || rmv);
+        var np = mc ? await uploadFile(mc, 'img') : (mp ? 'preset:' + mp : null), nv = mv ? await uploadFile(mv, 'mp4') : null;
+        var setC = !!(mc || mp || rmc), setV = !!(mv || my || rmv);
         if (setC || setV) {
           var rr = await sb.rpc('update_track_media', { p_track: mt.id, p_set_cover: setC, p_cover: np, p_set_video: setV, p_video: nv, p_yt: my || null });
           if (rr.error) { throw rr.error; }
@@ -2776,7 +3144,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           owner: D.me, title: title.slice(0, 40), artist: artist.slice(0, 30), team: entered ? formTeam : null, genre: $('#f-genre').value,
           tool: $('#f-tool').value, plan: $('#f-plan').value, audio_path: path, rights_ack: true
         };
-        if (cpath) { rowIns.cover_path = cpath; }
+        if (cpath) { rowIns.cover_path = cpath; } else if (MEDIA && preSel('pre-cover')) { rowIns.cover_path = 'preset:' + preSel('pre-cover'); }
         if (vpath) { rowIns.video_path = vpath; }
         if (yid) { rowIns.youtube_id = yid; }
         var lyIn = LYR && $('#f-lyr') ? $('#f-lyr').value.trim() : '';
@@ -2786,7 +3154,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       } catch (ex) {
         go.disabled = false;
         var em = String((ex && ex.message) || '');
-        err.textContent = /lyrics/i.test(em)
+        err.textContent = (rowIns && /^preset:/.test(rowIns.cover_path || '') && /row-level|check constraint|policy|violates/i.test(em)) ? '見本のアイコンを使うには、schema_presets.sql の実行が必要です'
+          : /lyrics/i.test(em)
           ? '投稿できませんでした。歌詞用の準備（schema_karaoke.sql）がまだ終わっていない可能性があります'
           : /cover_path|video_path|youtube_id|mime type|not supported/i.test(em)
           ? '投稿できませんでした。アイコン・PV用の準備（schema_media.sql）がまだ終わっていない可能性があります'
@@ -2958,6 +3327,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       history.replaceState(null, '', location.pathname + location.search);
     }
     await load();
+    var qs = new URLSearchParams(location.search);
+    if (qs.get('paid') || qs.get('connect')) {
+      history.replaceState(null, '', location.pathname + location.hash);
+      if (qs.get('paid') === 'plan') { toast('ありがとうございます。Plusの反映まで、数秒かかることがあります'); setTimeout(reload, 4000); setTimeout(reload, 12000); }
+      else if (qs.get('paid') === 'tip') { toast('投げ銭ありがとうございます。応援が届きました'); setTimeout(reload, 4000); }
+      else if (qs.get('connect') && D.me) { payRefresh(); }
+    }
     setInterval(function () { if (!document.hidden) { load(); } }, 20000);
   }
 
