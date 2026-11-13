@@ -367,6 +367,16 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
 .msg.me { align-self: flex-end; border-radius: 14px 14px 4px 14px; background: var(--surface-2); }
 .msg small { display: block; color: var(--muted); font-size: 11px; }
 .mdel { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border: 0; background: none; color: var(--muted); font-size: 16px; }
+.lyr { position: relative; max-height: 200px; overflow-y: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; scroll-behavior: smooth; }
+.lyr p { margin: 0; padding: 4px 0; font-size: 15px; line-height: 1.5; color: var(--muted); white-space: pre-wrap; }
+.lyr[data-timed="true"] p.on { color: var(--fg); font-weight: 700; font-size: 17px; }
+.lyr[data-timed="false"] p { color: var(--fg); }
+.meter { height: 10px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; margin: 8px 0; }
+.meter i { display: block; height: 100%; width: 0; background: var(--gold); transition: width .08s linear; }
+.kcount { font-size: 72px; font-weight: 800; text-align: center; margin: 10px 0; color: var(--gold); }
+.recdot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #e5484d; margin-right: 6px; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.pa { width: 100%; margin: 10px 0; }
 </style>
 
 </head>
@@ -471,11 +481,12 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
   };
   var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
-  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true;
+  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true;
+  var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0 };
   var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
@@ -491,7 +502,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       title: title, artist: String(r.artist || '名無し'), team: r.team === 'red' ? 'red' : (r.team === 'ice' ? 'ice' : null),
       genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'その他', tool: String(r.tool || 'その他'),
       status: r.status === 'approved' ? '公開' : (r.status === 'rejected' ? '非公開' : '審査中'),
-      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', srcPath: r.source_path || '', hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
+      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', srcPath: r.source_path || '', lyrics: String(r.lyrics || ''), hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
     };
   }
   function byId(id) {
@@ -637,7 +648,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     stopPlayback(true);
     P.t = t; P.elapsed = 0; P.counted = false;
     if (t.url) {
-      P.el = new Audio(t.url);
+      P.el = new Audio(); if (P.cors) { P.el.crossOrigin = 'anonymous'; } P.el.src = t.url;
       P.el.addEventListener('ended', onEnded);
     }
     mediaMeta(t);
@@ -708,7 +719,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     if (i < 0) { i = Q.repeat === 'all' ? Q.ids.length - 1 : 0; }
     playAt(i);
   }
-  function onEnded() { if (S.on) { stageNext(); return; } nextTrack(true); }
+  function onEnded() { if (KA.phase === 'rec') { kaStop(); return; } if (S.on) { stageNext(); return; } nextTrack(true); }
   function mediaMeta(t) {
     try {
       if ('mediaSession' in navigator && window.MediaMetadata) {
@@ -758,6 +769,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       $('#sheet-bar').style.width = (on && dur() ? Math.min(100, (pos() / dur()) * 100) : 0) + '%';
       $('#sheet-cur').textContent = mmss(on ? pos() : 0);
       $('#sheet-tot').textContent = mmss(on ? dur() : DEMO_SEC);
+      var lt = byId(s.id); if (lt && lt.lyrics) { lyrSync('lyr-box', lt.lyrics, on ? pos() : 0); }
     }
   }
   setInterval(function () {
@@ -893,7 +905,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   var RK_PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['total', '総合']];
   function rkPeriods() {
-    var list = ui.rk === 'pv' ? [['w', '週間'], ['total', '総合']] : (PERIODS_OK ? RK_PERIODS : [['w', '週間'], ['total', '総合']]);
+    var list = (ui.rk === 'pv' || ui.rk === 'sing') ? [['w', '週間'], ['total', '総合']] : (PERIODS_OK ? RK_PERIODS : [['w', '週間'], ['total', '総合']]);
     if (!list.some(function (x) { return x[0] === ui.rp; })) { ui.rp = 'w'; }
     return list;
   }
@@ -910,7 +922,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   }
   function viewRanking() {
     if (!PVOK && ui.rk === 'pv') { ui.rk = 'song'; }
-    var kinds = [['song', '曲'], ['artist', 'アーティスト'], ['genre', 'ジャンル']].concat(PVOK ? [['pv', 'PV']] : []);
+    if (!SINGOK && ui.rk === 'sing') { ui.rk = 'song'; }
+    var kinds = [['song', '曲'], ['artist', 'アーティスト'], ['genre', 'ジャンル']].concat(PVOK ? [['pv', 'PV']] : []).concat(SINGOK ? [['sing', '歌ってみた']] : []);
     var h = '<h2 class="ttl">ランキング</h2><div class="stack">' +
       '<div class="seg" role="group" aria-label="ランキングの種類">' + kinds.map(function (x) {
         return '<button data-act="rk" data-v="' + x[0] + '" aria-pressed="' + (ui.rk === x[0]) + '">' + x[1] + '</button>';
@@ -960,6 +973,10 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
         return '<li class="row"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span><button class="rowmain" data-act="sg-go" data-v="' + esc(x.g) + '"><span class="cover md" style="--h:' + hueOf(x.g) + '" aria-hidden="true">' + esc(Array.from(x.g)[0]) + '</span>' +
           '<span class="rt"><b>' + esc(x.g) + '</b><small>' + x.n + '曲</small></span></button><span class="rv tnum">' + fmt(x.pl) + '回</span></li>';
       }).join('') + '</ul><p class="hint">ジャンルを押すと、そのジャンルの曲を探せます。</p>' : '<p class="sub">まだ曲がありません。</p>';
+    } else if (ui.rk === 'sing') {
+      var sl = singRank(ui.rp);
+      h += sl.length ? '<ul class="list">' + sl.map(function (g, i) { return singRow(g, i, { rank: true, period: ui.rp }); }).join('') + '</ul>'
+        : empty('まだ公開された歌ってみたがありません。好きな曲の詳細画面から「この曲を歌ってみる」を押してみましょう。', '<a class="cta" href="#search">曲を探す</a>');
     } else {
       var pl = pvRank(ui.rp);
       h += pl.length ? '<ul class="list">' + pl.map(function (p, i) { return pvRow(p, i, { rank: true, period: ui.rp }); }).join('') + '</ul>'
@@ -1263,6 +1280,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="field"><label for="f-video">PV（任意）</label><input type="file" id="f-video" accept="video/mp4,video/webm,video/quicktime">' +
       '<input type="text" id="f-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
       '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。大きい動画は、YouTubeのURLで登録してください。</p></div>' : '') +
+      (LYR ? '<div class="field"><label for="f-lyr">歌詞（任意・4000字まで）</label><textarea id="f-lyr" rows="5" maxlength="4000" placeholder="[00:12.00]1行目の歌詞&#10;[00:18.50]2行目の歌詞" style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--fg);font:inherit"></textarea>' +
+      '<p class="hint">みんなが「歌ってみた」で使えます。自作の歌詞だけを入れてください。「[分:秒.小数]歌詞」の形で書くと、再生に合わせて進みます。あとから変更できます。</p></div>' : '') +
       '<div class="evpick"><label class="check"><input type="checkbox" id="c-entry"><span><b>AI紅白歌合戦にエントリーする</b>（任意）<br><small>年末のイベントに、この曲で出場します。</small></span></label>' +
       '<div id="entry-team" hidden><div class="seg" role="radiogroup" aria-label="陣営">' +
       '<button type="button" data-act="s-team" data-v="red" data-team="red" aria-pressed="true">紅組</button>' +
@@ -1308,7 +1327,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div>' +
       '<div class="box"><small>今日の紅白の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div></div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
-      review + grantReview() + pvReview() + eventAdmin() + judgeSec + adminSec + myPvs() +
+      review + grantReview() + pvReview() + singReview() + eventAdmin() + judgeSec + adminSec + myPvs() + mySings() +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>アカウント</h3></div><div class="stack">' +
       '<button class="vbtn line" style="min-height:44px" data-act="chpw">パスワードを変更する</button>' +
       '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div></section></div>';
@@ -1399,7 +1418,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     drawSheet();
     var c = $('#sheet .x, #sheet input'); if (c) { c.focus(); }
   }
-  function closeSheet() { ui.sheet = null; ui.pv = null; $('#veil').hidden = true; }
+  function closeSheet() { if (KA.phase !== 'idle') { kaCleanup(true); } ui.sheet = null; ui.pv = null; $('#veil').hidden = true; }
   function openLogin(msg) { openSheet({ k: 'login', msg: msg || '' }); }
   function sheetTop(label) {
     return '<div class="sheet-top"><span class="pill">' + esc(label) + '</span><button class="x" data-act="close" aria-label="閉じる">×</button></div>';
@@ -1417,6 +1436,8 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (s.k === 'pvnew') { drawPvNew(s); }
     else if (s.k === 'srcreq') { drawSrcReq(s); }
     else if (s.k === 'pvplay') { drawPvPlay(s); }
+    else if (s.k === 'karaoke') { drawKaraoke(); }
+    else if (s.k === 'singplay') { drawSingPlay(s); }
   }
   function drawLogin(msg) {
     $('#sheet').innerHTML = sheetTop('ログイン・新規登録') +
@@ -1464,7 +1485,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="who" style="margin:4px 0 8px">' + cover(t, 'md') + '<span class="rt"><b style="color:var(--fg)">' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small></span></div>' +
       '<div class="menu">' + item('m-play', '再生する') + item('m-next', '次に再生') +
       (t.status === '公開' ? item('m-pl', 'プレイリストに追加') + item('m-like', lk ? 'お気に入りから外す' : 'お気に入りに追加') : '') +
-      (t.mine && MEDIA ? item('m-media', 'アイコン・PVを変更') : '') +
+      (t.mine && MEDIA ? item('m-media', 'アイコン・PV・歌詞を変更') : '') +
       (s.pl ? item('m-rm', 'このプレイリストから外す', ' data-v="' + esc(s.pl) + '"') : '') +
       item('m-artist', 'アーティストのページへ') + item('m-detail', '詳細・コメント') + item('m-share', '共有') + '</div>';
   }
@@ -1580,7 +1601,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   function drawMedia(s) {
     var t = byId(s.id);
     if (!t) { closeSheet(); return; }
-    $('#sheet').innerHTML = sheetTop('アイコン・PVの変更') +
+    $('#sheet').innerHTML = sheetTop('アイコン・PV・歌詞の変更') +
       '<h2 style="font-size:20px">' + esc(t.title) + '</h2>' +
       '<form id="media-form" data-id="' + esc(t.id) + '">' +
       '<div class="field"><span class="lab">曲のアイコン</span><div class="thumbrow">' + cover(t, 'md') + '<input type="file" id="m-cover" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="アイコン画像"></div>' +
@@ -1593,7 +1614,9 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       (SRC && SRCOK ? '<div class="field"><span class="lab">PV制作用の音源' + (t.srcPath ? '（登録済み）' : '') + '</span><input type="file" id="m-src" accept="audio/*" aria-label="PV制作用の音源">' +
       '<p class="hint">PVを作りたい人に渡す原本です（mp3・wavなど、20MBまで）。非公開の場所に置かれ、あなたが許可した人にだけ渡ります。</p>' +
       (t.srcPath ? '<label class="check"><input type="checkbox" id="m-rmsrc"><span>配布用の音源を削除する</span></label>' : '') + '</div>' : '') +
-      '<label class="check"><input type="checkbox" id="m-right"><span>アイコン画像・PVの権利は自分にあります。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
+      (LYR ? '<div class="field"><label for="m-lyr">歌詞（任意・4000字まで）</label><textarea id="m-lyr" rows="6" maxlength="4000" placeholder="[00:12.00]1行目の歌詞&#10;[00:18.50]2行目の歌詞" style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--fg);font:inherit">' + esc(t.lyrics) + '</textarea>' +
+      '<p class="hint">「[分:秒.小数]歌詞」の形で書くと、再生に合わせて歌詞が進みます（3行以上）。時間なしで貼ると、そのまま表示されます。自分で作った歌詞、または使ってよい歌詞だけを入れてください。</p></div>' : '') +
+      '<label class="check"><input type="checkbox" id="m-right"><span>アイコン画像・PV・歌詞の権利は自分にあります。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
       '<p class="err" id="m-err" role="alert"></p><button class="cta" type="submit" id="m-go">保存する</button></form>';
   }
   function drawTrack(s) {
@@ -1627,7 +1650,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'お気に入り</button>' +
       '<button class="vbtn line" data-act="m-pl" data-id="' + esc(t.id) + '"' + (votable ? '' : ' disabled') + '>' + ICON.plus + '追加</button>' +
       '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
-      pvBlock(t) + srcBlock(t) + pvSection(t) +
+      lyrBlock(t, 'lyr-box') + pvBlock(t) + srcBlock(t) + pvSection(t) + singSection(t) +
       (t.team && votable ? evBox(t, dis) : '') +
       upNext +
       (D.judge && votable && t.team ? judgeForm(t) : '') +
@@ -1635,6 +1658,288 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       cs.map(function (c) { return '<li><small>' + esc(c.n) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
       (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
     syncPlayer();
+  }
+
+  /* ---------- lyrics (歌詞。[mm:ss.xx] 付きなら、再生に合わせて進む) ---------- */
+  var LYC = {};
+  function parseLyrics(txt) {
+    txt = String(txt || '');
+    if (LYC[txt]) { return LYC[txt]; }
+    var out = [], timed = 0;
+    txt.split(/\r?\n/).forEach(function (l) {
+      var re = /\[(\d{1,2}):(\d{2})(?:[.:](\d{1,3}))?\]/g, m, ts = [];
+      while ((m = re.exec(l))) { ts.push(Number(m[1]) * 60 + Number(m[2]) + (m[3] ? Number('0.' + m[3]) : 0)); }
+      var text = l.replace(re, '').trim();
+      if (ts.length) { timed++; ts.forEach(function (t) { out.push({ t: t, s: text }); }); }
+      else if (!/^\[[a-z]+:.*\]$/i.test(l.trim())) { out.push({ t: null, s: text }); }
+    });
+    var res;
+    if (timed >= 3) {
+      res = { timed: true, lines: out.filter(function (x) { return x.t !== null; }).sort(function (a, b) { return a.t - b.t; }) };
+    } else { res = { timed: false, lines: out }; }
+    LYC[txt] = res;
+    return res;
+  }
+  function lyrBlock(t, id) {
+    if (!t.lyrics) { return ''; }
+    var p = parseLyrics(t.lyrics);
+    return '<div class="sec"><div class="sec-h"><h3>歌詞</h3></div><div class="lyr" id="' + id + '" data-timed="' + p.timed + '">' +
+      p.lines.map(function (l) { return '<p>' + (esc(l.s) || '&nbsp;') + '</p>'; }).join('') + '</div></div>';
+  }
+  function lyrSync(id, txt, time) {
+    var box = document.getElementById(id);
+    if (!box) { return; }
+    var p = parseLyrics(txt);
+    if (!p.timed) { return; }
+    var idx = -1, i;
+    for (i = 0; i < p.lines.length; i++) { if (p.lines[i].t <= time + 0.15) { idx = i; } else { break; } }
+    if (box.getAttribute('data-on') === String(idx)) { return; }
+    box.setAttribute('data-on', String(idx));
+    var ps = box.children;
+    for (i = 0; i < ps.length; i++) { ps[i].classList.toggle('on', i === idx); }
+    if (idx >= 0 && ps[idx]) { box.scrollTop = ps[idx].offsetTop - box.clientHeight / 2 + ps[idx].offsetHeight / 2; }
+    else { box.scrollTop = 0; }
+  }
+
+  /* ---------- 歌ってみた（録音） ---------- */
+  function kaSupport() {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder && (window.AudioContext || window.webkitAudioContext));
+  }
+  function kaMime() {
+    var c = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'], i;
+    for (i = 0; i < c.length; i++) { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c[i])) { return c[i]; } }
+    return '';
+  }
+  function kaCleanup(keep) {
+    clearInterval(KA.timer); KA.timer = null; clearTimeout(KA.guard); clearTimeout(KA.cd);
+    if (KA.rec && KA.rec.state !== 'inactive') { KA.rec.onstop = null; try { KA.rec.stop(); } catch (e) { /* 停止済み */ } }
+    KA.rec = null;
+    if (KA.stream) { KA.stream.getTracks().forEach(function (t) { t.stop(); }); KA.stream = null; }
+    KA.nodes.forEach(function (n) { try { n.disconnect(); } catch (e) { /* 切断済み */ } });
+    KA.nodes = [];
+    if (P.master && KA.dest) { try { P.master.disconnect(KA.dest); } catch (e) { /* 未接続 */ } }
+    KA.dest = null; KA.an = null;
+    if (KA.phase === 'count' || KA.phase === 'rec') { pausePlayback(); KA.phase = 'ready'; }
+    if (!keep) {
+      if (KA.url) { URL.revokeObjectURL(KA.url); }
+      KA.url = ''; KA.blob = null; KA.phase = 'idle';
+    }
+  }
+  function kaOpen(id) {
+    var t = byId(id);
+    if (!t || t.status !== '公開') { return; }
+    pausePlayback();
+    if (KA.blob && KA.tid === t.id) { KA.phase = 'done'; }
+    else { kaCleanup(false); KA.tid = t.id; KA.phase = 'ready'; KA.err = ''; }
+    openSheet({ k: 'karaoke', id: t.id });
+  }
+  function kaRetry() {
+    if (KA.url) { URL.revokeObjectURL(KA.url); }
+    KA.url = ''; KA.blob = null; KA.phase = 'ready'; KA.err = '';
+    drawKaraoke();
+  }
+  async function kaStart() {
+    var t = byId(KA.tid);
+    if (!t || KA.phase !== 'ready') { return; }
+    KA.err = '';
+    if (!kaSupport()) { KA.err = 'この端末のブラウザでは録音できません。Chrome・Safariの新しいバージョンでお試しください'; drawKaraoke(); return; }
+    KA.phase = 'wait';
+    try {
+      KA.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch (e) {
+      KA.phase = 'ready'; KA.err = 'マイクを使えませんでした。ブラウザのマイクの許可を確認してください'; drawKaraoke(); return;
+    }
+    if (!ui.sheet || ui.sheet.k !== 'karaoke') { KA.phase = 'ready'; kaCleanup(true); return; }
+    try {
+      stopPlayback(true); Q.ids = []; Q.i = -1;
+      P.cors = true; loadTrack(t, true); P.cors = false;
+      if (!P.ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        P.ctx = new AC();
+        P.master = P.ctx.createGain();
+        P.master.gain.value = 0.22;
+        P.master.connect(P.ctx.destination);
+      }
+      if (P.ctx.state === 'suspended') { P.ctx.resume(); }
+      var ctx = P.ctx;
+      KA.dest = ctx.createMediaStreamDestination();
+      var mic = ctx.createMediaStreamSource(KA.stream), mg = ctx.createGain(), zg = ctx.createGain();
+      KA.an = ctx.createAnalyser(); KA.an.fftSize = 512;
+      mic.connect(mg); mg.connect(KA.dest); mic.connect(KA.an);
+      zg.gain.value = 0; KA.an.connect(zg); zg.connect(ctx.destination);
+      KA.nodes = [mic, mg, KA.an, zg];
+      if (P.el) {
+        var sn = ctx.createMediaElementSource(P.el), bg = ctx.createGain();
+        bg.gain.value = 0.8; sn.connect(bg); bg.connect(ctx.destination); bg.connect(KA.dest);
+        KA.nodes.push(sn, bg);
+      } else { P.master.connect(KA.dest); }
+    } catch (e2) {
+      KA.phase = 'ready'; KA.err = '録音の準備ができませんでした。もう一度お試しください'; kaCleanup(true); drawKaraoke(); return;
+    }
+    KA.phase = 'count'; KA.n = 3; drawKaraoke();
+    (function tick() {
+      KA.cd = setTimeout(function () {
+        KA.n--;
+        if (KA.n <= 0) { kaGo(); } else { drawKaraoke(); tick(); }
+      }, 1000);
+    })();
+  }
+  function kaGo() {
+    try {
+      KA.mime = kaMime();
+      KA.rec = new MediaRecorder(KA.dest.stream, KA.mime ? { mimeType: KA.mime } : {});
+    } catch (e) { KA.phase = 'ready'; KA.err = 'この端末では録音を始められませんでした'; kaCleanup(true); drawKaraoke(); return; }
+    KA.chunks = [];
+    KA.rec.ondataavailable = function (e) { if (e.data && e.data.size) { KA.chunks.push(e.data); } };
+    KA.rec.onstop = kaFinish;
+    KA.rec.start(1000);
+    P.elapsed = 0; startPlayback();
+    KA.phase = 'rec'; KA.t0 = Date.now();
+    drawKaraoke();
+    KA.timer = setInterval(kaTick, 100);
+    KA.guard = setTimeout(kaStop, 5 * 60 * 1000);
+  }
+  function kaTick() {
+    var lv = $('#ka-lv'), tm = $('#ka-time'), t = byId(KA.tid);
+    if (KA.an && lv) {
+      var d = new Uint8Array(KA.an.fftSize), i, sum = 0;
+      KA.an.getByteTimeDomainData(d);
+      for (i = 0; i < d.length; i++) { var v = (d[i] - 128) / 128; sum += v * v; }
+      lv.style.width = Math.min(100, Math.sqrt(sum / d.length) * 300) + '%';
+    }
+    if (tm) { tm.textContent = mmss((Date.now() - KA.t0) / 1000); }
+    if (t && t.lyrics) { lyrSync('ka-lyr', t.lyrics, pos()); }
+  }
+  function kaStop() {
+    if (KA.phase !== 'rec') { return; }
+    clearInterval(KA.timer); KA.timer = null; clearTimeout(KA.guard);
+    pausePlayback();
+    if (KA.rec && KA.rec.state === 'recording') { try { KA.rec.stop(); } catch (e) { kaFinish(); } } else { kaFinish(); }
+  }
+  function kaFinish() {
+    var type = String((KA.rec && KA.rec.mimeType) || KA.mime || 'audio/webm');
+    var blob = new Blob(KA.chunks, { type: type.split(';')[0] });
+    KA.mime = type;
+    KA.ext = /mp4/.test(type) ? 'm4a' : (/ogg/.test(type) ? 'ogg' : 'webm');
+    if (blob.size < 2000) { KA.phase = 'ready'; KA.err = '録音できていませんでした。マイクを確認して、もう一度お試しください'; kaCleanup(true); }
+    else { KA.blob = blob; KA.url = URL.createObjectURL(blob); KA.phase = 'done'; kaCleanup(true); }
+    if (ui.sheet && ui.sheet.k === 'karaoke') { drawKaraoke(); }
+  }
+  function drawKaraoke() {
+    var t = byId(KA.tid);
+    if (!t) { closeSheet(); return; }
+    var h = sheetTop('歌ってみた') + '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんの曲で歌います。</p>';
+    var lyr = t.lyrics ? lyrBlock(t, 'ka-lyr') : '<p class="hint">この曲には歌詞が登録されていません（歌詞なしでも録音できます）。</p>';
+    var ph = KA.phase;
+    if (ph === 'done') {
+      h += '<p class="sub">録音できました。聴き直して、よければ投稿してください。</p>' +
+        '<audio class="pa" controls src="' + esc(KA.url) + '"></audio>' +
+        '<form id="sing-form" data-id="' + esc(t.id) + '">' +
+        '<div class="field"><label for="sg-title">タイトル</label><input type="text" id="sg-title" maxlength="40" autocomplete="off" value="歌ってみた"></div>' +
+        '<label class="check"><input type="checkbox" id="sg-right"><span>歌声は自分のものです。他の人の声や、権利のある音源をまぜていません。<a href="terms.html#sing" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
+        '<p class="err" id="sg-err" role="alert"></p><button class="cta" type="submit" id="sg-go">承認に出す</button></form>' +
+        '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:8px" data-act="ka-retry">撮り直す</button>';
+    } else if (ph === 'count') {
+      h += '<div class="kcount" role="status" aria-live="assertive">' + KA.n + '</div>' + lyr;
+    } else if (ph === 'rec') {
+      h += '<p class="sub"><span class="recdot"></span>録音中 <b id="ka-time" class="tnum">0:00</b></p><div class="meter" aria-hidden="true"><i id="ka-lv"></i></div>' + lyr +
+        '<button class="cta" style="margin-top:10px" data-act="ka-stop">録音を終える</button>';
+    } else if (ph === 'wait') {
+      h += '<p class="sub">マイクの許可をお待ちしています…</p>';
+    } else {
+      h += '<p class="hint">イヤホンをつけて歌ってください（スピーカーだと、曲の音がマイクに入ってしまいます）。3・2・1のあと、曲が流れて録音が始まります。曲の終わりで、自動で止まります（最長5分）。</p>' + lyr +
+        '<p class="err" role="alert">' + esc(KA.err) + '</p>' +
+        '<button class="cta" style="margin-top:10px" data-act="ka-start">' + ICON.play + '録音スタート</button>';
+    }
+    $('#sheet').innerHTML = h;
+  }
+
+  /* ---------- 歌ってみた（一覧・再生・承認・ランキング） ---------- */
+  function singById(id) { for (var i = 0; i < D.sings.length; i++) { if (D.sings[i].id === String(id)) { return D.sings[i]; } } return null; }
+  function singLikeN(g, period) { var x = D.singScore[g.id]; return x ? num(x[period]) : 0; }
+  function singsOf(t) {
+    return D.sings.filter(function (g) { return g.tid === t.id && g.status === 'approved'; })
+      .sort(function (a, b) { return singLikeN(b, 'total') - singLikeN(a, 'total') || b.n - a.n; });
+  }
+  function singRank(period) {
+    return D.sings.filter(function (g) { return g.status === 'approved' && byId(g.tid) && byId(g.tid).status === '公開'; })
+      .sort(function (a, b) { return singLikeN(b, period) - singLikeN(a, period) || singLikeN(b, 'total') - singLikeN(a, 'total') || b.n - a.n; });
+  }
+  function singStatus(g) { return g.status === 'approved' ? '公開' : (g.status === 'rejected' ? '非公開' : '承認待ち'); }
+  function singRow(g, i, o) {
+    o = o || {};
+    var t = byId(g.tid);
+    if (!t) { return ''; }
+    var rk = o.rank ? '<span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' : '';
+    var right = g.status !== 'approved' ? '<span class="status">' + singStatus(g) + '</span>' : '<span class="rv tnum">' + fmt(singLikeN(g, o.period || 'total')) + '♥</span>';
+    return '<li class="row">' + rk + '<button class="rowmain" data-act="sing-open" data-id="' + esc(g.id) + '" aria-label="' + esc(g.title) + 'を聴く">' + cover(t) +
+      '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '・' + esc(t.artist) + '／歌：' + esc(g.sname) + '</small></span></button>' + right +
+      '<button class="pbtn" data-act="sing-open" data-id="' + esc(g.id) + '" aria-label="聴く">' + ICON.play + '</button></li>';
+  }
+  function singSection(t) {
+    if (!SINGOK || t.status !== '公開') { return ''; }
+    var list = singsOf(t);
+    return '<div class="sec"><div class="sec-h"><h3>みんなの歌ってみた（' + list.length + '）</h3></div>' +
+      (list.length ? '<ul class="list">' + list.slice(0, 5).map(function (g) { return singRow(g, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだ歌ってみたがありません。最初に歌ってみませんか。</p>') +
+      '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:8px" data-act="ka-open" data-id="' + esc(t.id) + '">' + ICON.play + 'この曲を歌ってみる</button></div>';
+  }
+  function drawSingPlay(s) {
+    var g = singById(s.id), t = g ? byId(g.tid) : null;
+    if (!g || !t) { closeSheet(); return; }
+    var lk = !!D.singLikes[g.id];
+    $('#sheet').innerHTML = sheetTop('歌ってみた') +
+      '<audio class="pa" controls autoplay preload="metadata" src="' + esc(g.url) + '"></audio>' +
+      '<h2 style="font-size:20px">' + esc(g.title) + '</h2>' +
+      '<p class="sub">歌：' + esc(g.sname) + '／曲：' + esc(t.title) + '・' + esc(t.artist) + (g.status !== 'approved' ? '／' + singStatus(g) : '') + '</p>' +
+      '<div class="acts" style="grid-template-columns:1fr 1fr 1fr"><button class="vbtn line' + (lk ? ' liked' : '') + '" data-act="sing-like" data-id="' + esc(g.id) + '" aria-pressed="' + lk + '"' + (g.status !== 'approved' || g.mine ? ' disabled' : '') + '>' + ICON.heart + singLikeN(g, 'total') + '</button>' +
+      '<button class="vbtn line" data-act="m-detail" data-id="' + esc(t.id) + '">曲を見る</button>' +
+      '<button class="vbtn line" data-act="ka-open" data-id="' + esc(t.id) + '">自分も歌う</button></div>' +
+      (g.mine || D.admin ? '<button class="vbtn line" style="width:100%;min-height:40px;margin-top:6px" data-act="sing-del" data-id="' + esc(g.id) + '">この歌ってみたを削除する</button>' : '');
+  }
+  async function singLike(id) {
+    if (!need('いいねするにはログインしてください')) { return; }
+    var was = !!D.singLikes[id], r;
+    if (was) { r = await sb.from('sing_likes').delete().eq('sing_id', id).eq('user_id', D.me); }
+    else { r = await sb.from('sing_likes').insert({ sing_id: id, user_id: D.me }); }
+    if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '自分の歌ってみたにはいいねできません' : errText(r.error)); return; }
+    await reload();
+    if (ui.sheet && ui.sheet.k === 'singplay') { drawSingPlay(ui.sheet); }
+  }
+  async function reviewSing(id, status) {
+    var r = await sb.rpc('review_sing', { p_sing: id, p_status: status });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast(status === 'approved' ? '歌ってみたを公開しました' : '歌ってみたを却下しました');
+    await reload();
+  }
+  async function deleteSing(id) {
+    var g = singById(id);
+    if (!g || !window.confirm('この歌ってみたを削除しますか？')) { return; }
+    var r = await sb.from('sings').delete().eq('id', id);
+    if (r.error) { toast(errText(r.error)); return; }
+    if (g.path) { sb.storage.from('tracks').remove([g.path]).then(function () {}, function () {}); }
+    toast('削除しました');
+    closeSheet();
+    await reload();
+  }
+  function singReview() {
+    if (!SINGOK) { return ''; }
+    var mineT = {};
+    D.tracks.forEach(function (t) { if (t.mine) { mineT[t.id] = true; } });
+    var pend = D.sings.filter(function (g) { return g.status === 'pending' && (D.admin || mineT[g.tid]) && byId(g.tid); });
+    if (!pend.length) { return ''; }
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>歌ってみたの承認待ち</h3></div><p class="sub">あなたの曲を歌ってくれた録音です。聴いて、公開するか選んでください。</p><ul class="list">' +
+      pend.map(function (g) {
+        var t = byId(g.tid);
+        return '<li class="row"><button class="rowmain" data-act="sing-open" data-id="' + esc(g.id) + '">' + cover(t) + '<span class="rt"><b>' + esc(g.title) + '</b><small>' + esc(t.title) + '／歌：' + esc(g.sname) + '</small></span></button>' +
+          '<button class="vbtn line" style="flex:none;padding:0 12px" data-act="sing-ng" data-id="' + esc(g.id) + '">却下</button>' +
+          '<button class="vbtn gold" style="flex:none;padding:0 14px" data-act="sing-ok" data-id="' + esc(g.id) + '">公開</button></li>';
+      }).join('') + '</ul></section>';
+  }
+  function mySings() {
+    if (!SINGOK) { return ''; }
+    var mine = D.sings.filter(function (g) { return g.mine && byId(g.tid); });
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>歌ってみた</h3></div>' +
+      (mine.length ? '<ul class="list">' + mine.map(function (g) { return singRow(g, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだありません。好きな曲の詳細画面から、歌ってみた録音を投稿できます。</p>') + '</section>';
   }
 
   /* ---------- data loading ---------- */
@@ -1653,7 +1958,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     if (!sb) { return; }
     try {
       var q = [
-        sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at' + (MEDIA ? ',cover_path,video_path,youtube_id' : '') + (MEDIA && SRC ? ',source_path' : '')).order('created_at', { ascending: false }).limit(500),
+        sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at' + (MEDIA ? ',cover_path,video_path,youtube_id' : '') + (MEDIA && SRC ? ',source_path' : '') + (LYR ? ',lyrics' : '')).order('created_at', { ascending: false }).limit(500),
         sb.from('track_scores').select('track_id,d,w,m,y,likes'),
         sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500)
       ];
@@ -1662,6 +1967,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
         q.push(sb.rpc('my_votes_today'));
       }
       var r = await Promise.all(q), i;
+      if (r[0].error && LYR && /lyrics/.test(String(r[0].error.message || ''))) { LYR = false; return load(); }
       if (r[0].error && MEDIA && SRC) { SRC = false; return load(); }
       if (r[0].error && MEDIA) { MEDIA = false; return load(); }
       for (i = 0; i < r.length; i++) { if (r[i].error) { throw r[i].error; } }
@@ -1736,6 +2042,27 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           }
         } catch (z) { /* PVの読み込みに失敗しても、ほかの機能は動かします */ }
       }
+      var sings = [], singScore = {}, singLikes = {};
+      if (SINGOK) {
+        try {
+          var sq = [
+            sb.from('sings').select('id,track_id,singer,title,audio_path,status,created_at,profiles(name)').order('created_at', { ascending: false }).limit(500),
+            sb.from('sing_scores').select('sing_id,total,w')
+          ];
+          if (D.me) { sq.push(sb.from('sing_likes').select('sing_id')); }
+          var sr = await Promise.all(sq);
+          if (sr[0].error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(sr[0].error.message || '') + String(sr[0].error.code || ''))) { SINGOK = false; }
+          } else {
+            sings = (sr[0].data || []).map(function (r) {
+              return { id: String(r.id), tid: String(r.track_id), singer: r.singer, mine: !!D.me && r.singer === D.me, sname: (r.profiles && r.profiles.name) || 'リスナー',
+                title: String(r.title || '歌ってみた'), path: r.audio_path || '', url: audioUrl(r.audio_path), status: r.status, n: Date.parse(r.created_at) || 0 };
+            });
+            if (!sr[1].error) { (sr[1].data || []).forEach(function (x) { singScore[String(x.sing_id)] = { total: num(x.total), w: num(x.w) }; }); }
+            if (D.me && sr[2] && !sr[2].error) { (sr[2].data || []).forEach(function (x) { singLikes[String(x.sing_id)] = true; }); }
+          }
+        } catch (z4) { /* 歌ってみたの読み込みに失敗しても、ほかの機能は動かします */ }
+      }
       var grants = [];
       if (SRC && SRCOK && D.me) {
         try {
@@ -1765,13 +2092,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           }
         } catch (z3) { /* イベントの読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var sig = JSON.stringify([evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var sig = JSON.stringify([sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
+        D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -1787,7 +2114,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       var typing = !!(ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && ae.closest && ae.closest('#view'));
       if (ui.route !== 'submit' && !typing) { render(); } else { $('#pill').textContent = D.me ? 'ログイン中' : 'ログイン・登録'; }
       var ci = $('#c-text'), editing = !!(ae && ae.closest && ae.closest('#sheet') && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName));
-      if (ui.sheet && ui.sheet.k !== 'login' && !(ci && ci.value) && !editing && !$('#sheet video, #sheet iframe')) { drawSheet(); }
+      if (ui.sheet && ui.sheet.k !== 'login' && ui.sheet.k !== 'karaoke' && !(ci && ci.value) && !editing && !$('#sheet video, #sheet iframe, #sheet audio')) { drawSheet(); }
       if (ui.route === 'submit' && D.me && !$('#submit-form')) { render(); }
     }, 40);
   }
@@ -2082,6 +2409,15 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (act === 'pv-del') { deletePv(id); }
     else if (act === 'pv-ok') { reviewPv(id, 'approved'); }
     else if (act === 'pv-ng') { reviewPv(id, 'rejected'); }
+    else if (act === 'ka-open') { kaOpen(id); }
+    else if (act === 'ka-start') { kaStart(); }
+    else if (act === 'ka-stop') { kaStop(); }
+    else if (act === 'ka-retry') { kaRetry(); }
+    else if (act === 'sing-open') { pausePlayback(); openSheet({ k: 'singplay', id: id }); }
+    else if (act === 'sing-like') { singLike(id); }
+    else if (act === 'sing-del') { deleteSing(id); }
+    else if (act === 'sing-ok') { reviewSing(id, 'approved'); }
+    else if (act === 'sing-ng') { reviewSing(id, 'rejected'); }
     else if (act === 'chat-del') { chatDel(id); }
     else if (act === 'qual') { qualVote(id); }
     else if (act === 'qt') { ui.qt = v; render(); }
@@ -2181,7 +2517,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       if (res) { CTX = {}; res.innerHTML = searchBody(); }
     }
   });
-  document.addEventListener('play', function (e) { if (e.target && e.target.tagName === 'VIDEO' && P.playing) { pausePlayback(); } }, true);
+  document.addEventListener('play', function (e) { if (e.target && (e.target.tagName === 'VIDEO' || (e.target.tagName === 'AUDIO' && e.target.closest && e.target.closest('#sheet'))) && P.playing && KA.phase !== 'rec') { pausePlayback(); } }, true);
   document.addEventListener('change', function (e) {
     if (e.target && e.target.id === 'c-entry') { $('#entry-team').hidden = !e.target.checked; }
   });
@@ -2254,15 +2590,40 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       await reload();
       return;
     }
+    if (f.id === 'sing-form') {
+      var sgErr = $('#sg-err'), sgGo = $('#sg-go'), sgT = byId(f.getAttribute('data-id'));
+      if (!sgT || !KA.blob) { return; }
+      if (!need('投稿するにはログインしてください。ログインしたあと、もう一度「歌ってみる」を押すと、録音がそのまま残っています')) { return; }
+      var sgTitle = $('#sg-title').value.trim().slice(0, 40) || '歌ってみた';
+      if (!$('#sg-right').checked) { sgErr.textContent = '確認項目にチェックしてください'; return; }
+      sgGo.disabled = true; sgErr.textContent = '';
+      try {
+        var sgPath = D.me + '/sing-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6) + '.' + KA.ext;
+        var sgUp = await sb.storage.from('tracks').upload(sgPath, KA.blob, { contentType: String(KA.mime || 'audio/webm').split(';')[0] });
+        if (sgUp.error) { throw sgUp.error; }
+        var sgIns = await sb.from('sings').insert({ track_id: sgT.id, singer: D.me, title: sgTitle, audio_path: sgPath, rights_ack: true });
+        if (sgIns.error) { sb.storage.from('tracks').remove([sgPath]).then(function () {}, function () {}); throw sgIns.error; }
+      } catch (sx) {
+        sgGo.disabled = false;
+        sgErr.textContent = /sings|schema cache|does not exist/i.test(String((sx && sx.message) || '')) ? '投稿できませんでした。この機能の準備（schema_karaoke.sql）がまだ終わっていない可能性があります' : '投稿できませんでした。承認待ちが5本以内か、通信を確認してください';
+        return;
+      }
+      toast('歌ってみたを承認に出しました。曲の投稿者が承認すると公開されます');
+      kaCleanup(false);
+      closeSheet();
+      await reload();
+      return;
+    }
     if (f.id === 'media-form') {
       var mt = byId(f.getAttribute('data-id')), me = $('#m-err'), mgo = $('#m-go');
       if (!mt) { return; }
       var mc = $('#m-cover').files[0], mv = $('#m-video').files[0], my = ytId($('#m-yt').value), myRaw = $('#m-yt').value.trim();
       var rmc = !!($('#m-rmcover') && $('#m-rmcover').checked), rmv = !!($('#m-rmpv') && $('#m-rmpv').checked);
+      var lyNew = $('#m-lyr') ? $('#m-lyr').value.trim() : null, lyCh = lyNew !== null && lyNew !== String(mt.lyrics || '').trim();
       var ms = $('#m-src') ? $('#m-src').files[0] : null, rms = !!($('#m-rmsrc') && $('#m-rmsrc').checked);
       var merr = (ms && !/^audio\//.test(ms.type) ? '配布用の音源は、音声ファイルにしてください' : '') || (ms && ms.size > 20 * 1024 * 1024 ? '配布用の音源は20MB以下にしてください' : '') || checkImage(mc) || checkVideo(mv) || (myRaw && !my ? 'YouTubeのURLを確認してください' : '') || (mv && my ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
-      if (!merr && (mc || mv || my || ms) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
-      if (!merr && !mc && !mv && !my && !rmc && !rmv && !ms && !rms) { merr = '変更する内容を選んでください'; }
+      if (!merr && (mc || mv || my || ms || (lyCh && lyNew)) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
+      if (!merr && !mc && !mv && !my && !rmc && !rmv && !ms && !rms && !lyCh) { merr = '変更する内容を選んでください'; }
       if (merr) { me.textContent = merr; return; }
       mgo.disabled = true; me.textContent = '';
       try {
@@ -2284,13 +2645,17 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
           if (sr.error) { throw sr.error; }
           if (mt.srcPath) { sb.storage.from('sources').remove([mt.srcPath]).then(function () {}, function () {}); }
         }
+        if (lyCh) {
+          var lr = await sb.rpc('set_track_lyrics', { p_track: mt.id, p_lyrics: lyNew });
+          if (lr.error) { throw lr.error; }
+        }
         var olds = [];
         if (setC && mt.coverPath) { olds.push(mt.coverPath); }
         if (setV && mt.videoPath) { olds.push(mt.videoPath); }
         if (olds.length) { sb.storage.from('tracks').remove(olds).then(function () {}, function () {}); }
       } catch (ex) {
         mgo.disabled = false;
-        me.textContent = /update_track_media|set_track_source|function|schema cache|Bucket not found/i.test(String((ex && ex.message) || '')) ? 'この機能の準備（schema_media.sql / schema_sources.sql）がまだ終わっていません' : '保存できませんでした。ファイルの形式とサイズを確認してください';
+        me.textContent = /update_track_media|set_track_source|set_track_lyrics|function|schema cache|Bucket not found/i.test(String((ex && ex.message) || '')) ? 'この機能の準備（schema_media.sql / schema_sources.sql / schema_karaoke.sql）がまだ終わっていません' : '保存できませんでした。ファイルの形式とサイズを確認してください';
         return;
       }
       toast('保存しました');
@@ -2343,12 +2708,16 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
         if (cpath) { rowIns.cover_path = cpath; }
         if (vpath) { rowIns.video_path = vpath; }
         if (yid) { rowIns.youtube_id = yid; }
+        var lyIn = LYR && $('#f-lyr') ? $('#f-lyr').value.trim() : '';
+        if (lyIn) { rowIns.lyrics = lyIn.slice(0, 4000); }
         var ins = await sb.from('tracks').insert(rowIns);
         if (ins.error) { throw ins.error; }
       } catch (ex) {
         go.disabled = false;
         var em = String((ex && ex.message) || '');
-        err.textContent = /cover_path|video_path|youtube_id|mime type|not supported/i.test(em)
+        err.textContent = /lyrics/i.test(em)
+          ? '投稿できませんでした。歌詞用の準備（schema_karaoke.sql）がまだ終わっていない可能性があります'
+          : /cover_path|video_path|youtube_id|mime type|not supported/i.test(em)
           ? '投稿できませんでした。アイコン・PV用の準備（schema_media.sql）がまだ終わっていない可能性があります'
           : /null value|not-null|team|check constraint|tracks_genre_check/i.test(em)
           ? '投稿できませんでした。サーバー側の準備（schema_music.sql）がまだ終わっていない可能性があります'
