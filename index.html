@@ -486,7 +486,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
   var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true;
-  var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0 };
+  var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0, fx: 'echo', wet: 0.35, mon: false };
   var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
@@ -1705,6 +1705,11 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
   function kaSupport() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder && (window.AudioContext || window.webkitAudioContext));
   }
+  function kaImpulse(ctx, sec, decay) {
+    var n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(2, n, ctx.sampleRate), c, i, d;
+    for (c = 0; c < 2; c++) { d = b.getChannelData(c); for (i = 0; i < n; i++) { d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, decay); } }
+    return b;
+  }
   function kaMime() {
     var c = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'], i;
     for (i = 0; i < c.length; i++) { if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c[i])) { return c[i]; } }
@@ -1765,9 +1770,30 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
       KA.dest = ctx.createMediaStreamDestination();
       var mic = ctx.createMediaStreamSource(KA.stream), mg = ctx.createGain(), zg = ctx.createGain();
       KA.an = ctx.createAnalyser(); KA.an.fftSize = 512;
-      mic.connect(mg); mg.connect(KA.dest); mic.connect(KA.an);
+      var mix = ctx.createGain(), mon = ctx.createGain();
+      mic.connect(mg); mg.connect(mix); mic.connect(KA.an);
+      mix.connect(KA.dest);
+      mon.gain.value = KA.mon ? 1 : 0; mix.connect(mon); mon.connect(ctx.destination);
+      KA.nodes = [mix, mon];
+      if (KA.fx !== 'off') {
+        var wet = ctx.createGain(); wet.gain.value = KA.wet * (KA.fx === 'echo' ? 1 : 1.3);
+        if (KA.fx === 'echo') {
+          var dl = ctx.createDelay(1), fb = ctx.createGain(), lpf = ctx.createBiquadFilter();
+          dl.delayTime.value = 0.3; fb.gain.value = 0.4; lpf.type = 'lowpass'; lpf.frequency.value = 3200;
+          mic.connect(dl); dl.connect(lpf); lpf.connect(fb); fb.connect(dl); lpf.connect(wet);
+          KA.nodes.push(dl, fb, lpf);
+        } else {
+          var cv = ctx.createConvolver(), bath = KA.fx === 'bath';
+          cv.buffer = kaImpulse(ctx, bath ? 2.8 : 1.6, bath ? 2 : 3);
+          mic.connect(cv);
+          if (bath) { var lp2 = ctx.createBiquadFilter(); lp2.type = 'lowpass'; lp2.frequency.value = 3500; cv.connect(lp2); lp2.connect(wet); KA.nodes.push(lp2); }
+          else { cv.connect(wet); }
+          KA.nodes.push(cv);
+        }
+        wet.connect(mix); KA.nodes.push(wet);
+      }
       zg.gain.value = 0; KA.an.connect(zg); zg.connect(ctx.destination);
-      KA.nodes = [mic, mg, KA.an, zg];
+      KA.nodes = KA.nodes.concat([mic, mg, KA.an, zg]);
       if (P.el) {
         var sn = ctx.createMediaElementSource(P.el), bg = ctx.createGain();
         bg.gain.value = 0.8; sn.connect(bg); bg.connect(ctx.destination); bg.connect(KA.dest);
@@ -1847,7 +1873,13 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     } else if (ph === 'wait') {
       h += '<p class="sub">マイクの許可をお待ちしています…</p>';
     } else {
-      h += '<p class="hint">イヤホンをつけて歌ってください（スピーカーだと、曲の音がマイクに入ってしまいます）。3・2・1のあと、曲が流れて録音が始まります。曲の終わりで、自動で止まります（最長5分）。</p>' + lyr +
+      h += '<div class="sec"><div class="sec-h"><h3>マイクのエフェクト</h3></div><div class="seg" role="group" aria-label="エフェクト">' +
+        [['off', 'なし'], ['echo', 'エコー'], ['hall', 'ホール'], ['bath', 'お風呂']].map(function (x) {
+          return '<button data-act="ka-fx" data-v="' + x[0] + '" aria-pressed="' + (KA.fx === x[0]) + '">' + x[1] + '</button>';
+        }).join('') + '</div>' +
+        (KA.fx !== 'off' ? '<div class="field" style="margin-top:8px"><label for="ka-wet">かかり具合</label><input type="range" id="ka-wet" min="0" max="100" value="' + Math.round(KA.wet * 100) + '" style="width:100%"></div>' : '') +
+        '<label class="check" style="margin-top:6px"><input type="checkbox" id="ka-mon"' + (KA.mon ? ' checked' : '') + '><span>歌いながら、自分の声（エフェクト付き）をイヤホンで聞く<br><small>必ずイヤホンをつけてください。スピーカーだと「キーン」と鳴ります。</small></span></label></div>' +
+        '<p class="hint">イヤホンをつけて歌ってください（スピーカーだと、曲の音がマイクに入ってしまいます）。3・2・1のあと、曲が流れて録音が始まります。曲の終わりで、自動で止まります（最長5分）。</p>' + lyr +
         '<p class="err" role="alert">' + esc(KA.err) + '</p>' +
         '<button class="cta" style="margin-top:10px" data-act="ka-start">' + ICON.play + '録音スタート</button>';
     }
@@ -2412,6 +2444,7 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     else if (act === 'ka-open') { kaOpen(id); }
     else if (act === 'ka-start') { kaStart(); }
     else if (act === 'ka-stop') { kaStop(); }
+    else if (act === 'ka-fx') { KA.fx = v; drawKaraoke(); }
     else if (act === 'ka-retry') { kaRetry(); }
     else if (act === 'sing-open') { pausePlayback(); openSheet({ k: 'singplay', id: id }); }
     else if (act === 'sing-like') { singLike(id); }
@@ -2518,7 +2551,9 @@ a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); colo
     }
   });
   document.addEventListener('play', function (e) { if (e.target && (e.target.tagName === 'VIDEO' || (e.target.tagName === 'AUDIO' && e.target.closest && e.target.closest('#sheet'))) && P.playing && KA.phase !== 'rec') { pausePlayback(); } }, true);
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'ka-wet') { KA.wet = Number(e.target.value) / 100; } });
   document.addEventListener('change', function (e) {
+    if (e.target && e.target.id === 'ka-mon') { KA.mon = !!e.target.checked; }
     if (e.target && e.target.id === 'c-entry') { $('#entry-team').hidden = !e.target.checked; }
   });
 
