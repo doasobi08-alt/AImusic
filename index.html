@@ -141,7 +141,7 @@ a { color: inherit; }
 
 /* segmented controls and chips */
 .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; }
-.seg button { border: 0; background: none; border-radius: 9px; padding: 8px 6px; font-weight: 700; font-size: 14px; color: var(--muted); }
+.seg button { border: 0; background: none; border-radius: 9px; padding: 8px 4px; font-weight: 700; font-size: 13px; white-space: nowrap; color: var(--muted); }
 .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
 .seg button[data-team="red"][aria-pressed="true"] { background: var(--red-fill); color: var(--on-red); }
 .seg button[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); color: var(--on-ice); }
@@ -195,7 +195,8 @@ input[type="file"] { width: 100%; font-size: 13px; color: var(--muted); }
 .mini { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .mini .rowmain { flex: 1; }
 .mini .prog { height: 3px; background: var(--line); border-radius: 3px; flex-basis: 100%; overflow: hidden; }
-.tabs { display: grid; grid-template-columns: repeat(5, 1fr); }
+.tabs { display: grid; grid-template-columns: repeat(6, 1fr); }
+.tab { font-size: 10px !important; }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 6px; text-decoration: none; color: var(--muted); font-size: 11px; font-weight: 700; min-height: 52px; }
 .tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .tab[aria-current="page"] { color: var(--fg); }
@@ -347,6 +348,25 @@ a.rowmain { text-decoration: none; color: inherit; }
 .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .pv { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #000; margin-top: 10px; }
 .thumbrow { display: flex; align-items: center; gap: 12px; }
+/* ranking */
+.rk1 { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; border: 1px solid var(--gold); position: relative;
+  background: radial-gradient(120% 140% at 0% 0%, rgba(255,200,61,0.25), transparent 60%), var(--surface); }
+.rk1 .cover.lg { width: 96px; height: 96px; font-size: 40px; border-radius: 12px; }
+.rk1 .crown { position: absolute; top: -9px; left: 12px; background: var(--gold); color: var(--on-gold); font-family: var(--font-display); font-size: 13px; padding: 1px 10px; border-radius: 99px; }
+.rk1b { display: flex; flex-direction: column; min-width: 0; }
+.rk1b b { font-size: 17px; line-height: 1.3; word-break: break-word; }
+.rk1b small { color: var(--muted); font-size: 12px; }
+.rk1b span { color: var(--gold-ink); font-weight: 700; margin-top: 2px; }
+li.cut { list-style: none; text-align: center; font-size: 11px; font-weight: 700; color: var(--gold-ink); border-top: 2px dashed var(--gold); padding-top: 4px; margin: 4px 0; }
+a.segl { display: block; text-align: center; text-decoration: none; border-radius: 9px; padding: 8px 4px; font-weight: 700; font-size: 13px; color: var(--muted); white-space: nowrap; }
+a.segl[aria-pressed="true"] { background: var(--surface-2); color: var(--fg); }
+a.segl[data-team="red"][aria-pressed="true"] { background: var(--red-fill); color: var(--on-red); }
+a.segl[data-team="ice"][aria-pressed="true"] { background: var(--ice-fill); color: var(--on-ice); }
+.chatlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.msg { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px 14px 14px 4px; padding: 8px 34px 8px 12px; max-width: 92%; word-break: break-word; }
+.msg.me { align-self: flex-end; border-radius: 14px 14px 4px 14px; background: var(--surface-2); }
+.msg small { display: block; color: var(--muted); font-size: 11px; }
+.mdel { position: absolute; top: 4px; right: 4px; width: 28px; height: 28px; border: 0; background: none; color: var(--muted); font-size: 16px; }
 </style>
 
 </head>
@@ -381,6 +401,7 @@ a.rowmain { text-decoration: none; color: inherit; }
   var TABS = [
     ['home', 'ホーム', '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>'],
     ['search', '検索', '<circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/>'],
+    ['ranking', 'ランキング', '<path d="M7 20V10M12 20V4M17 20v-7"/>'],
     ['library', 'ライブラリ', '<path d="M5 4v16M10 4v16M15 5l4 15"/>'],
     ['event', '紅白', '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3"/>'],
     ['my', 'マイページ', '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>']
@@ -450,11 +471,12 @@ a.rowmain { text-decoration: none; color: inherit; }
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
   };
-  var ui = { pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
+  var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
-  var MEDIA = true, PVOK = true;
+  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true;
+  var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
 
   function num(x) { return typeof x === 'number' && isFinite(x) && x > 0 ? Math.floor(x) : 0; }
@@ -469,7 +491,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       title: title, artist: String(r.artist || '名無し'), team: r.team === 'red' ? 'red' : (r.team === 'ice' ? 'ice' : null),
       genre: GENRES.indexOf(r.genre) >= 0 ? r.genre : 'その他', tool: String(r.tool || 'その他'),
       status: r.status === 'approved' ? '公開' : (r.status === 'rejected' ? '非公開' : '審査中'),
-      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
+      url: audioUrl(r.audio_path), cover: audioUrl(r.cover_path), coverPath: r.cover_path || '', video: audioUrl(r.video_path), videoPath: r.video_path || '', yt: /^[A-Za-z0-9_-]{11}$/.test(r.youtube_id || '') ? r.youtube_id : '', srcPath: r.source_path || '', hue: hue, bpm: 90 + (hue % 40), mode: hue % 2 ? 'minor' : 'major'
     };
   }
   function byId(id) {
@@ -479,6 +501,7 @@ a.rowmain { text-decoration: none; color: inherit; }
   function votesOf(t, period) { var s = D.scores[t.id]; return s ? num(s[period]) : 0; }
   function likesOf(t) { var s = D.scores[t.id]; return s ? num(s.likes) : 0; }
   function playsOf(t) { var p = D.plays[t.id]; return p ? num(p.total) : 0; }
+  function playsIn(t, per) { var p = D.plays[t.id]; return p ? num(p[per]) : 0; }
   function pop(t) { var p = D.plays[t.id]; return (p ? num(p.w) * 2 + num(p.total) : 0) + likesOf(t) * 3 + votesOf(t, 'y') * 2; }
   function pvLikeN(p, period) { var x = D.pvScore[p.id]; return x ? num(x[period]) : 0; }
   function pvById(id) { for (var i = 0; i < D.pvs.length; i++) { if (D.pvs[i].id === String(id)) { return D.pvs[i]; } } return null; }
@@ -796,14 +819,24 @@ a.rowmain { text-decoration: none; color: inherit; }
   function backBtn() { return '<button class="backbtn" data-act="back" aria-label="戻る">' + ICON.back + '戻る</button>'; }
 
   /* ---------- event helpers (紅白は、イベントとして独立) ---------- */
+  function phase() { return D.evt ? D.evt.phase : null; }
+  function compete() {
+    var p = phase();
+    return (p === 'main' || p === 'closed') ? teamed().filter(function (t) { return !!D.fin[t.id]; }) : teamed();
+  }
+  function qualN(t) { return num(D.qual[t.id]); }
+  function qualList(team) {
+    return teamed().filter(function (t) { return t.team === team; })
+      .sort(function (a, b) { return qualN(b) - qualN(a) || playsOf(b) - playsOf(a) || a.n - b.n; });
+  }
   function teamed() { return visible().filter(function (t) { return !!t.team; }); }
   function tally() {
     var r = 0, w = 0;
-    teamed().forEach(function (t) { var v = votesOf(t, 'y'); if (t.team === 'red') { r += v; } else { w += v; } });
+    compete().forEach(function (t) { var v = votesOf(t, 'y'); if (t.team === 'red') { r += v; } else { w += v; } });
     return { r: r, w: w };
   }
   function topOf(team) {
-    return teamed().filter(function (t) { return t.team === team; })
+    return compete().filter(function (t) { return t.team === team; })
       .sort(function (a, b) { return votesOf(b, 'w') - votesOf(a, 'w'); }).slice(0, 3);
   }
   function pairs() {
@@ -814,7 +847,7 @@ a.rowmain { text-decoration: none; color: inherit; }
   function eventBanner() {
     var tl = tally();
     return '<a class="evbanner" href="#event"><span class="k">開催中のイベント</span><b>AI<i>紅</i><i>白</i>歌合戦</b>' +
-      '<small>年末決戦まで あと <span class="tnum" data-cd="year">-</span>　紅 ' + full(tl.r) + '票 ／ 白 ' + full(tl.w) + '票</small></a>';
+      '<small>' + (phase() === 'entry' ? 'エントリー受付中。曲を投稿して出場をめざそう' : phase() === 'qualifying' ? '予選投票中！ あなたの1票で出場者が決まります' : '年末決戦まで あと <span class="tnum" data-cd="year">-</span>　紅 ' + full(tl.r) + '票 ／ 白 ' + full(tl.w) + '票') + '</small></a>';
   }
 
   /* ---------- views ---------- */
@@ -834,7 +867,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     var h = head + '<section class="sec" style="margin-top:14px">' + countdownCard() + '</section>';
     if (recent.length) { h += '<section class="sec"><div class="sec-h"><h3>最近聴いた曲</h3></div>' + shelf(recent, 'recent') + '</section>'; }
     h += '<section class="sec"><div class="sec-h"><h3>新着</h3></div>' + shelf(fresh, 'fresh') + '</section>';
-    h += '<section class="sec"><div class="sec-h"><h3>人気の曲</h3></div>' + listHtml(hot, 'hot', { rank: true, right: playsRight }) + '</section>';
+    h += '<section class="sec"><div class="sec-h"><h3>人気の曲</h3><a href="#ranking">ランキング</a></div>' + listHtml(hot, 'hot', { rank: true, right: playsRight }) + '</section>';
     h += '<section class="sec"><div class="sec-h"><h3>ジャンル</h3><a href="#search">すべて見る</a></div><div class="chips">' +
       GENRES.map(function (g) { return '<button class="chip" data-act="sg-go" data-v="' + esc(g) + '">' + esc(g) + '</button>'; }).join('') + '</div></section>';
     if (PVOK) {
@@ -844,6 +877,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     }
     if (ars.length) { h += '<section class="sec"><div class="sec-h"><h3>注目のアーティスト</h3></div><div class="shelf">' + ars.map(artistCard).join('') + '</div></section>'; }
     h += '<section class="sec">' + eventBanner() + '</section>';
+    h += '<section class="sec"><a class="ctdn" href="#chat" style="text-decoration:none;color:inherit"><span class="n" style="font-size:22px">CHAT</span><span class="t"><b>みんなのチャット</b><small>ラウンジ・紅組と白組の応援ルーム</small></span></a></section>';
     return h;
   }
 
@@ -856,6 +890,148 @@ a.rowmain { text-decoration: none; color: inherit; }
     return '<li class="row">' + rk + '<button class="rowmain" data-act="pv-open" data-id="' + esc(p.id) + '" aria-label="' + esc(p.title) + 'のPVを見る">' + cover(t) +
       '<span class="rt"><b>' + esc(p.title) + '</b><small>' + esc(t.title) + '・' + esc(t.artist) + '／PV：' + esc(p.cname) + '</small></span></button>' + right +
       '<button class="pbtn" data-act="pv-open" data-id="' + esc(p.id) + '" aria-label="PVを見る">' + ICON.play + '</button></li>';
+  }
+  var RK_PERIODS = [['d', '日間'], ['w', '週間'], ['m', '月間'], ['total', '総合']];
+  function rkPeriods() {
+    var list = ui.rk === 'pv' ? [['w', '週間'], ['total', '総合']] : (PERIODS_OK ? RK_PERIODS : [['w', '週間'], ['total', '総合']]);
+    if (!list.some(function (x) { return x[0] === ui.rp; })) { ui.rp = 'w'; }
+    return list;
+  }
+  function plabel() { var l = RK_PERIODS.filter(function (x) { return x[0] === ui.rp; })[0]; return l ? l[1] : ''; }
+  function rkSongs() {
+    var vs = visible().filter(function (t) { return ui.rg === 'all' || t.genre === ui.rg; });
+    var key = ui.rs === 'likes' ? function (t) { return likesOf(t); } : function (t) { return playsIn(t, ui.rp); };
+    return vs.sort(function (a, b) { return key(b) - key(a) || likesOf(b) - likesOf(a) || playsOf(b) - playsOf(a) || b.n - a.n; });
+  }
+  function rkHero(t) {
+    var val = ui.rs === 'likes' ? fmt(likesOf(t)) + '♥' : fmt(playsIn(t, ui.rp)) + '回';
+    return '<div class="rk1"><span class="crown">1位</span>' + cover(t, 'lg') + '<div class="rk1b"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + esc(t.genre) + '</small><span class="tnum">' + val + '</span></div>' +
+      '<button class="pbtn" style="width:48px;height:48px;background:var(--gold);color:var(--on-gold);border:0" data-act="play" data-id="' + esc(t.id) + '" data-ctx="rk" aria-label="' + esc(t.title) + 'を再生">' + ICON.play + '</button></div>';
+  }
+  function viewRanking() {
+    if (!PVOK && ui.rk === 'pv') { ui.rk = 'song'; }
+    var kinds = [['song', '曲'], ['artist', 'アーティスト'], ['genre', 'ジャンル']].concat(PVOK ? [['pv', 'PV']] : []);
+    var h = '<h2 class="ttl">ランキング</h2><div class="stack">' +
+      '<div class="seg" role="group" aria-label="ランキングの種類">' + kinds.map(function (x) {
+        return '<button data-act="rk" data-v="' + x[0] + '" aria-pressed="' + (ui.rk === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>';
+    var per = rkPeriods();
+    if (!(ui.rk === 'song' && ui.rs === 'likes')) {
+      h += '<div class="seg" role="group" aria-label="期間">' + per.map(function (x) {
+        return '<button data-act="rp" data-v="' + x[0] + '" aria-pressed="' + (ui.rp === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>';
+    }
+    if (ui.rk === 'song') {
+      var list = rkSongs();
+      h += '<div class="seg" role="group" aria-label="順位の基準">' + [['plays', '再生数'], ['likes', 'お気に入り']].map(function (x) {
+        return '<button data-act="rs" data-v="' + x[0] + '" aria-pressed="' + (ui.rs === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>' +
+        '<div class="chips" role="group" aria-label="ジャンル">' + ['all'].concat(GENRES).map(function (g) {
+          return '<button class="chip" data-act="rg" data-v="' + esc(g) + '" aria-pressed="' + (ui.rg === g) + '">' + (g === 'all' ? 'すべて' : esc(g)) + '</button>';
+        }).join('') + '</div>';
+      if (!list.length) { h += '<p class="sub">この条件の曲はまだありません。</p>'; }
+      else {
+        var shown = list.slice(0, 50);
+        CTX.rk = shown.map(function (t) { return t.id; });
+        h += rkHero(shown[0]);
+        if (shown.length > 1) {
+          h += '<ul class="list">' + shown.slice(1).map(function (t, i) {
+            return row(t, 'rk', i + 1, { rank: true, right: function (x) { return ui.rs === 'likes' ? fmt(likesOf(x)) + '♥' : fmt(playsIn(x, ui.rp)) + '回'; } })
+              ;
+          }).join('') + '</ul>';
+        }
+        h += '<p class="hint">ログインして聴かれた再生を数えています。同じ人が同じ曲を30分以内に聴き直した分は、1回です。</p>';
+      }
+    } else if (ui.rk === 'artist') {
+      var ars = artists().map(function (a) {
+        a.pl = a.ts.reduce(function (n, t) { return n + (ui.rp === 'total' ? playsOf(t) : playsIn(t, ui.rp)); }, 0);
+        return a;
+      }).sort(function (a, b) { return b.pl - a.pl || num(D.followers[b.name]) - num(D.followers[a.name]) || b.pop - a.pop; }).slice(0, 50);
+      h += ars.length ? '<ul class="list">' + ars.map(function (a, i) {
+        return '<li class="row"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span><a class="rowmain" href="' + ahref(a.name) + '"><span class="cover round md" style="--h:' + hueOf(a.name) + '" aria-hidden="true">' + esc(Array.from(a.name)[0]) + '</span>' +
+          '<span class="rt"><b>' + esc(a.name) + '</b><small>' + a.ts.length + '曲・フォロワー ' + fmt(num(D.followers[a.name])) + '人</small></span></a><span class="rv tnum">' + fmt(a.pl) + '回</span></li>';
+      }).join('') + '</ul>' : '<p class="sub">まだ曲がありません。</p>';
+    } else if (ui.rk === 'genre') {
+      var gs = GENRES.map(function (g) {
+        var ts = visible().filter(function (t) { return t.genre === g; });
+        return { g: g, n: ts.length, pl: ts.reduce(function (n, t) { return n + (ui.rp === 'total' ? playsOf(t) : playsIn(t, ui.rp)); }, 0) };
+      }).filter(function (x) { return x.n > 0; }).sort(function (a, b) { return b.pl - a.pl || b.n - a.n; });
+      h += gs.length ? '<ul class="list">' + gs.map(function (x, i) {
+        return '<li class="row"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span><button class="rowmain" data-act="sg-go" data-v="' + esc(x.g) + '"><span class="cover md" style="--h:' + hueOf(x.g) + '" aria-hidden="true">' + esc(Array.from(x.g)[0]) + '</span>' +
+          '<span class="rt"><b>' + esc(x.g) + '</b><small>' + x.n + '曲</small></span></button><span class="rv tnum">' + fmt(x.pl) + '回</span></li>';
+      }).join('') + '</ul><p class="hint">ジャンルを押すと、そのジャンルの曲を探せます。</p>' : '<p class="sub">まだ曲がありません。</p>';
+    } else {
+      var pl = pvRank(ui.rp);
+      h += pl.length ? '<ul class="list">' + pl.map(function (p, i) { return pvRow(p, i, { rank: true, period: ui.rp }); }).join('') + '</ul>'
+        : empty('まだ公開されたPVがありません。好きな曲の詳細画面から「PVを投稿する」を押してみましょう。', '<a class="cta" href="#search">曲を探す</a>');
+    }
+    return h + '</div>';
+  }
+  var ROOMS = [['lounge', 'みんなのラウンジ', ''], ['red', '紅組の応援', 'red'], ['ice', '白組の応援', 'ice']];
+  function ago(ms) {
+    var m = Math.floor((Date.now() - ms) / 60000);
+    if (m < 1) { return 'たった今'; }
+    if (m < 60) { return m + '分前'; }
+    var d = new Date(ms);
+    return m < 1440 ? Math.floor(m / 60) + '時間前' : (d.getMonth() + 1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  function chatListHtml() {
+    if (!CH.ok) { return empty('この機能の準備（schema_chat.sql）がまだ終わっていません。'); }
+    if (!CH.loaded) { return '<p class="sub">読み込み中…</p>'; }
+    if (!CH.msgs.length) { return '<p class="sub">まだ発言がありません。最初のひとことをどうぞ。</p>'; }
+    return '<ul class="chatlist">' + CH.msgs.map(function (m) {
+      var mine = !!D.me && m.uid === D.me;
+      return '<li class="msg' + (mine ? ' me' : '') + '"><small>' + esc(mine ? 'あなた' : m.name) + '・' + ago(m.n) + '</small><span>' + esc(m.body) + '</span>' +
+        (mine || D.admin ? '<button class="mdel" data-act="chat-del" data-id="' + esc(m.id) + '" aria-label="この発言を削除">×</button>' : '') + '</li>';
+    }).join('') + '</ul>';
+  }
+  function viewChat() {
+    var r = ROOMS.filter(function (x) { return x[0] === ui.arg; })[0];
+    if (r) { CH.room = r[0]; }
+    var cur = ROOMS.filter(function (x) { return x[0] === CH.room; })[0];
+    return '<h2 class="ttl">チャット</h2><div class="stack"><div class="seg" role="group" aria-label="ルーム">' + ROOMS.map(function (x) {
+      return '<a class="segl" href="#chat/' + x[0] + '" data-team="' + x[2] + '" aria-pressed="' + (CH.room === x[0]) + '">' + x[1] + '</a>';
+    }).join('') + '</div>' +
+      '<p class="sub">' + (CH.room === 'lounge' ? 'AI音楽の話を、気軽にどうぞ。' : (CH.room === 'red' ? '紅組を応援するルームです。' : '白組を応援するルームです。')) + 'この画面は、数秒ごとに自動で更新されます。' + esc(cur ? '' : '') + '</p>' +
+      (D.me ? '<form class="cform" id="chat-form"><input type="text" id="chat-text" maxlength="200" autocomplete="off" placeholder="メッセージを書く（200字まで）" aria-label="メッセージ"><button class="vbtn gold" style="flex:none;padding:0 16px" type="submit">送信</button></form>'
+        : '<button class="vbtn line" style="min-height:44px" data-act="login-open">ログインして参加する</button>') +
+      '<div id="chat-list">' + chatListHtml() + '</div>' +
+      '<p class="hint">発言は、全員に表示されます。個人情報は書かないでください。<a href="terms.html#terms">利用規約</a>に反する発言は、運営が削除します。</p></div>';
+  }
+  async function chatLoad() {
+    if (!sb || ui.route !== 'chat') { return; }
+    var room = CH.room;
+    var r = await sb.from('chat_messages').select('id,room,user_id,body,created_at,profiles(name)').eq('room', room).order('created_at', { ascending: false }).limit(100);
+    if (room !== CH.room || ui.route !== 'chat') { return; }
+    if (r.error) {
+      if (/schema cache|does not exist|PGRST20|42P01/.test(String(r.error.message || '') + String(r.error.code || ''))) { CH.ok = false; }
+    } else {
+      CH.ok = true;
+      CH.msgs = (r.data || []).map(function (m) {
+        return { id: String(m.id), uid: m.user_id, name: (m.profiles && m.profiles.name) || 'リスナー', body: String(m.body || '').slice(0, 200), n: Date.parse(m.created_at) || 0 };
+      }).sort(function (a, b) { return b.n - a.n; });
+      CH.loaded = true;
+    }
+    var el = $('#chat-list');
+    if (el) { el.innerHTML = chatListHtml(); }
+  }
+  function chatStart() {
+    clearInterval(CH.timer); CH.timer = null;
+    if (ui.route !== 'chat') { return; }
+    CH.loaded = false; CH.msgs = [];
+    chatLoad();
+    CH.timer = setInterval(function () { if (!document.hidden) { chatLoad(); } }, 4000);
+  }
+  async function chatSend(text) {
+    var r = await sb.from('chat_messages').insert({ room: CH.room, user_id: D.me, body: text.slice(0, 200) });
+    if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '送信が早すぎます。少し待ってから送ってください' : errText(r.error)); return false; }
+    await chatLoad();
+    return true;
+  }
+  async function chatDel(id) {
+    var r = await sb.from('chat_messages').delete().eq('id', id);
+    if (r.error) { toast(errText(r.error)); return; }
+    await chatLoad();
   }
   function viewPv() {
     if (!PVOK) { return '<h2 class="ttl">みんなのPV</h2>' + empty('この機能の準備（schema_pv.sql）がまだ終わっていません。'); }
@@ -943,20 +1119,77 @@ a.rowmain { text-decoration: none; color: inherit; }
   }
 
   /* 紅白歌合戦（イベント） */
+  function evTabs() {
+    var p = phase();
+    if (p === 'entry') { return [['entrants', 'エントリー曲']]; }
+    if (p === 'qualifying') { return [['qual', '予選投票'], ['entrants', 'エントリー曲']]; }
+    if (p === 'main') { return [['battle', '対決'], ['ranking', 'ランキング'], ['finalists', '出場者'], ['gp', '年間GP']]; }
+    if (p === 'closed') { return [['gp', '年間GP'], ['ranking', 'ランキング'], ['finalists', '出場者']]; }
+    return [['battle', '対決'], ['ranking', 'ランキング'], ['gp', '年間GP']];
+  }
+  function qualEndText() {
+    if (!D.evt || !D.evt.qualEnd) { return ''; }
+    var d = new Date(D.evt.qualEnd);
+    return isNaN(d) ? '' : '予選の締め切り：' + (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
   function viewEvent() {
+    var p = phase(), slots = D.evt ? D.evt.slots : 10;
     var tl = tally(), total = tl.r + tl.w, pr = total ? (tl.r / total) * 100 : 50;
     var lead = tl.r === tl.w ? '現在は同点です' : (tl.r > tl.w ? '現在：紅組リード +' : '現在：白組リード +') + full(Math.abs(tl.r - tl.w)) + '票';
-    var hero = '<section class="hero"><p class="eyebrow">年末決戦まで あと <b class="tnum" data-cd="year">-</b></p>' +
-      '<h2>AI紅白歌合戦</h2><p class="sub" style="margin:0 0 12px">AI MUSICで開かれる、年末のイベントです。曲を投稿するときに「エントリー」すると、紅組か白組で出場できます。</p>' +
-      '<div class="vs"><div class="side red"><span class="k">紅組</span><b class="tnum">' + full(tl.r) + '</b><small>票</small></div><div class="vsmark">VS</div>' +
-      '<div class="side ice"><span class="k">白組</span><b class="tnum">' + full(tl.w) + '</b><small>票</small></div></div>' +
-      '<div class="bar" role="img" aria-label="紅組 ' + Math.round(pr) + '%、白組 ' + Math.round(100 - pr) + '%"><i style="width:' + pr.toFixed(1) + '%"></i></div>' +
-      '<p class="lead">' + lead + '</p><a class="cta" href="#submit">この曲で紅白にエントリーする</a></section>';
-    var tabs = [['battle', '対決'], ['ranking', 'ランキング'], ['gp', '年間GP']];
-    var body = ui.ev === 'ranking' ? evRanking() : ui.ev === 'gp' ? gpBody() : evBattle();
-    return '<div class="stack">' + hero + '<div class="seg" role="group" aria-label="イベントの内容">' + tabs.map(function (x) {
+    var nr = teamed().filter(function (t) { return t.team === 'red'; }).length, nw = teamed().filter(function (t) { return t.team === 'ice'; }).length;
+    var tag = { entry: 'エントリー受付中', qualifying: '予選投票中', main: '本番（出場者が決定）', closed: '結果発表' }[p] || '';
+    var blurb = {
+      entry: '曲を投稿するときに「紅白にエントリー」を選ぶと、予選に出られます。出場者は、予選のユーザー投票で決まります。',
+      qualifying: '紅組・白組それぞれ、予選の得票が多い上位' + slots + '曲が、本番の出場者になります。気に入ったエントリー曲を応援しましょう。',
+      main: '予選を勝ち抜いた出場者による本番です。1日' + DAILY + '票で、応援する曲に投票できます。',
+      closed: '今年のイベントは終了しました。'
+    }[p] || 'AI MUSICで開かれる、年末のイベントです。曲を投稿するときに「エントリー」すると、紅組か白組で出場できます。';
+    var showTally = !p || p === 'main' || p === 'closed';
+    var hero = '<section class="hero"><p class="eyebrow">' + (tag ? '<b>' + tag + '</b>　' : '') + '年末決戦まで あと <b class="tnum" data-cd="year">-</b></p>' +
+      '<h2>' + esc((D.evt && D.evt.name) || 'AI紅白歌合戦') + '</h2><p class="sub" style="margin:0 0 12px">' + blurb + '</p>' +
+      (p === 'qualifying' ? '<p class="sub" style="margin:0 0 10px"><b style="color:var(--fg)">' + (D.me ? 'あなたの予選の票：残り ' + (10 - Object.keys(D.myQual).length) + ' / 10' : 'ログインすると、10曲まで応援できます') + '</b>' + (qualEndText() ? '　' + qualEndText() : '') + '</p>' : '') +
+      '<div class="vs"><div class="side red"><span class="k">紅組</span><b class="tnum">' + (showTally ? full(tl.r) : nr) + '</b><small>' + (showTally ? '票' : '曲がエントリー') + '</small></div><div class="vsmark">VS</div>' +
+      '<div class="side ice"><span class="k">白組</span><b class="tnum">' + (showTally ? full(tl.w) : nw) + '</b><small>' + (showTally ? '票' : '曲がエントリー') + '</small></div></div>' +
+      (showTally ? '<div class="bar" role="img" aria-label="紅組 ' + Math.round(pr) + '%、白組 ' + Math.round(100 - pr) + '%"><i style="width:' + pr.toFixed(1) + '%"></i></div><p class="lead">' + lead + '</p>' : '<div style="height:12px"></div>') +
+      (!p || p === 'entry' || p === 'qualifying' ? '<a class="cta" href="#submit">この曲で紅白にエントリーする</a>' : '') + '</section>';
+    var tabs = evTabs();
+    if (ui.evSeen !== p) { ui.evSeen = p; ui.ev = tabs[0][0]; }
+    if (!tabs.some(function (x) { return x[0] === ui.ev; })) { ui.ev = tabs[0][0]; }
+    var body = ui.ev === 'ranking' ? evRanking() : ui.ev === 'gp' ? gpBody() : ui.ev === 'qual' ? evQual() : ui.ev === 'entrants' ? evEntrants() : ui.ev === 'finalists' ? evFinalists() : evBattle();
+    return '<div class="stack">' + hero + '<p class="hint" style="text-align:center">応援ルーム：<a href="#chat/red">紅組</a>・<a href="#chat/ice">白組</a></p>' + (tabs.length > 1 ? '<div class="seg" role="group" aria-label="イベントの内容">' + tabs.map(function (x) {
       return '<button data-act="ev-tab" data-v="' + x[0] + '" aria-pressed="' + (ui.ev === x[0]) + '">' + x[1] + '</button>';
-    }).join('') + '</div>' + body + '</div>';
+    }).join('') + '</div>' : '') + body + '</div>';
+  }
+  function evEntrants() {
+    var list = teamed().slice().sort(function (a, b) { return b.n - a.n; });
+    return list.length ? listHtml(list, 'entrants', { right: playsRight }) : empty('まだエントリーした曲がありません。最初のエントリーをしてみませんか。', '<a class="cta" href="#submit">曲を投稿する</a>');
+  }
+  function evFinalists() {
+    var all = teamed().filter(function (t) { return !!D.fin[t.id]; });
+    if (!all.length) { return '<p class="sub">出場者はまだ決まっていません。</p>'; }
+    return [['red', '紅組'], ['ice', '白組']].map(function (g) {
+      var ts = all.filter(function (t) { return t.team === g[0]; }).sort(function (a, b) { return qualN(b) - qualN(a); });
+      return '<div class="sec" style="margin-top:4px"><div class="sec-h"><h3>' + g[1] + '（' + ts.length + '曲）</h3></div>' + (ts.length ? listHtml(ts, 'fin' + g[0], { right: function (t) { return fmt(qualN(t)) + '票'; } }) : '<p class="sub">なし</p>') + '</div>';
+    }).join('');
+  }
+  function evQual() {
+    var slots = D.evt ? D.evt.slots : 10, team = ui.qt, list = qualList(team);
+    var left10 = 10 - Object.keys(D.myQual).length;
+    var h = '<div class="seg" role="group" aria-label="陣営">' + [['red', '紅組'], ['ice', '白組']].map(function (x) {
+      return '<button data-act="qt" data-v="' + x[0] + '" data-team="' + x[0] + '" aria-pressed="' + (team === x[0]) + '">' + x[1] + '</button>';
+    }).join('') + '</div><p class="sub">上位' + slots + '曲が本番に出場します。同票の場合は、再生数が多い曲が上になります。1人10曲まで応援できます（残り ' + (D.me ? left10 : 10) + '）。</p>';
+    if (!list.length) { return h + empty('この組のエントリー曲はまだありません。'); }
+    CTX.qual = list.map(function (t) { return t.id; });
+    h += '<ul class="list">';
+    list.forEach(function (t, i) {
+      var on = !!D.myQual[t.id];
+      h += '<li class="row' + (P.t && P.t.id === t.id ? ' now' : '') + '" data-tid="' + esc(t.id) + '"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span>' +
+        '<button class="rowmain" data-act="play" data-id="' + esc(t.id) + '" data-ctx="qual" aria-label="' + esc(t.title) + 'を再生">' + cover(t) +
+        '<span class="rt"><b>' + esc(t.title) + '</b><small>' + esc(t.artist) + '・' + fmt(qualN(t)) + '票</small></span></button>' +
+        '<button class="vbtn ' + (on ? 'line' : 'gold') + '" style="flex:none;padding:0 12px;min-height:36px" data-act="qual" data-id="' + esc(t.id) + '" aria-pressed="' + on + '">' + (on ? '応援済み' : '応援') + '</button></li>';
+      if (i === slots - 1 && i < list.length - 1) { h += '<li class="cut" aria-hidden="true">ここまでが出場圏内（上位' + slots + '曲）</li>'; }
+    });
+    return h + '</ul>';
   }
   function evBattle() {
     var ps = pairs();
@@ -966,7 +1199,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       (ps.length ? ps.map(function (m) { return matchCard(m[0], m[1]); }).join('') : empty('紅組と白組の曲がそろうと、対戦カードが表示されます。'));
   }
   function evRanking() {
-    var list = teamed().filter(function (t) {
+    var list = compete().filter(function (t) {
       return (ui.team === 'all' || t.team === ui.team) && (ui.genre === 'all' || t.genre === ui.genre);
     }).sort(function (a, b) { return votesOf(b, ui.period) - votesOf(a, ui.period); });
     var teams = [['all', '総合', ''], ['red', '紅組', 'red'], ['ice', '白組', 'ice']];
@@ -991,7 +1224,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     return (D.reveal ? '' : '<p class="hint">運営者にだけ表示しています。まだ全員には公開されていません。</p>') +
       '<ul class="list">' + D.final.map(function (f) {
         var t = byId(f.track_id);
-        if (!t || !t.team) { return ''; }
+        if (!t || !t.team || ((phase() === 'main' || phase() === 'closed') && !D.fin[t.id])) { return ''; }
         var rk = num(f.rank);
         return '<li class="row" data-tid="' + esc(t.id) + '"><span class="rank ' + (rk <= 3 ? 'm' + rk : '') + '">' + rk + '</span>' +
           '<button class="rowmain" data-act="play" data-id="' + esc(t.id) + '">' + cover(t) +
@@ -1075,12 +1308,40 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="box"><small>表示名</small><b style="font-size:16px">' + esc(D.name || '未設定') + '</b></div>' +
       '<div class="box"><small>今日の紅白の残り投票</small><b class="tnum">' + left() + ' / ' + DAILY + '</b></div></div>' +
       '<form class="cform" id="name-form"><input type="text" id="n-text" maxlength="20" placeholder="表示名を変更" aria-label="表示名"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">保存</button></form>' +
-      review + pvReview() + judgeSec + adminSec + myPvs() +
+      review + grantReview() + pvReview() + eventAdmin() + judgeSec + adminSec + myPvs() +
       '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>アカウント</h3></div><div class="stack">' +
       '<button class="vbtn line" style="min-height:44px" data-act="chpw">パスワードを変更する</button>' +
       '<button class="vbtn line" style="min-height:44px" data-act="logout">ログアウト</button></div></section></div>';
   }
 
+  function eventAdmin() {
+    if (!D.admin || !D.evt) { return ''; }
+    var labels = { entry: 'エントリー受付', qualifying: '予選投票', main: '本番', closed: '終了' }, p = D.evt.phase;
+    var endv = '';
+    if (D.evt.qualEnd) { var d = new Date(D.evt.qualEnd); if (!isNaN(d)) { endv = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); } }
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>紅白イベントの進行（運営用）</h3></div>' +
+      '<p class="sub">現在の段階：<b style="color:var(--fg)">' + labels[p] + '</b>。エントリー ' + teamed().length + '曲。予選の票が集まったら「出場者を決定」を押すと、各組の上位が出場者になり、本番が始まります。</p>' +
+      '<div class="seg" role="group" aria-label="段階">' + ['entry', 'qualifying', 'main', 'closed'].map(function (x) {
+        return '<button data-act="ev-phase" data-v="' + x + '" aria-pressed="' + (p === x) + '">' + labels[x] + '</button>';
+      }).join('') + '</div>' +
+      '<div class="meta" style="margin-top:8px"><div class="field box"><label for="ev-slots">各組の出場枠</label><input type="text" id="ev-slots" inputmode="numeric" value="' + D.evt.slots + '"></div>' +
+      '<div class="field box"><label for="ev-end">予選の締め切り（表示用）</label><input type="datetime-local" id="ev-end" value="' + esc(endv) + '" style="width:100%;min-height:44px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 8px;color:var(--fg)"></div></div>' +
+      '<p class="hint">段階のボタンを押すと、上の出場枠と締め切りも一緒に保存されます。</p>' +
+      (p === 'qualifying' ? '<button class="vbtn gold" style="min-height:44px;width:100%;margin-top:8px" data-act="ev-final">予選を締め切って、出場者を決定する</button>' : '') + '</section>';
+  }
+  function grantReview() {
+    if (!SRC || !SRCOK) { return ''; }
+    var items = D.grants.filter(function (g) { return !g.mine && byId(g.tid) && g.status !== 'rejected'; });
+    if (!items.length) { return ''; }
+    return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>音源のリクエスト</h3></div><p class="sub">あなたの曲の音源を、PV制作用に欲しい人です。目的を読んで、許可する人を選んでください。許可は、あとから取り消せます。</p><ul class="list">' +
+      items.map(function (g) {
+        var t = byId(g.tid);
+        return '<li class="row" style="align-items:flex-start;flex-wrap:wrap"><span class="rt" style="flex:1;min-width:0;white-space:normal"><b style="white-space:normal">' + esc(g.rname) + '：' + esc(t.title) + '</b><small style="white-space:normal">' + esc(g.purpose) + '</small></span>' +
+          (g.status === 'approved'
+            ? '<span class="status">許可済み</span><button class="vbtn line" style="flex:none;padding:0 12px;min-height:36px" data-act="g-ng" data-id="' + esc(g.id) + '">取り消す</button>'
+            : '<button class="vbtn line" style="flex:none;padding:0 12px;min-height:36px" data-act="g-ng" data-id="' + esc(g.id) + '">断る</button><button class="vbtn gold" style="flex:none;padding:0 14px;min-height:36px" data-act="g-ok" data-id="' + esc(g.id) + '">許可</button>') + '</li>';
+      }).join('') + '</ul></section>';
+  }
   function pvReview() {
     if (!PVOK) { return ''; }
     var mineT = {};
@@ -1101,8 +1362,8 @@ a.rowmain { text-decoration: none; color: inherit; }
     return '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>作ったPV</h3></div>' +
       (mine.length ? '<ul class="list">' + mine.map(function (p) { return pvRow(p, 0, { period: 'total' }); }).join('') + '</ul>' : '<p class="sub">まだありません。好きな曲の詳細画面から、PVを投稿できます。</p>') + '</section>';
   }
-  var VIEWS = { home: viewHome, search: viewSearch, library: viewLibrary, event: viewEvent, my: viewMy, pv: viewPv, submit: viewSubmit, artist: viewArtist, playlist: viewPlaylist };
-  var TAB_OF = { home: 'home', search: 'search', library: 'library', event: 'event', my: 'my', pv: 'home', submit: 'library', artist: 'home', playlist: 'library' };
+  var VIEWS = { chat: viewChat, ranking: viewRanking, home: viewHome, search: viewSearch, library: viewLibrary, event: viewEvent, my: viewMy, pv: viewPv, submit: viewSubmit, artist: viewArtist, playlist: viewPlaylist };
+  var TAB_OF = { chat: 'home', ranking: 'ranking', home: 'home', search: 'search', library: 'library', event: 'event', my: 'my', pv: 'home', submit: 'library', artist: 'home', playlist: 'library' };
 
   function viewSetup() {
     var why;
@@ -1154,6 +1415,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     else if (s.k === 'track') { drawTrack(s); }
     else if (s.k === 'media') { drawMedia(s); }
     else if (s.k === 'pvnew') { drawPvNew(s); }
+    else if (s.k === 'srcreq') { drawSrcReq(s); }
     else if (s.k === 'pvplay') { drawPvPlay(s); }
   }
   function drawLogin(msg) {
@@ -1229,12 +1491,57 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="field"><label for="j-text">講評（任意・200字まで）</label><input type="text" id="j-text" maxlength="200" value="' + esc(sc.comment || '') + '"></div>' +
       '<button class="cta" type="submit">評価を保存する</button></form></div>';
   }
+  function evBox(t, dis) {
+    var p = phase(), box = function (right, hint) {
+      return '<div class="evbox"><span>' + badge(t.team) + ' <b>AI紅白歌合戦</b> エントリー曲</span>' + right + '</div>' + (hint ? '<p class="hint">' + hint + '</p>' : '');
+    };
+    if (p === 'entry') { return box('', 'エントリー受付中です。予選の投票が始まるまで、お待ちください。'); }
+    if (p === 'qualifying') {
+      var on = !!D.myQual[t.id];
+      return box('<button class="vbtn ' + (on ? 'line' : 'gold') + '" style="flex:none;padding:0 16px" data-act="qual" data-id="' + esc(t.id) + '">' + ICON.vote + (on ? '応援済み' : '予選で応援') + '</button>',
+        '予選の得票 ' + fmt(qualN(t)) + '票。' + (D.me ? '残り ' + (10 - Object.keys(D.myQual).length) + ' / 10' : 'ログインすると応援できます'));
+    }
+    if (p === 'closed') { return box('', 'イベントは終了しました。'); }
+    if (p === 'main' && !D.fin[t.id]) { return box('', 'この曲は、予選で出場できませんでした。'); }
+    return box('<button class="vbtn gold" style="flex:none;padding:0 16px" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + ICON.vote + '投票</button>',
+      D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます');
+  }
   function pvBlock(t) {
     if (!(t.video || t.yt)) { return ''; }
     if (ui.pv !== t.id) { return '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:10px" data-act="pv-show" data-id="' + esc(t.id) + '">▶ PVを見る</button>'; }
     return t.video
       ? '<video class="pv" controls playsinline preload="metadata" src="' + esc(t.video) + '"' + (t.cover ? ' poster="' + esc(t.cover) + '"' : '') + '></video>'
       : '<iframe class="pv" src="https://www.youtube-nocookie.com/embed/' + esc(t.yt) + '" title="PV" allow="encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  }
+  function grantOf(t) {
+    for (var i = 0; i < D.grants.length; i++) { if (D.grants[i].tid === t.id && D.grants[i].mine) { return D.grants[i]; } }
+    return null;
+  }
+  function srcBlock(t) {
+    if (!MEDIA || !SRC || !SRCOK || t.status !== '公開') { return ''; }
+    var head = '<div class="sec"><div class="sec-h"><h3>PV制作用の音源</h3></div>';
+    if (t.mine) {
+      return head + '<p class="sub">' + (t.srcPath ? '配布用の音源を登録済みです。PVを作りたい人からのリクエストは、マイページで許可できます。' : 'PVを作りたい人に渡す音源を登録すると、許可した人にだけ渡せます。「アイコン・PVを変更」から登録できます。') + '</p></div>';
+    }
+    if (!t.srcPath) { return ''; }
+    var g = grantOf(t), body;
+    if (!D.me) { body = '<button class="vbtn line" style="width:100%;min-height:44px" data-act="login-open">ログインして音源をリクエスト</button>'; }
+    else if (!g || g.status === 'rejected') {
+      body = (g ? '<p class="hint">前回のリクエストは許可されませんでした。</p>' : '') + '<button class="vbtn line" style="width:100%;min-height:44px" data-act="src-req" data-id="' + esc(t.id) + '">音源をリクエスト</button>';
+    }
+    else if (g.status === 'pending') { body = '<p class="hint">リクエスト中です。曲の投稿者が許可すると、ここからダウンロードできます。</p>'; }
+    else { body = '<button class="vbtn gold" style="width:100%;min-height:44px" data-act="src-dl" data-id="' + esc(t.id) + '">音源をダウンロード（PV制作用）</button><p class="hint">PVの制作以外には使わず、再配布しないでください。</p>'; }
+    return head + '<p class="sub">PVを作りたい人は、曲の投稿者に許可をもらうと、原本の音源を受け取れます。</p>' + body + '</div>';
+  }
+  function drawSrcReq(s) {
+    var t = byId(s.id);
+    if (!t) { closeSheet(); return; }
+    $('#sheet').innerHTML = sheetTop('音源のリクエスト') +
+      '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんに、PV制作用の音源をリクエストします。許可されると、ダウンロードできるようになります。</p>' +
+      '<form id="srcreq-form" data-id="' + esc(t.id) + '">' +
+      '<div class="field"><label for="sr-purpose">どんなPVを作りますか（100字まで）</label><input type="text" id="sr-purpose" maxlength="100" autocomplete="off" placeholder="例：街の風景を撮ったPVを、YouTubeに公開します"></div>' +
+      '<label class="check"><input type="checkbox" id="sr-ok"><span>受け取った音源は、この曲のPVの制作だけに使い、他の人に渡したり、配布したりしません。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
+      '<p class="err" id="sr-err" role="alert"></p><button class="cta" type="submit" id="sr-go">リクエストを送る</button></form>';
   }
   function pvSection(t) {
     if (!PVOK || t.status !== '公開') { return ''; }
@@ -1283,6 +1590,9 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<input type="text" id="m-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
       '<p class="hint">動画ファイルは50MBまで。新しく登録すると、今のPVと置き換わります。</p>' +
       ((t.video || t.yt) ? '<label class="check"><input type="checkbox" id="m-rmpv"><span>PVを削除する</span></label>' : '') + '</div>' +
+      (SRC && SRCOK ? '<div class="field"><span class="lab">PV制作用の音源' + (t.srcPath ? '（登録済み）' : '') + '</span><input type="file" id="m-src" accept="audio/*" aria-label="PV制作用の音源">' +
+      '<p class="hint">PVを作りたい人に渡す原本です（mp3・wavなど、20MBまで）。非公開の場所に置かれ、あなたが許可した人にだけ渡ります。</p>' +
+      (t.srcPath ? '<label class="check"><input type="checkbox" id="m-rmsrc"><span>配布用の音源を削除する</span></label>' : '') + '</div>' : '') +
       '<label class="check"><input type="checkbox" id="m-right"><span>アイコン画像・PVの権利は自分にあります。<a href="terms.html#rights" target="_blank" rel="noopener">投稿ルール</a>を読みました</span></label>' +
       '<p class="err" id="m-err" role="alert"></p><button class="cta" type="submit" id="m-go">保存する</button></form>';
   }
@@ -1317,11 +1627,8 @@ a.rowmain { text-decoration: none; color: inherit; }
       '<div class="acts"><button class="vbtn line' + (liked ? ' liked' : '') + '" data-act="like" data-id="' + esc(t.id) + '" aria-pressed="' + liked + '"' + (votable ? '' : ' disabled') + '>' + ICON.heart + 'お気に入り</button>' +
       '<button class="vbtn line" data-act="m-pl" data-id="' + esc(t.id) + '"' + (votable ? '' : ' disabled') + '>' + ICON.plus + '追加</button>' +
       '<button class="vbtn line" data-act="share" data-id="' + esc(t.id) + '">' + ICON.share + '共有</button></div>' +
-      pvBlock(t) + pvSection(t) +
-      (t.team && votable
-        ? '<div class="evbox"><span>' + badge(t.team) + ' <b>AI紅白歌合戦</b> エントリー曲</span><button class="vbtn gold" style="flex:none;padding:0 16px" data-act="vote" data-id="' + esc(t.id) + '"' + dis + '>' + ICON.vote + '投票</button></div>' +
-          '<p class="hint">' + (D.me ? '今日の残り投票 ' + left() + ' / ' + DAILY : 'ログインすると投票できます') + '</p>'
-        : '') +
+      pvBlock(t) + srcBlock(t) + pvSection(t) +
+      (t.team && votable ? evBox(t, dis) : '') +
       upNext +
       (D.judge && votable && t.team ? judgeForm(t) : '') +
       '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
@@ -1335,6 +1642,9 @@ a.rowmain { text-decoration: none; color: inherit; }
     var m = String((e && (e.message || e.details)) || e || '');
     if (m.indexOf('daily_limit') >= 0) { return '今日の投票はここまでです。明日また投票できます'; }
     if (m.indexOf('login_required') >= 0) { return 'ログインしてください'; }
+    if (m.indexOf('vote_closed') >= 0) { return '今は本番の投票期間ではありません'; }
+    if (m.indexOf('not_qualifying') >= 0) { return '今は予選投票の期間ではありません'; }
+    if (m.indexOf('qual_limit') >= 0) { return '予選の票は10曲までです。ほかの曲の応援を外してから、応援してください'; }
     if (m.indexOf('track_unavailable') >= 0) { return 'この曲には投票できません（紅白にエントリーしている曲だけ投票できます）'; }
     if (/schema cache|does not exist|PGRST20[0-9]|42P01/.test(m + ' ' + String((e && e.code) || ''))) { return 'この機能の準備（schema_music.sql）がまだ終わっていません'; }
     return '処理できませんでした。しばらくしてからもう一度お試しください';
@@ -1343,7 +1653,7 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (!sb) { return; }
     try {
       var q = [
-        sb.from('tracks').select(MEDIA ? 'id,owner,title,artist,team,genre,tool,audio_path,cover_path,video_path,youtube_id,status,created_at' : 'id,owner,title,artist,team,genre,tool,audio_path,status,created_at').order('created_at', { ascending: false }).limit(500),
+        sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at' + (MEDIA ? ',cover_path,video_path,youtube_id' : '') + (MEDIA && SRC ? ',source_path' : '')).order('created_at', { ascending: false }).limit(500),
         sb.from('track_scores').select('track_id,d,w,m,y,likes'),
         sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500)
       ];
@@ -1352,6 +1662,7 @@ a.rowmain { text-decoration: none; color: inherit; }
         q.push(sb.rpc('my_votes_today'));
       }
       var r = await Promise.all(q), i;
+      if (r[0].error && MEDIA && SRC) { SRC = false; return load(); }
       if (r[0].error && MEDIA) { MEDIA = false; return load(); }
       for (i = 0; i < r.length; i++) { if (r[i].error) { throw r[i].error; } }
       var tracks = (r[0].data || []).map(makeTrack);
@@ -1383,7 +1694,7 @@ a.rowmain { text-decoration: none; color: inherit; }
       } catch (x) { /* schema_judges.sql が未実行でも、ほかの機能は動かします */ }
       var plays = {}, followers = {}, follows = {}, pls = [], plt = {}, recent = [];
       try {
-        var ex = [sb.from('track_plays').select('track_id,total,w'), sb.from('artist_followers').select('artist,n')];
+        var ex = [sb.from('track_plays').select(PERIODS_OK ? 'track_id,total,w,d,m' : 'track_id,total,w'), sb.from('artist_followers').select('artist,n')];
         if (D.me) {
           ex.push(sb.from('follows').select('artist'));
           ex.push(sb.from('playlists').select('id,name,created_at').eq('owner', D.me).order('created_at', { ascending: false }));
@@ -1391,7 +1702,8 @@ a.rowmain { text-decoration: none; color: inherit; }
           ex.push(sb.rpc('my_recent_tracks', { p_limit: 20 }));
         }
         var er = await Promise.all(ex);
-        if (!er[0].error) { (er[0].data || []).forEach(function (p) { plays[String(p.track_id)] = { total: num(p.total), w: num(p.w) }; }); }
+        if (er[0].error && PERIODS_OK) { PERIODS_OK = false; return load(); }
+        if (!er[0].error) { (er[0].data || []).forEach(function (p) { plays[String(p.track_id)] = { total: num(p.total), w: num(p.w), d: num(p.d), m: num(p.m) }; }); }
         if (!er[1].error) { (er[1].data || []).forEach(function (a) { followers[a.artist] = num(a.n); }); }
         if (D.me) {
           if (!er[2].error) { (er[2].data || []).forEach(function (f) { follows[f.artist] = true; }); }
@@ -1424,13 +1736,42 @@ a.rowmain { text-decoration: none; color: inherit; }
           }
         } catch (z) { /* PVの読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var sig = JSON.stringify([pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var grants = [];
+      if (SRC && SRCOK && D.me) {
+        try {
+          var gr = await sb.from('source_grants').select('id,track_id,requester,purpose,status,created_at,profiles(name)').order('created_at', { ascending: false }).limit(300);
+          if (gr.error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(gr.error.message || '') + String(gr.error.code || ''))) { SRCOK = false; }
+          } else {
+            grants = (gr.data || []).map(function (g) {
+              return { id: String(g.id), tid: String(g.track_id), req: g.requester, mine: g.requester === D.me, rname: (g.profiles && g.profiles.name) || 'リスナー', purpose: String(g.purpose || ''), status: g.status, n: Date.parse(g.created_at) || 0 };
+            });
+          }
+        } catch (z2) { /* 音源の許可の読み込みに失敗しても、ほかの機能は動かします */ }
+      }
+      var evt = null, fin = {}, qual = {}, myQual = {};
+      if (EVOK) {
+        try {
+          var eq = [sb.from('kouhaku_event').select('phase,name,slots,qual_ends_at').maybeSingle(), sb.from('qual_scores').select('track_id,n'), sb.from('tracks').select('id').eq('finalist', true)];
+          if (D.me) { eq.push(sb.from('qual_votes').select('track_id')); }
+          var ee = await Promise.all(eq);
+          if (ee[0].error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(ee[0].error.message || '') + String(ee[0].error.code || ''))) { EVOK = false; }
+          } else if (ee[0].data) {
+            evt = { phase: ee[0].data.phase, name: ee[0].data.name || 'AI紅白歌合戦', slots: num(ee[0].data.slots) || 10, qualEnd: ee[0].data.qual_ends_at || '' };
+            if (!ee[1].error) { (ee[1].data || []).forEach(function (x) { qual[String(x.track_id)] = num(x.n); }); }
+            if (!ee[2].error) { (ee[2].data || []).forEach(function (x) { fin[String(x.id)] = true; }); }
+            if (D.me && ee[3] && !ee[3].error) { (ee[3].data || []).forEach(function (x) { myQual[String(x.track_id)] = true; }); }
+          }
+        } catch (z3) { /* イベントの読み込みに失敗しても、ほかの機能は動かします */ }
+      }
+      var sig = JSON.stringify([evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes;
+        D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -1552,6 +1893,49 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (r.error) { toast(errText(r.error)); return; }
     toast('削除しました');
     location.hash = '#library';
+    await reload();
+  }
+  async function requestSource(tid, purpose) {
+    var r = await sb.from('source_grants').upsert({ track_id: tid, requester: D.me, purpose: purpose.slice(0, 100), status: 'pending' }, { onConflict: 'track_id,requester' });
+    if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? 'リクエストできませんでした（未回答のリクエストは10件までです）' : errText(r.error)); return false; }
+    return true;
+  }
+  async function reviewGrant(id, status) {
+    var r = await sb.rpc('review_source_grant', { p_id: id, p_status: status });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast(status === 'approved' ? '音源の受け取りを許可しました' : '許可を取り消しました');
+    await reload();
+  }
+  async function downloadSource(tid) {
+    var t = byId(tid);
+    if (!t || !t.srcPath) { return; }
+    var ext = (t.srcPath.split('.').pop() || 'mp3');
+    var r = await sb.storage.from('sources').createSignedUrl(t.srcPath, 90, { download: t.artist + ' - ' + t.title + '.' + ext });
+    if (r.error || !r.data) { toast('ダウンロードできませんでした。許可が取り消された可能性があります'); return; }
+    var a = document.createElement('a');
+    a.href = r.data.signedUrl; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+    toast('ダウンロードを始めました');
+  }
+  async function qualVote(id) {
+    if (!need('予選で応援するにはログインしてください')) { return; }
+    var r = await sb.rpc('qual_vote', { p_track: id, p_on: !D.myQual[id] });
+    if (r.error) { toast(errText(r.error)); return; }
+    await reload();
+    if (ui.sheet && ui.sheet.k === 'track') { drawSheet(); }
+  }
+  async function setEventPhase(ph) {
+    var slots = Number($('#ev-slots') ? $('#ev-slots').value : 10) || 10, endv = $('#ev-end') ? $('#ev-end').value : '';
+    var r = await sb.rpc('set_event', { p_phase: ph, p_slots: slots, p_qual_ends: endv ? new Date(endv).toISOString() : null });
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('イベントの段階を切り替えました');
+    await reload();
+  }
+  async function finalizeEvent() {
+    if (!window.confirm('予選を締め切って、各組の上位を出場者に決め、本番に進めます。よろしいですか？')) { return; }
+    var r = await sb.rpc('finalize_event');
+    if (r.error) { toast(errText(r.error)); return; }
+    toast('出場者を決めました（' + num(r.data) + '曲）。本番が始まります');
+    ui.ev = 'finalists';
     await reload();
   }
   async function pvLike(id) {
@@ -1688,12 +2072,25 @@ a.rowmain { text-decoration: none; color: inherit; }
       var ids = CTX[cx] || [];
       if (ids.length) { playQueue(ids, act === 'shufall' ? null : ids[0], act === 'shufall'); }
     }
+    else if (act === 'src-req') { openSheet({ k: 'srcreq', id: id }); }
+    else if (act === 'src-dl') { downloadSource(id); }
+    else if (act === 'g-ok') { reviewGrant(id, 'approved'); }
+    else if (act === 'g-ng') { reviewGrant(id, 'rejected'); }
     else if (act === 'pv-open') { pausePlayback(); openSheet({ k: 'pvplay', id: id }); }
     else if (act === 'pv-new') { if (need('PVを投稿するにはログインしてください')) { openSheet({ k: 'pvnew', id: id }); } }
     else if (act === 'pv-like') { pvLike(id); }
     else if (act === 'pv-del') { deletePv(id); }
     else if (act === 'pv-ok') { reviewPv(id, 'approved'); }
     else if (act === 'pv-ng') { reviewPv(id, 'rejected'); }
+    else if (act === 'chat-del') { chatDel(id); }
+    else if (act === 'qual') { qualVote(id); }
+    else if (act === 'qt') { ui.qt = v; render(); }
+    else if (act === 'ev-phase') { setEventPhase(v); }
+    else if (act === 'ev-final') { finalizeEvent(); }
+    else if (act === 'rk') { ui.rk = v; render(); }
+    else if (act === 'rp') { ui.rp = v; render(); }
+    else if (act === 'rs') { ui.rs = v; render(); }
+    else if (act === 'rg') { ui.rg = v; render(); }
     else if (act === 'pvp') { ui.pvp = v; render(); }
     else if (act === 'm-media') { openSheet({ k: 'media', id: id }); }
     else if (act === 'pv-show') { pausePlayback(); ui.pv = id; drawSheet(); }
@@ -1814,6 +2211,25 @@ a.rowmain { text-decoration: none; color: inherit; }
     if (f.id === 'login-form') { await authSubmit('login'); return; }
     if (f.id === 'forgot-form') { await forgotSubmit(); return; }
     if (f.id === 'newpass-form') { await newPassSubmit(); return; }
+    if (f.id === 'chat-form') {
+      var ct = $('#chat-text'), cv = ct.value.trim();
+      if (!cv) { return; }
+      ct.value = '';
+      if (!(await chatSend(cv))) { ct.value = cv; }
+      return;
+    }
+    if (f.id === 'srcreq-form') {
+      var sq = $('#sr-purpose').value.trim(), se = $('#sr-err');
+      if (!sq) { se.textContent = 'どんなPVを作るか、書いてください'; return; }
+      if (!$('#sr-ok').checked) { se.textContent = '使い方の確認にチェックしてください'; return; }
+      $('#sr-go').disabled = true;
+      var okq = await requestSource(f.getAttribute('data-id'), sq);
+      if (!okq) { $('#sr-go').disabled = false; return; }
+      toast('リクエストを送りました。許可されると、曲の画面からダウンロードできます');
+      closeSheet();
+      await reload();
+      return;
+    }
     if (f.id === 'pvnew-form') {
       var pt = byId(f.getAttribute('data-id')), pe = $('#pv-err'), pgo = $('#pv-go');
       var ptitle = $('#pv-title').value.trim(), pf = $('#pv-file').files[0], praw = $('#pv-yt').value.trim(), pid = ytId(praw);
@@ -1843,23 +2259,38 @@ a.rowmain { text-decoration: none; color: inherit; }
       if (!mt) { return; }
       var mc = $('#m-cover').files[0], mv = $('#m-video').files[0], my = ytId($('#m-yt').value), myRaw = $('#m-yt').value.trim();
       var rmc = !!($('#m-rmcover') && $('#m-rmcover').checked), rmv = !!($('#m-rmpv') && $('#m-rmpv').checked);
-      var merr = checkImage(mc) || checkVideo(mv) || (myRaw && !my ? 'YouTubeのURLを確認してください' : '') || (mv && my ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
-      if (!merr && (mc || mv || my) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
-      if (!merr && !mc && !mv && !my && !rmc && !rmv) { merr = '変更する内容を選んでください'; }
+      var ms = $('#m-src') ? $('#m-src').files[0] : null, rms = !!($('#m-rmsrc') && $('#m-rmsrc').checked);
+      var merr = (ms && !/^audio\//.test(ms.type) ? '配布用の音源は、音声ファイルにしてください' : '') || (ms && ms.size > 20 * 1024 * 1024 ? '配布用の音源は20MB以下にしてください' : '') || checkImage(mc) || checkVideo(mv) || (myRaw && !my ? 'YouTubeのURLを確認してください' : '') || (mv && my ? 'PVは、動画ファイルかYouTubeのURLのどちらか1つにしてください' : '');
+      if (!merr && (mc || mv || my || ms) && !$('#m-right').checked) { merr = '権利の確認にチェックしてください'; }
+      if (!merr && !mc && !mv && !my && !rmc && !rmv && !ms && !rms) { merr = '変更する内容を選んでください'; }
       if (merr) { me.textContent = merr; return; }
       mgo.disabled = true; me.textContent = '';
       try {
         var np = mc ? await uploadFile(mc, 'img') : null, nv = mv ? await uploadFile(mv, 'mp4') : null;
         var setC = !!(mc || rmc), setV = !!(mv || my || rmv);
-        var rr = await sb.rpc('update_track_media', { p_track: mt.id, p_set_cover: setC, p_cover: np, p_set_video: setV, p_video: nv, p_yt: my || null });
-        if (rr.error) { throw rr.error; }
+        if (setC || setV) {
+          var rr = await sb.rpc('update_track_media', { p_track: mt.id, p_set_cover: setC, p_cover: np, p_set_video: setV, p_video: nv, p_yt: my || null });
+          if (rr.error) { throw rr.error; }
+        }
+        if (ms || rms) {
+          var sp = null;
+          if (ms) {
+            var sx = (ms.name.split('.').pop() || 'mp3').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'mp3';
+            sp = D.me + '/' + mt.id + '/' + Date.now() + '.' + sx;
+            var su = await sb.storage.from('sources').upload(sp, ms, { contentType: ms.type || undefined });
+            if (su.error) { throw su.error; }
+          }
+          var sr = await sb.rpc('set_track_source', { p_track: mt.id, p_path: sp });
+          if (sr.error) { throw sr.error; }
+          if (mt.srcPath) { sb.storage.from('sources').remove([mt.srcPath]).then(function () {}, function () {}); }
+        }
         var olds = [];
         if (setC && mt.coverPath) { olds.push(mt.coverPath); }
         if (setV && mt.videoPath) { olds.push(mt.videoPath); }
         if (olds.length) { sb.storage.from('tracks').remove(olds).then(function () {}, function () {}); }
       } catch (ex) {
         mgo.disabled = false;
-        me.textContent = /update_track_media|function|schema cache/i.test(String((ex && ex.message) || '')) ? 'この機能の準備（schema_media.sql）がまだ終わっていません' : '保存できませんでした。ファイルの形式とサイズを確認してください';
+        me.textContent = /update_track_media|set_track_source|function|schema cache|Bucket not found/i.test(String((ex && ex.message) || '')) ? 'この機能の準備（schema_media.sql / schema_sources.sql）がまだ終わっていません' : '保存できませんでした。ファイルの形式とサイズを確認してください';
         return;
       }
       toast('保存しました');
@@ -2111,11 +2542,13 @@ a.rowmain { text-decoration: none; color: inherit; }
   /* ---------- routing ---------- */
   function route() {
     var raw = location.hash.replace(/^#/, ''), parts = raw.split('/'), r = parts[0], arg = parts.slice(1).join('/');
-    if (r === 'ranking' || r === 'battle') { ui.ev = r === 'ranking' ? 'ranking' : 'battle'; r = 'event'; }
+    if (r === 'pv') { ui.rk = 'pv'; r = 'ranking'; }
+    if (r === 'battle') { ui.ev = 'battle'; r = 'event'; }
     try { arg = decodeURIComponent(arg); } catch (e) { /* そのまま使います */ }
     if (!VIEWS[r]) { r = 'home'; }
     ui.route = r; ui.arg = arg; ui.tab = TAB_OF[r];
     render();
+    chatStart();
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
