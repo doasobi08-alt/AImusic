@@ -403,6 +403,64 @@ button.pill { display: inline-flex; align-items: center; }
 .macts { display: flex; gap: 8px; margin-top: 2px; align-items: center; }
 .mrep { background: none; border: 0; padding: 4px 2px; min-height: 28px; color: var(--muted); font-size: 11px; text-decoration: underline; cursor: pointer; font-family: inherit; }
 .mrc { font-size: 11px; color: #d64545; }
+.ggrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gitem { border: 2px solid var(--line); border-radius: 14px; background: var(--surface); padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; color: var(--fg); font-family: inherit; min-height: 92px; }
+.gitem[aria-pressed="true"] { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold) inset; }
+.gitem svg, .gchip svg, .glist svg { width: 44px; height: 44px; display: block; }
+.gitem b { font-size: 12px; }
+.gitem small { font-size: 12px; color: var(--muted); }
+.gsum { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.gchip { display: inline-flex; align-items: center; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px 2px 4px; font-size: 13px; }
+.gchip svg { width: 28px; height: 28px; }
+.glist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.glist li { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.glist svg { width: 26px; height: 26px; flex: none; }
+.glist small { color: var(--muted); }
+.rl { position: fixed; inset: 0; z-index: 35; background: #000; color: #fff; }
+.rl-top { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: linear-gradient(#000a, transparent); }
+.rl-top b { font-size: 16px; }
+.rl-x, .rl-snd { border: 0; border-radius: 99px; background: rgba(0,0,0,.5); color: #fff; font: inherit; font-size: 14px; min-height: 40px; padding: 0 14px; cursor: pointer; }
+.rl-x { font-size: 24px; width: 44px; padding: 0; }
+.rl-feed { position: absolute; inset: 0; overflow-y: scroll; scroll-snap-type: y mandatory; overscroll-behavior: contain; scrollbar-width: none; }
+.rl-feed::-webkit-scrollbar { display: none; }
+.rl-item { position: relative; height: 100vh; height: 100dvh; scroll-snap-align: start; scroll-snap-stop: always; overflow: hidden; background: #000; }
+.rl-m, .rl-yt, .rl-yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #000; }
+.rl-yt iframe { pointer-events: none; }
+.rl-tap { position: absolute; inset: 0; width: 100%; height: 100%; background: transparent; border: 0; padding: 0; cursor: pointer; z-index: 1; }
+.rl-pz { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -38px 0 0 -38px; z-index: 1; display: none; pointer-events: none; opacity: .85; }
+.rl-pz svg { width: 100%; height: 100%; fill: #fff; filter: drop-shadow(0 2px 8px #000a); }
+.rl-item.paused .rl-pz { display: block; }
+.rl-side { position: absolute; right: 8px; bottom: 120px; z-index: 2; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.rl-b { border: 0; background: transparent; color: #fff; font: inherit; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; min-width: 52px; min-height: 52px; text-shadow: 0 1px 6px #000; }
+.rl-b i { font-style: normal; font-size: 30px; line-height: 1; filter: drop-shadow(0 1px 4px #000a); }
+.rl-b b { font-size: 12px; }
+.rl-b.on i { color: #ff4d6d; }
+.rl-info { position: absolute; left: 12px; right: 76px; bottom: 76px; z-index: 2; display: flex; flex-direction: column; gap: 2px; text-shadow: 0 1px 6px #000; pointer-events: none; }
+.rl-info b { font-size: 17px; }
+.rl-info span { font-size: 14px; }
+.rl-info small { font-size: 12px; opacity: .85; }
+.rl-item::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(transparent, #000b); pointer-events: none; }
+.rl-hint { position: absolute; left: 0; right: 0; bottom: 20px; z-index: 3; text-align: center; font-size: 13px; opacity: .85; margin: 0; pointer-events: none; text-shadow: 0 1px 6px #000; }
+.rl-tr { background: #120a24; }
+.rl-bg { position: absolute; inset: -30px; background: hsl(var(--h, 280) 60% 30%); overflow: hidden; }
+.rl-bg img { width: 100%; height: 100%; object-fit: cover; filter: blur(34px) brightness(.55); transform: scale(1.2); }
+.rl-art { position: absolute; left: 50%; top: 13%; width: min(62vw, 34vh); transform: translateX(-50%); z-index: 1; pointer-events: none; }
+.rl-art .cover { box-shadow: 0 14px 40px rgba(0,0,0,.55); }
+.rl-lyr { position: absolute; left: 20px; right: 20px; top: calc(13% + min(62vw, 34vh) + 18px); height: 22vh; overflow: hidden; z-index: 1; text-align: center; pointer-events: none; -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent); }
+.rl-lyr p { margin: 0; padding: 6px 0; font-size: 16px; line-height: 1.5; opacity: .55; transition: opacity .2s, font-size .2s; text-shadow: 0 1px 6px #000; }
+.rl-lyr p.on { opacity: 1; font-size: 20px; font-weight: 700; }
+.rl-lyr[data-timed="false"] p { opacity: .9; }
+.rl-nolyr { position: absolute; left: 0; right: 0; top: calc(13% + min(62vw, 34vh) + 40px); text-align: center; opacity: .6; font-size: 13px; margin: 0; z-index: 1; }
+.rl-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.2); z-index: 3; }
+.rl-bar i { display: block; height: 100%; width: 0; background: var(--gold, #ffc83d); }
+.rl-empty { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 24px; }
+.gburst { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+.gburst .big { position: absolute; left: 50%; top: 42%; width: 150px; height: 150px; margin: -75px 0 0 -75px; animation: gpop 2.6s ease-out forwards; }
+.gburst .big svg { width: 100%; height: 100%; }
+.gburst .p { position: absolute; top: -50px; width: 34px; height: 34px; animation: gfall 2.6s linear forwards; }
+.gburst .p svg { width: 100%; height: 100%; }
+@keyframes gpop { 0% { transform: scale(.2); opacity: 0; } 20% { transform: scale(1.15); opacity: 1; } 70% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.1) translateY(-60px); opacity: 0; } }
+@keyframes gfall { to { transform: translateY(115vh) rotate(360deg); } }
 </style>
 
 </head>
@@ -507,11 +565,11 @@ button.pill { display: inline-flex; align-items: center; }
   }
   var D = {
     tracks: [], scores: {}, comments: {}, myLikes: {}, left: DAILY, me: null, name: '', admin: false, judge: false, myScores: {},
-    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, avatar: '', plus: {}, mySub: null, conn: null, tipReady: {}, tipN: {}, myTips: [], seasons: [], sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
+    reveal: false, final: [], plays: {}, followers: {}, follows: {}, pls: [], plt: {}, recent: [], pvs: [], pvScore: {}, pvLikes: {}, giftFeed: [], giftScore: {}, avatar: '', plus: {}, mySub: null, conn: null, tipReady: {}, tipN: {}, myTips: [], seasons: [], sings: [], singScore: {}, singLikes: {}, grants: [], evt: null, fin: {}, qual: {}, myQual: {}, ready: false, err: '', sig: ''
   };
   var ui = { qt: 'red', rk: 'song', rp: 'w', rs: 'plays', rg: 'all', pvp: 'w', tab: 'home', route: 'home', arg: '', team: 'all', period: 'w', genre: 'all', sg: 'all', q: '', lib: 'pl', ev: 'battle', sheet: null };
   var CTX = {};
-  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true, SEASONOK = true, PAYDB = true, PAY, AVOK = true, MOVEOK = true;
+  var MEDIA = true, PVOK = true, SRC = true, SRCOK = true, PERIODS_OK = true, EVOK = true, LYR = true, SINGOK = true, SEASONOK = true, PAYDB = true, GIFTDB = true, PAY, AVOK = true, MOVEOK = true;
   var KA = { phase: 'idle', tid: '', stream: null, rec: null, chunks: [], blob: null, url: '', mime: '', ext: 'webm', timer: null, cd: null, guard: null, an: null, nodes: [], err: '', n: 3, dest: null, t0: 0, fx: 'echo', wet: 0.35, mon: false };
   var CH = { room: 'lounge', msgs: [], timer: null, ok: true, loaded: false, mod: true, bans: [], banned: null, rc: {} };
   var Q = { ids: [], i: -1, shuffle: false, repeat: 'off' };
@@ -673,6 +731,7 @@ button.pill { display: inline-flex; align-items: center; }
   function loadTrack(t, force) {
     if (!force && P.t && String(P.t.id) === String(t.id)) { return; }
     stopPlayback(true);
+    rlPauseAll();
     P.t = t; P.elapsed = 0; P.counted = false;
     if (t.url) {
       P.el = new Audio(); if (P.cors) { P.el.crossOrigin = 'anonymous'; } P.el.src = t.url;
@@ -915,6 +974,8 @@ button.pill { display: inline-flex; align-items: center; }
     var b = document.querySelector('#' + gid + ' [aria-pressed="true"]');
     return b ? b.getAttribute('data-v') : '';
   }
+  var AV = {};
+  function uav(uid) { return avatarHtml(uid === D.me ? D.avatar : AV[uid]); }
   function avatarHtml(id, size) {
     var ok = id && /^preset:/.test(id) && preOk(id.slice(7));
     return '<span class="av' + (size ? ' ' + size : '') + '" aria-hidden="true">' + (ok ? presetSvg(id.slice(7)) : '') + '</span>';
@@ -1021,7 +1082,7 @@ button.pill { display: inline-flex; align-items: center; }
     var fresh = vs.slice().sort(function (a, b) { return b.n - a.n; }).slice(0, 12);
     var hot = vs.slice().sort(function (a, b) { return pop(b) - pop(a); }).slice(0, 5);
     var ars = artists().slice(0, 12);
-    var pvTop = PVOK ? pvRank('w').slice(0, 3) : [];
+    var pvTop = PVOK ? pvRank('w').slice(0, 3) : [], pvAll = PVOK;
     var recent = D.recent.map(byId).filter(function (t) { return t && t.status === '公開'; });
     var h = head + '<section class="sec" style="margin-top:14px">' + countdownCard() + '</section>';
     if (recent.length) { h += '<section class="sec"><div class="sec-h"><h3>最近聴いた曲</h3></div>' + shelf(recent, 'recent') + '</section>'; }
@@ -1030,7 +1091,7 @@ button.pill { display: inline-flex; align-items: center; }
     h += '<section class="sec"><div class="sec-h"><h3>ジャンル</h3><a href="#search">すべて見る</a></div><div class="chips">' +
       GENRES.map(function (g) { return '<button class="chip" data-act="sg-go" data-v="' + esc(g) + '">' + esc(g) + '</button>'; }).join('') + '</div></section>';
     if (PVOK) {
-      h += '<section class="sec"><div class="sec-h"><h3>みんなのPV</h3><a href="#pv">ランキング</a></div>' +
+      h += '<section class="sec"><div class="sec-h"><h3>みんなのPV</h3><a href="#pv">ランキング</a></div>' + (pvAll ? '<button class="cta" style="width:100%;margin-bottom:10px" data-act="reels-open">' + ICON.play + 'ショートで見る（縦スワイプ）</button>' : '') + '' +
         (pvTop.length ? '<ul class="list">' + pvTop.map(function (p, i) { return pvRow(p, i, { rank: true, period: 'w' }); }).join('') + '</ul>'
           : '<p class="sub">好きな曲のPVを作って投稿できます。曲の詳細画面の「PVを投稿する」から。</p>') + '</section>';
     }
@@ -1092,13 +1153,14 @@ button.pill { display: inline-flex; align-items: center; }
   function viewRanking() {
     if (!PVOK && ui.rk === 'pv') { ui.rk = 'song'; }
     if (!SINGOK && ui.rk === 'sing') { ui.rk = 'song'; }
-    var kinds = [['song', '曲'], ['artist', 'アーティスト'], ['genre', 'ジャンル']].concat(PVOK ? [['pv', 'PV']] : []).concat(SINGOK ? [['sing', '歌ってみた']] : []);
+    if (ui.rk === 'gift' && !(PAY && PAYDB && GIFTDB)) { ui.rk = 'song'; }
+    var kinds = [['song', '曲'], ['artist', 'アーティスト'], ['genre', 'ジャンル']].concat(PVOK ? [['pv', 'PV']] : []).concat(SINGOK ? [['sing', '歌ってみた']] : []).concat(PAY && PAYDB && GIFTDB ? [['gift', 'ギフト']] : []);
     var h = '<h2 class="ttl">ランキング</h2><div class="stack">' +
       '<div class="seg" role="group" aria-label="ランキングの種類">' + kinds.map(function (x) {
         return '<button data-act="rk" data-v="' + x[0] + '" aria-pressed="' + (ui.rk === x[0]) + '">' + x[1] + '</button>';
       }).join('') + '</div>';
     var per = rkPeriods();
-    if (!(ui.rk === 'song' && ui.rs === 'likes')) {
+    if (!(ui.rk === 'song' && ui.rs === 'likes') && ui.rk !== 'gift') {
       h += '<div class="seg" role="group" aria-label="期間">' + per.map(function (x) {
         return '<button data-act="rp" data-v="' + x[0] + '" aria-pressed="' + (ui.rp === x[0]) + '">' + x[1] + '</button>';
       }).join('') + '</div>';
@@ -1143,6 +1205,10 @@ button.pill { display: inline-flex; align-items: center; }
         return '<li class="row"><span class="rank ' + (i < 3 ? 'm' + (i + 1) : '') + '">' + (i + 1) + '</span><button class="rowmain" data-act="sg-go" data-v="' + esc(x.g) + '"><span class="cover md" style="--h:' + hueOf(x.g) + '" aria-hidden="true">' + esc(Array.from(x.g)[0]) + '</span>' +
           '<span class="rt"><b>' + esc(x.g) + '</b><small>' + x.n + '曲</small></span></button><span class="rv tnum">' + fmt(x.pl) + '回</span></li>';
       }).join('') + '</ul><p class="hint">ジャンルを押すと、そのジャンルの曲を探せます。</p>' : '<p class="sub">まだ曲がありません。</p>';
+    } else if (ui.rk === 'gift') {
+      var gl = visible().filter(function (t) { return D.giftScore[t.id] && D.giftScore[t.id].pts > 0; }).sort(function (a, b) { return D.giftScore[b.id].pts - D.giftScore[a.id].pts || D.giftScore[b.id].n - D.giftScore[a.id].n; }).slice(0, 50);
+      h += gl.length ? '<p class="sub">もらったギフトのポイント順です（100円＝1ポイント）。</p>' + listHtml(gl, 'rkg', { rank: true, right: function (x) { return D.giftScore[x.id].pts + 'pt'; } })
+        : empty('まだギフトを贈られた曲がありません。気に入った曲の詳細画面から、ギフトを贈れます。', '<a class="cta" href="#search">曲を探す</a>');
     } else if (ui.rk === 'sing') {
       var sl = singRank(ui.rp);
       h += sl.length ? '<ul class="list">' + sl.map(function (g, i) { return singRow(g, i, { rank: true, period: ui.rp }); }).join('') + '</ul>'
@@ -1168,7 +1234,7 @@ button.pill { display: inline-flex; align-items: center; }
     if (!CH.msgs.length) { return '<p class="sub">まだ発言がありません。最初のひとことをどうぞ。</p>'; }
     return '<ul class="chatlist">' + CH.msgs.map(function (m) {
       var mine = !!D.me && m.uid === D.me;
-      return '<li class="msg' + (mine ? ' me' : '') + '"><small>' + esc(mine ? 'あなた' : pn(m.uid, m.name)) + '・' + ago(m.n) + '</small><span>' + esc(m.body) + '</span>' +
+      return '<li class="msg' + (mine ? ' me' : '') + '"><small>' + uav(m.uid) + esc(mine ? 'あなた' : pn(m.uid, m.name)) + '・' + ago(m.n) + '</small><span>' + esc(m.body) + '</span>' +
         (mine || D.admin ? '<button class="mdel" data-act="chat-del" data-id="' + esc(m.id) + '" aria-label="この発言を削除">×</button>' : '') +
         (CH.mod && D.me && !mine ? '<span class="macts"><button class="mrep" data-act="chat-rep" data-id="' + esc(m.id) + '">報告</button>' + (D.admin ? '<button class="mrep" data-act="chat-ban" data-id="' + esc(m.uid) + '" data-v="' + esc(m.name) + '">停止</button>' + (CH.rc[m.id] ? '<b class="mrc">報告' + CH.rc[m.id] + '</b>' : '') : '') + '</span>' : '') + '</li>';
     }).join('') + '</ul>';
@@ -1196,13 +1262,18 @@ button.pill { display: inline-flex; align-items: center; }
   async function chatLoad() {
     if (!sb || ui.route !== 'chat') { return; }
     var room = CH.room;
-    var r = await sb.from('chat_messages').select('id,room,user_id,body,created_at,profiles(name)').eq('room', room).order('created_at', { ascending: false }).limit(100);
+    var r = await sb.from('chat_messages').select('id,room,user_id,body,created_at,profiles(' + (AVOK ? 'name,avatar' : 'name') + ')').eq('room', room).order('created_at', { ascending: false }).limit(100);
+    if (r.error && AVOK && /avatar/.test(String(r.error.message || ''))) {
+      AVOK = false;
+      r = await sb.from('chat_messages').select('id,room,user_id,body,created_at,profiles(name)').eq('room', room).order('created_at', { ascending: false }).limit(100);
+    }
     if (room !== CH.room || ui.route !== 'chat') { return; }
     if (r.error) {
       if (/schema cache|does not exist|PGRST20|42P01/.test(String(r.error.message || '') + String(r.error.code || ''))) { CH.ok = false; }
     } else {
       CH.ok = true;
       CH.msgs = (r.data || []).map(function (m) {
+        if (m.profiles && m.profiles.avatar) { AV[m.user_id] = m.profiles.avatar; }
         return { id: String(m.id), uid: m.user_id, name: (m.profiles && m.profiles.name) || 'リスナー', body: String(m.body || '').slice(0, 200), n: Date.parse(m.created_at) || 0 };
       }).sort(function (a, b) { return b.n - a.n; });
       CH.loaded = true;
@@ -1499,7 +1570,7 @@ button.pill { display: inline-flex; align-items: center; }
       '<p class="hint">画像を選ばない場合は、下の見本（アプリのイラスト）から選べます。何も選ばないと、曲名の頭文字のアイコンになります。あとから変更できます。</p>' + prePicker('pre-cover', '', '') + '</div>' +
       '<div class="field"><label for="f-video">PV（任意）</label><input type="file" id="f-video" accept="video/mp4,video/webm,video/quicktime">' +
       '<input type="text" id="f-yt" placeholder="またはYouTubeのURLを貼る" autocomplete="off" inputmode="url" aria-label="YouTubeのURL">' +
-      '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。大きい動画は、YouTubeのURLで登録してください。</p></div>' : '') +
+      '<p class="hint">動画ファイルは50MBまで（mp4・webm・mov）。縦長（9:16）の短い動画だと、「ショート」で全画面に映えます。大きい動画は、YouTubeのURLで登録してください。</p></div>' : '') +
       (LYR ? '<div class="field"><label for="f-lyr">歌詞（任意・4000字まで）</label><textarea id="f-lyr" rows="5" maxlength="4000" placeholder="[00:12.00]1行目の歌詞&#10;[00:18.50]2行目の歌詞" style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--fg);font:inherit"></textarea>' +
       '<p class="hint">みんなが「歌ってみた」で使えます。自作の歌詞だけを入れてください。「[分:秒.小数]歌詞」の形で書くと、再生に合わせて進みます。あとから変更できます。</p></div>' : '') +
       '<div class="evpick"><label class="check"><input type="checkbox" id="c-entry"><span><b>AI紅白歌合戦にエントリーする</b>（任意）<br><small>年末のイベントに、この曲で出場します。</small></span></label>' +
@@ -1631,6 +1702,147 @@ button.pill { display: inline-flex; align-items: center; }
     setPill();
     tickCountdown();
     markNow();
+  }
+
+  /* ---------- ショート（縦にスワイプ：PV と、ジャケット＋歌詞の曲） ---------- */
+  var RL = { el: null, io: null, muted: false };
+  function rlList(start) {
+    var has = {}, l = [];
+    D.pvs.forEach(function (p) {
+      var t = byId(p.tid);
+      if (p.status === 'approved' && t && t.status === '公開' && (p.url || p.yt)) { l.push({ k: 'pv:' + p.id, n: p.n, p: p, t: t }); has[t.id] = true; }
+    });
+    visible().forEach(function (t) { if (t.url && !has[t.id]) { l.push({ k: 't:' + t.id, n: t.n, t: t }); } });
+    l.sort(function (a, b) { return b.n - a.n; });
+    var i = -1;
+    if (start) { l.forEach(function (x, j) { if (x.k === start || x.k === 'pv:' + start) { i = j; } }); }
+    if (i > 0) { l.unshift(l.splice(i, 1)[0]); }
+    return l;
+  }
+  function rlSide(x, lk, n) {
+    var t = x.t, id = x.p ? x.p.id : t.id;
+    var gift = PAY && PAY.tip && PAYDB && t.uid && !t.mine && D.tipReady[t.uid] ? '<button class="rl-b" data-act="tip-open" data-id="' + esc(t.id) + '" aria-label="ギフトを贈る"><i>🎁</i><b>ギフト</b></button>' : '';
+    return '<div class="rl-side"><button class="rl-b' + (lk ? ' on' : '') + '" data-act="' + (x.p ? 'pv-like' : 'like') + '" data-id="' + esc(id) + '" aria-pressed="' + lk + '" aria-label="いいね"><i>♥</i><b class="tnum rl-n">' + fmt(n) + '</b></button>' + gift +
+      '<button class="rl-b" data-act="m-detail" data-id="' + esc(t.id) + '" aria-label="曲の詳細"><i>♪</i><b>曲</b></button></div>';
+  }
+  function rlItem(x) {
+    var t = x.t, p = x.p;
+    var tap = '<button class="rl-tap" data-act="rl-tap" aria-label="再生・一時停止"></button><div class="rl-pz" aria-hidden="true">' + ICON.play + '</div>';
+    if (p) {
+      var media = p.url
+        ? '<video class="rl-m" loop playsinline preload="none" data-src="' + esc(p.url) + '"' + (t.cover ? ' poster="' + esc(t.cover) + '"' : '') + '></video>'
+        : '<div class="rl-yt" data-yt="' + esc(p.yt) + '"></div>';
+      return '<section class="rl-item" data-k="' + esc(x.k) + '">' + media + tap + rlSide(x, !!D.pvLikes[p.id], pvLikeN(p, 'total')) +
+        '<div class="rl-info"><b>' + esc(p.title) + '</b><span>' + esc(t.title) + '・' + esc(t.artist) + '</span><small>PV：' + esc(pn(p.creator, p.cname)) + '</small></div></section>';
+    }
+    var lyr = t.lyrics ? parseLyrics(t.lyrics) : null;
+    return '<section class="rl-item rl-tr" data-k="' + esc(x.k) + '" style="--h:' + t.hue + '">' +
+      '<div class="rl-bg">' + (t.cover ? '<img src="' + esc(t.cover) + '" alt="" onerror="this.remove()">' : '') + '</div>' +
+      '<div class="rl-art">' + cover(t, 'lg') + '</div>' +
+      (lyr && lyr.lines.length ? '<div class="rl-lyr" id="rl-l-' + esc(t.id) + '" data-timed="' + lyr.timed + '">' + lyr.lines.map(function (l) { return '<p>' + (esc(l.s) || '&nbsp;') + '</p>'; }).join('') + '</div>' : '<p class="rl-nolyr">歌詞は登録されていません</p>') +
+      '<audio class="rl-a" loop preload="none" data-src="' + esc(t.url) + '"></audio><div class="rl-bar"><i></i></div>' +
+      tap + rlSide(x, isLiked(t.id), likesOf(t)) +
+      '<div class="rl-info"><b>' + esc(t.title) + '</b><span>' + esc(t.artist) + '</span><small>' + esc(t.genre || '') + (t.tool ? '・' + esc(t.tool) : '') + '</small></div></section>';
+  }
+  function rlYt(item, cmd) {
+    var f = item.querySelector('iframe');
+    if (f && f.contentWindow) { try { f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: cmd, args: [] }), '*'); } catch (e) { /* 無視 */ } }
+  }
+  function rlLabel() { var b = $('#rl-snd'); if (b) { b.textContent = RL.muted ? '🔇 音を出す' : '🔊 音あり'; b.setAttribute('aria-pressed', String(!RL.muted)); } }
+  function rlTime(a, item) {
+    var k = item.getAttribute('data-k'), t = byId(k.slice(2)), box = item.querySelector('.rl-lyr'), bar = item.querySelector('.rl-bar i');
+    if (bar && a.duration) { bar.style.width = (a.currentTime / a.duration * 100) + '%'; }
+    if (!box || !t) { return; }
+    if (box.getAttribute('data-timed') === 'true') { lyrSync(box.id, t.lyrics, a.currentTime); }
+    else if (a.duration) { box.scrollTop = (box.scrollHeight - box.clientHeight) * (a.currentTime / a.duration); }
+  }
+  function rlActivate(item) {
+    Array.prototype.forEach.call(RL.el.querySelectorAll('.rl-item'), function (it) { if (it !== item) { rlDeact(it); } });
+    var v = item.querySelector('video'), y = item.querySelector('.rl-yt'), a = item.querySelector('audio');
+    item.classList.remove('paused');
+    if (v) {
+      if (!v.getAttribute('src')) { v.src = v.getAttribute('data-src'); }
+      v.muted = RL.muted;
+      var pr = v.play();
+      if (pr && pr.catch) {
+        pr.catch(function () {
+          if (RL.muted) { item.classList.add('paused'); return; }
+          RL.muted = true; v.muted = true; rlLabel();
+          var p2 = v.play(); if (p2 && p2.catch) { p2.catch(function () { item.classList.add('paused'); }); }
+        });
+      }
+    } else if (a) {
+      if (!a.getAttribute('src')) { a.src = a.getAttribute('data-src'); a.addEventListener('timeupdate', function () { rlTime(a, item); }); }
+      a.muted = RL.muted;
+      var pa = a.play();
+      if (pa && pa.catch) { pa.catch(function () { item.classList.add('paused'); }); }
+    } else if (y && !y.firstChild) {
+      var id = y.getAttribute('data-yt'), f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&mute=1&loop=1&playlist=' + id + '&controls=0&playsinline=1&rel=0&modestbranding=1&enablejsapi=1';
+      f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture'); f.setAttribute('title', 'PV'); f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      f.addEventListener('load', function () { if (!RL.muted) { setTimeout(function () { rlYt(item, 'unMute'); }, 800); } });
+      y.appendChild(f);
+    }
+  }
+  function rlDeact(it) {
+    var m = it.querySelector('video, audio'), y = it.querySelector('.rl-yt');
+    if (m) { m.pause(); }
+    if (y) { y.innerHTML = ''; }
+    it.classList.remove('paused');
+  }
+  function rlPauseAll() {
+    if (!RL.el) { return; }
+    Array.prototype.forEach.call(RL.el.querySelectorAll('video, audio'), function (m) { m.pause(); });
+    Array.prototype.forEach.call(RL.el.querySelectorAll('.rl-item'), function (it) { if (it.querySelector('iframe')) { rlYt(it, 'pauseVideo'); } it.classList.add('paused'); });
+  }
+  function rlTap(el) {
+    var it = el.closest('.rl-item'), m = it.querySelector('video, audio');
+    if (m) {
+      if (m.paused) { m.muted = RL.muted; m.play(); it.classList.remove('paused'); } else { m.pause(); it.classList.add('paused'); }
+    } else { var p = it.classList.contains('paused'); rlYt(it, p ? 'playVideo' : 'pauseVideo'); it.classList.toggle('paused', !p); }
+  }
+  function rlSound() {
+    RL.muted = !RL.muted; rlLabel();
+    Array.prototype.forEach.call(RL.el.querySelectorAll('video, audio'), function (v) { v.muted = RL.muted; });
+    Array.prototype.forEach.call(RL.el.querySelectorAll('.rl-item'), function (it) { if (it.querySelector('iframe')) { rlYt(it, RL.muted ? 'mute' : 'unMute'); } });
+  }
+  function rlRefresh() {
+    if (!RL.el) { return; }
+    Array.prototype.forEach.call(RL.el.querySelectorAll('.rl-item'), function (it) {
+      var k = it.getAttribute('data-k'), b = it.querySelector('.rl-b[aria-pressed]'), lk, n;
+      if (!b) { return; }
+      if (k.indexOf('pv:') === 0) { var p = pvById(k.slice(3)); if (!p) { return; } lk = !!D.pvLikes[p.id]; n = pvLikeN(p, 'total'); }
+      else { var t = byId(k.slice(2)); if (!t) { return; } lk = isLiked(t.id); n = likesOf(t); }
+      b.classList.toggle('on', lk); b.setAttribute('aria-pressed', String(lk));
+      it.querySelector('.rl-n').textContent = fmt(n);
+    });
+  }
+  function openReels(start) {
+    if (RL.el) { closeReels(true); }
+    pausePlayback();
+    var l = rlList(start), d = document.createElement('div');
+    d.className = 'rl'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'ショート');
+    d.innerHTML = '<div class="rl-top"><button class="rl-x" data-act="rl-close" aria-label="ショートを閉じる">×</button><b>ショート</b><button class="rl-snd" id="rl-snd" data-act="rl-snd" aria-pressed="true">🔊 音あり</button></div>' +
+      (l.length ? '<div class="rl-feed">' + l.map(rlItem).join('') + '</div><p class="rl-hint" id="rl-hint">↑ 上にスワイプで次へ</p>'
+        : '<div class="rl-empty"><p><b>まだ流せる曲がありません</b></p><p>曲を投稿すると、ここに流れます。</p><button class="cta" data-act="rl-close">もどる</button></div>');
+    document.body.appendChild(d);
+    RL.el = d; RL.muted = false;
+    document.body.style.overflow = 'hidden';
+    if (l.length && 'IntersectionObserver' in window) {
+      RL.io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio >= 0.7) { rlActivate(e.target); var h = $('#rl-hint'); if (h && e.target !== d.querySelector('.rl-item')) { h.hidden = true; } } });
+      }, { root: d.querySelector('.rl-feed'), threshold: [0.7] });
+      Array.prototype.forEach.call(d.querySelectorAll('.rl-item'), function (it) { RL.io.observe(it); });
+    } else if (l.length) { rlActivate(d.querySelector('.rl-item')); }
+    var x = d.querySelector('.rl-x, .cta'); if (x) { x.focus(); }
+  }
+  function closeReels(quiet) {
+    if (!RL.el) { return; }
+    Array.prototype.forEach.call(RL.el.querySelectorAll('.rl-item'), rlDeact);
+    if (RL.io) { RL.io.disconnect(); RL.io = null; }
+    RL.el.remove(); RL.el = null;
+    document.body.style.overflow = '';
+    if (!quiet && /^#reels/.test(location.hash)) { location.hash = '#' + (ui.route || 'home'); }
   }
 
   /* ---------- sheets ---------- */
@@ -1883,7 +2095,7 @@ button.pill { display: inline-flex; align-items: center; }
       upNext +
       (D.judge && votable && t.team ? judgeForm(t) : '') +
       '<div class="sec"><div class="sec-h"><h3>コメント</h3></div><ul class="comments" id="comments">' +
-      cs.map(function (c) { return '<li><small>' + esc(c.u === D.me ? c.n : pn(c.u, c.n)) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
+      cs.map(function (c) { return '<li><small>' + uav(c.u) + esc(c.u === D.me ? c.n : pn(c.u, c.n)) + '</small>' + esc(c.t) + '</li>'; }).join('') + '</ul>' +
       (votable ? '<form class="cform" id="cform" data-id="' + esc(t.id) + '"><input type="text" id="c-text" maxlength="80" placeholder="感想を書く" aria-label="コメント"><button class="vbtn line" style="flex:none;padding:0 16px" type="submit">送信</button></form>' : '') + '</div>';
     syncPlayer();
   }
@@ -2223,8 +2435,8 @@ button.pill { display: inline-flex; align-items: center; }
     } catch (e) { return { error: 'network' }; }
   }
   function payErr(c) {
-    return ({ login_required: 'ログインしてください', already_subscribed: 'すでに加入しています', bad_amount: '金額は100円〜50,000円で入れてください', self_tip: '自分の曲には投げ銭できません',
-      not_ready: 'この投稿者は、まだ投げ銭を受け取る設定をしていません', track_unavailable: 'この曲には投げ銭できません', no_customer: '契約が見つかりません', network: '通信できませんでした。電波を確認してください',
+    return ({ login_required: 'ログインしてください', already_subscribed: 'すでに加入しています', bad_gift: 'ギフトを選びなおしてください', self_tip: '自分の曲には投げ銭できません',
+      not_ready: 'この投稿者は、まだギフトを受け取る設定をしていません', track_unavailable: 'この曲にはギフトを贈れません', no_customer: '契約が見つかりません', network: '通信できませんでした。電波を確認してください',
       not_configured: '決済の準備中です', plan_unavailable: '決済の準備中です' })[c] || '処理できませんでした。しばらくしてからもう一度お試しください';
   }
   async function payGo(path, body, btn) {
@@ -2254,34 +2466,74 @@ button.pill { display: inline-flex; align-items: center; }
     }
     if (PAY.tip) {
       var ready = !!(D.conn && D.conn.ready), got = D.myTips.filter(function (x) { return x.to === D.me; }), sum = got.reduce(function (s, x) { return s + x.amount; }, 0);
-      h += '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>投げ銭</h3></div>';
+      h += '<section class="sec" style="margin-top:8px"><div class="sec-h"><h3>ギフト（投げ銭）</h3></div>';
       if (ready) {
-        h += '<p class="sub">あなたの曲は、投げ銭を受け取れます。受け取り ' + got.length + '件（合計 ' + fmt(sum) + '円。運営の手数料 ' + PAY.feePct + '%を引いた額が、登録した口座に振り込まれます）。</p>';
+        h += '<p class="sub">あなたの曲は、ギフトを受け取れます。受け取り ' + got.length + '件（合計 ' + fmt(sum) + '円。運営の手数料 ' + PAY.feePct + '%を引いた額が、登録した口座に振り込まれます）。</p>';
       } else {
-        h += '<p class="sub">自分の曲に投げ銭を受け取るには、決済会社 Stripe で、本人確認と振込先の口座の登録をします（数分かかります）。運営の手数料は ' + PAY.feePct + '%です。</p>' +
+        h += '<p class="sub">自分の曲にギフトを受け取るには、決済会社 Stripe で、本人確認と振込先の口座の登録をします（数分かかります）。運営の手数料は ' + PAY.feePct + '%です。</p>' +
           '<button class="vbtn gold" style="width:100%;min-height:44px" data-act="pay-connect">' + (D.conn ? '受け取り設定の続きをする' : '受け取り設定をする') + '</button>' +
           (D.conn ? '<button class="vbtn line" style="width:100%;min-height:44px;margin-top:6px" data-act="pay-refresh">設定が終わったので、確認する</button>' : '');
       }
       var gave = D.myTips.filter(function (x) { return x.from === D.me; });
-      if (gave.length) { h += '<p class="hint">あなたが送った投げ銭：' + gave.length + '件</p>'; }
+      if (gave.length) { h += '<p class="hint">あなたが贈ったギフト：' + gave.length + '件</p>'; }
       h += '</section>';
     }
     return h;
   }
+  /* ---------- ギフト（投げ銭を、ギフトの形で） ---------- */
+  var GIFT_ART = {
+    sakura: '<g transform="translate(50 50)"><g fill="#ffb7d1" stroke="#f06fa4" stroke-width="2"><path id="gp" d="M0 -6 Q-16 -22 -9 -38 Q0 -34 0 -28 Q0 -34 9 -38 Q16 -22 0 -6z"/><use href="#gp" transform="rotate(72)"/><use href="#gp" transform="rotate(144)"/><use href="#gp" transform="rotate(216)"/><use href="#gp" transform="rotate(288)"/></g><circle r="6" fill="#ffe36b" stroke="#e0a800" stroke-width="1.5"/></g>',
+    present: '<rect x="18" y="42" width="64" height="42" rx="6" fill="#ff7a8a" stroke="#d94a60" stroke-width="2.5"/><rect x="14" y="32" width="72" height="16" rx="5" fill="#ff98a5" stroke="#d94a60" stroke-width="2.5"/><rect x="44" y="32" width="12" height="52" fill="#ffe36b" stroke="#e0a800" stroke-width="1.5"/><path d="M50 32 Q34 10 28 24 Q26 34 50 32z M50 32 Q66 10 72 24 Q74 34 50 32z" fill="#ffe36b" stroke="#e0a800" stroke-width="2"/>',
+    clover: '<g transform="translate(50 46)" fill="#5fc24b" stroke="#2f8a30" stroke-width="2"><path id="gl" d="M0 0 Q-20 -6 -16 -22 Q-4 -28 0 -10z"/><use href="#gl" transform="rotate(90)"/><use href="#gl" transform="rotate(180)"/><use href="#gl" transform="rotate(270)"/></g><path d="M50 50 Q52 70 44 88" stroke="#2f8a30" stroke-width="4" fill="none" stroke-linecap="round"/>',
+    crown: '<path d="M14 72 L8 30 L32 50 L50 22 L68 50 L92 30 L86 72z" fill="#ffd23f" stroke="#d99a00" stroke-width="3" stroke-linejoin="round"/><rect x="14" y="72" width="72" height="12" rx="4" fill="#ffc400" stroke="#d99a00" stroke-width="3"/><circle cx="50" cy="60" r="5" fill="#ff5a7a"/><circle cx="30" cy="62" r="3.5" fill="#5ac8ff"/><circle cx="70" cy="62" r="3.5" fill="#5ac8ff"/><circle cx="8" cy="30" r="4" fill="#ffe36b"/><circle cx="92" cy="30" r="4" fill="#ffe36b"/><circle cx="50" cy="22" r="4" fill="#ffe36b"/>',
+    gem: '<polygon points="26,22 74,22 92,42 50,90 8,42" fill="#7fe3ff" stroke="#1f9bd0" stroke-width="3" stroke-linejoin="round"/><polygon points="8,42 92,42 50,90" fill="#4fc6f5" stroke="#1f9bd0" stroke-width="2.5" stroke-linejoin="round"/><polygon points="26,22 38,42 50,22 62,42 74,22" fill="#c9f4ff" stroke="#1f9bd0" stroke-width="2" stroke-linejoin="round"/><line x1="38" y1="42" x2="50" y2="90" stroke="#1f9bd0" stroke-width="2"/><line x1="62" y1="42" x2="50" y2="90" stroke="#1f9bd0" stroke-width="2"/>'
+  };
+  function giftSvg(id, cls) {
+    if (!GIFT_ART[id]) { return ''; }
+    return '<svg class="gi ' + (cls || '') + '" viewBox="0 0 100 100" aria-hidden="true">' + GIFT_ART[id] + '</svg>';
+  }
+  function giftDef(id) { var l = (PAY && PAY.gifts) || []; for (var i = 0; i < l.length; i++) { if (l[i].id === id) { return l[i]; } } return null; }
+  var GIFT_NAME = { sakura: 'さくら', present: 'プレゼント', clover: 'クローバー', crown: 'おうかん', gem: 'ダイヤ' };
+  function giftsOf(t) { return D.giftFeed.filter(function (g) { return g.tid === t.id; }); }
+  function giftBurst(id) {
+    if (!GIFT_ART[id]) { return; }
+    try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; } } catch (e) { /* 無視 */ }
+    var d = document.createElement('div'), h = '<div class="big">' + giftSvg(id) + '</div>', i;
+    d.className = 'gburst'; d.setAttribute('aria-hidden', 'true');
+    for (i = 0; i < 14; i++) { h += '<div class="p" style="left:' + Math.round(Math.random() * 92) + '%;animation-delay:' + (Math.random() * 1.1).toFixed(2) + 's;animation-duration:' + (2 + Math.random()).toFixed(2) + 's">' + giftSvg(id) + '</div>'; }
+    d.innerHTML = h;
+    document.body.appendChild(d);
+    setTimeout(function () { if (d.parentNode) { d.parentNode.removeChild(d); } }, 4200);
+  }
   function tipSection(t) {
-    if (!PAY || !PAY.tip || !PAYDB || t.status !== '公開' || !t.uid || t.mine || !D.tipReady[t.uid]) { return ''; }
-    var n = D.tipN[t.id] || 0;
-    return '<div class="sec"><button class="vbtn gold" style="width:100%;min-height:44px" data-act="tip-open" data-id="' + esc(t.id) + '">♥ 投げ銭で応援する</button>' + (n ? '<p class="hint">この曲への投げ銭：' + n + '件</p>' : '') + '</div>';
+    if (!PAY || !PAY.tip || !PAYDB) { return ''; }
+    var feed = giftsOf(t), h = '';
+    if (feed.length) {
+      var cnt = {};
+      feed.forEach(function (g) { cnt[g.gift] = (cnt[g.gift] || 0) + 1; });
+      h += '<div class="sec"><div class="sec-h"><h3>もらったギフト（' + feed.length + '）</h3></div><div class="gsum">' +
+        Object.keys(GIFT_ART).filter(function (k) { return cnt[k]; }).map(function (k) { return '<span class="gchip">' + giftSvg(k) + '<b class="tnum">×' + cnt[k] + '</b></span>'; }).join('') + '</div>' +
+        '<ul class="glist">' + feed.slice(0, 3).map(function (g) {
+          return '<li>' + giftSvg(g.gift) + '<span>' + esc(g.uid ? pn(g.uid, g.name || 'リスナー') : '匿名さん') + ' が「' + esc(GIFT_NAME[g.gift] || 'ギフト') + '」を贈りました<small>・' + ago(g.n) + '</small></span></li>';
+        }).join('') + '</ul></div>';
+    }
+    if (t.status === '公開' && t.uid && !t.mine && D.tipReady[t.uid]) {
+      h += '<div class="sec"><button class="vbtn gold" style="width:100%;min-height:44px" data-act="tip-open" data-id="' + esc(t.id) + '">🎁 ギフトを贈る</button></div>';
+    }
+    return h;
   }
   function drawTip(s) {
-    var t = byId(s.id);
-    if (!t || !PAY) { closeSheet(); return; }
-    var amts = [100, 300, 500, 1000, 3000];
-    $('#sheet').innerHTML = sheetTop('投げ銭') + '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんに、投げ銭で応援します。</p>' +
-      '<div class="seg" role="group" aria-label="金額">' + amts.map(function (a) { return '<button data-act="tip-amt" data-v="' + a + '" aria-pressed="' + (ui.tipAmt === a) + '">' + fmt(a) + '円</button>'; }).join('') + '</div>' +
-      '<div class="field" style="margin-top:8px"><label for="tip-amt">金額（円・' + full(PAY.tipMin) + '〜' + full(PAY.tipMax) + '）</label><input type="text" id="tip-amt" inputmode="numeric" value="' + ui.tipAmt + '"></div>' +
-      '<p class="hint">支払いは、決済会社 Stripe の画面で行います（カード等）。投げ銭は、あとから取り消せません。運営の手数料 ' + PAY.feePct + '%を引いた額が、曲の投稿者に届きます。<a href="terms.html#tokusho" target="_blank" rel="noopener">特定商取引法に基づく表記</a></p>' +
-      '<button class="cta" data-act="tip-go" data-id="' + esc(t.id) + '">決済画面へ進む</button>';
+    var t = byId(s.id), gs = (PAY && PAY.gifts) || [];
+    if (!t || !PAY || !gs.length) { closeSheet(); return; }
+    if (!giftDef(ui.tipGift)) { ui.tipGift = gs[1] ? gs[1].id : gs[0].id; }
+    var cur = giftDef(ui.tipGift);
+    $('#sheet').innerHTML = sheetTop('ギフト') + '<h2 style="font-size:20px">' + esc(t.title) + '</h2><p class="sub">' + esc(t.artist) + ' さんに、ギフトを贈って応援します。</p>' +
+      '<div class="ggrid" id="ggrid" role="group" aria-label="ギフトの種類">' + gs.map(function (g) {
+        return '<button type="button" class="gitem" data-act="tip-gift" data-v="' + esc(g.id) + '" data-amt="' + g.amount + '" aria-pressed="' + (g.id === ui.tipGift) + '">' + giftSvg(g.id) + '<b>' + esc(GIFT_NAME[g.id] || g.name) + '</b><small>' + full(g.amount) + '円</small></button>';
+      }).join('') + '</div>' +
+      '<label class="check" style="margin-top:10px"><input type="checkbox" id="tip-anon"><span>名前を出さずに贈る（相手には「匿名さん」と表示されます）</span></label>' +
+      '<p class="hint">支払いは、決済会社 Stripe の画面で行います（カード等）。ギフトは、あとから取り消せません。運営の手数料 ' + PAY.feePct + '%を引いた額が、曲の投稿者に届きます。ギフトは応援の気持ちで、特典や商品の対価ではありません。<a href="terms.html#tokusho" target="_blank" rel="noopener">特定商取引法に基づく表記</a></p>' +
+      '<button class="cta" id="tip-go-btn" data-act="tip-go" data-id="' + esc(t.id) + '">' + full(cur.amount) + '円で贈る</button>';
   }
 
   /* ---------- data loading ---------- */
@@ -2302,7 +2554,7 @@ button.pill { display: inline-flex; align-items: center; }
       var q = [
         sb.from('tracks').select('id,owner,title,artist,team,genre,tool,audio_path,status,created_at' + (MEDIA ? ',cover_path,video_path,youtube_id' : '') + (MEDIA && SRC ? ',source_path' : '') + (LYR ? ',lyrics' : '')).order('created_at', { ascending: false }).limit(500),
         sb.from('track_scores').select('track_id,d,w,m,y,likes' + (SEASONOK ? ',s' : '')),
-        sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500)
+        sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(' + (AVOK ? 'name,avatar' : 'name') + ')').order('created_at', { ascending: true }).limit(500)
       ];
       if (D.me) {
         q.push(sb.from('likes').select('track_id'));
@@ -2317,8 +2569,13 @@ button.pill { display: inline-flex; align-items: center; }
       var tracks = (r[0].data || []).map(makeTrack);
       var scores = {};
       (r[1].data || []).forEach(function (s) { scores[String(s.track_id)] = s; });
+      if (r[2].error && AVOK) {
+        AVOK = false;
+        r[2] = await sb.from('comments').select('id,track_id,user_id,body,created_at,profiles(name)').order('created_at', { ascending: true }).limit(500);
+      }
       var comments = {};
       (r[2].data || []).forEach(function (c) {
+        if (c.profiles && c.profiles.avatar) { AV[c.user_id] = c.profiles.avatar; }
         var k = String(c.track_id);
         var nm = c.user_id === D.me ? 'あなた' : ((c.profiles && c.profiles.name) || 'リスナー');
         (comments[k] = comments[k] || []).push({ u: c.user_id, n: nm, t: String(c.body || '').slice(0, 80) });
@@ -2407,6 +2664,18 @@ button.pill { display: inline-flex; align-items: center; }
           }
         } catch (z5) { /* 課金まわりの読み込みに失敗しても、ほかの機能は動かします */ }
       }
+      var giftFeed = [], giftScore = {};
+      if (PAYDB && GIFTDB) {
+        try {
+          var gq = await Promise.all([sb.from('gift_feed').select('id,track_id,gift,from_user,from_name,created_at').order('created_at', { ascending: false }).limit(300), sb.from('track_gift_score').select('track_id,pts,n')]);
+          if (gq[0].error) {
+            if (/schema cache|does not exist|PGRST20|42P01/.test(String(gq[0].error.message || '') + String(gq[0].error.code || ''))) { GIFTDB = false; }
+          } else {
+            giftFeed = (gq[0].data || []).map(function (g) { return { id: String(g.id), tid: String(g.track_id), gift: g.gift, uid: g.from_user || '', name: g.from_name || '', n: Date.parse(g.created_at) || 0 }; });
+            if (!gq[1].error) { (gq[1].data || []).forEach(function (x) { giftScore[String(x.track_id)] = { pts: num(x.pts), n: num(x.n) }; }); }
+          }
+        } catch (z6) { /* ギフトの読み込みに失敗しても、ほかの機能は動かします */ }
+      }
       var sings = [], singScore = {}, singLikes = {};
       if (SINGOK) {
         try {
@@ -2462,13 +2731,13 @@ button.pill { display: inline-flex; align-items: center; }
           }
         } catch (z3) { /* イベントの読み込みに失敗しても、ほかの機能は動かします */ }
       }
-      var sig = JSON.stringify([D.avatar, plus, mySub, conn, tipReady, tipN, myTips, seasons, sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
+      var sig = JSON.stringify([giftFeed, giftScore, D.avatar, plus, mySub, conn, tipReady, tipN, myTips, seasons, sings, singScore, singLikes, evt, fin, qual, myQual, grants, pvs, pvScore, pvLikes, tracks, scores, comments, likes, leftNow, D.me, D.name, D.admin, D.judge, reveal, myScores, fin, plays, followers, follows, pls, plt, recent]);
       D.err = '';
       D.ready = true;
       if (sig !== D.sig) {
         D.sig = sig; D.tracks = tracks; D.scores = scores; D.comments = comments; D.myLikes = likes; D.left = leftNow;
         D.reveal = reveal; D.myScores = myScores; D.final = fin; D.plays = plays; D.followers = followers; D.follows = follows;
-        D.plus = plus; D.mySub = mySub; D.conn = conn; D.tipReady = tipReady; D.tipN = tipN; D.myTips = myTips; D.seasons = seasons; D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
+        D.giftFeed = giftFeed; D.giftScore = giftScore; D.plus = plus; D.mySub = mySub; D.conn = conn; D.tipReady = tipReady; D.tipN = tipN; D.myTips = myTips; D.seasons = seasons; D.sings = sings; D.singScore = singScore; D.singLikes = singLikes; D.pls = pls; D.plt = plt; D.recent = recent; D.pvs = pvs; D.pvScore = pvScore; D.pvLikes = pvLikes; D.grants = grants; D.evt = evt; D.fin = fin; D.qual = qual; D.myQual = myQual;
         changed();
       } else if (!$('#view').firstChild) { changed(); }
     } catch (e) {
@@ -2552,6 +2821,7 @@ button.pill { display: inline-flex; align-items: center; }
     if (r.error) { toast(errText(r.error)); return; }
     toast(was ? 'お気に入りから外しました' : 'お気に入りに追加しました');
     await reload();
+    rlRefresh();
   }
   async function follow(name) {
     if (!need('フォローするにはログインしてください')) { return; }
@@ -2679,6 +2949,7 @@ button.pill { display: inline-flex; align-items: center; }
     if (r.error) { toast(/row-level|policy/.test(String(r.error.message)) ? '自分のPVにはいいねできません' : errText(r.error)); return; }
     await reload();
     if (ui.sheet && ui.sheet.k === 'pvplay') { drawPvPlay(ui.sheet); }
+    rlRefresh();
   }
   async function reviewPv(id, status) {
     var r = await sb.rpc('review_pv', { p_pv: id, p_status: status });
@@ -2827,6 +3098,10 @@ button.pill { display: inline-flex; align-items: center; }
     else if (act === 'pv-open') { pausePlayback(); openSheet({ k: 'pvplay', id: id }); }
     else if (act === 'pv-new') { if (need('PVを投稿するにはログインしてください')) { openSheet({ k: 'pvnew', id: id }); } }
     else if (act === 'pv-like') { pvLike(id); }
+    else if (act === 'reels-open') { location.hash = '#reels' + (id ? '/' + id : ''); }
+    else if (act === 'rl-close') { closeReels(); }
+    else if (act === 'rl-snd') { rlSound(); }
+    else if (act === 'rl-tap') { rlTap(el); }
     else if (act === 'pv-del') { deletePv(id); }
     else if (act === 'pv-ok') { reviewPv(id, 'approved'); }
     else if (act === 'pv-ng') { reviewPv(id, 'rejected'); }
@@ -2835,9 +3110,9 @@ button.pill { display: inline-flex; align-items: center; }
     else if (act === 'pay-portal') { payGo('/api/portal', {}, el); }
     else if (act === 'pay-connect') { payGo('/api/connect', {}, el); }
     else if (act === 'pay-refresh') { payRefresh(); }
-    else if (act === 'tip-open') { if (need('投げ銭するにはログインしてください')) { ui.tipAmt = ui.tipAmt || 300; openSheet({ k: 'tip', id: id }); } }
-    else if (act === 'tip-amt') { ui.tipAmt = Number(v); if (ui.sheet && ui.sheet.k === 'tip') { drawTip(ui.sheet); } }
-    else if (act === 'tip-go') { payGo('/api/checkout', { kind: 'tip', track_id: id, amount: Number(String(($('#tip-amt') || {}).value || '').replace(/[,，円\s]/g, '')) || 0 }, el); }
+    else if (act === 'tip-open') { if (need('ギフトを贈るにはログインしてください')) { openSheet({ k: 'tip', id: id }); } }
+    else if (act === 'tip-gift') { ui.tipGift = v; Array.prototype.forEach.call(el.parentNode.querySelectorAll('.gitem'), function (b) { b.setAttribute('aria-pressed', b === el ? 'true' : 'false'); }); var gb = $('#tip-go-btn'), gd = giftDef(v); if (gb && gd) { gb.textContent = full(gd.amount) + '円で贈る'; } }
+    else if (act === 'tip-go') { payGo('/api/checkout', { kind: 'tip', track_id: id, gift: ui.tipGift, anon: !!($('#tip-anon') && $('#tip-anon').checked) }, el); }
     else if (act === 'ka-start') { kaStart(); }
     else if (act === 'ka-stop') { kaStop(); }
     else if (act === 'ka-fx') { KA.fx = v; drawKaraoke(); }
@@ -2946,7 +3221,7 @@ button.pill { display: inline-flex; align-items: center; }
     }
   });
   $('#veil').addEventListener('click', function (e) { if (e.target === $('#veil')) { closeSheet(); } });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (S.on) { stageStop(); } else if (ui.sheet) { closeSheet(); } } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (S.on) { stageStop(); } else if (ui.sheet) { closeSheet(); } else if (RL.el) { closeReels(); } } });
   document.addEventListener('input', function (e) {
     if (e.target && e.target.id === 's-q') {
       ui.q = e.target.value;
@@ -3331,7 +3606,7 @@ button.pill { display: inline-flex; align-items: center; }
     if (qs.get('paid') || qs.get('connect')) {
       history.replaceState(null, '', location.pathname + location.hash);
       if (qs.get('paid') === 'plan') { toast('ありがとうございます。Plusの反映まで、数秒かかることがあります'); setTimeout(reload, 4000); setTimeout(reload, 12000); }
-      else if (qs.get('paid') === 'tip') { toast('投げ銭ありがとうございます。応援が届きました'); setTimeout(reload, 4000); }
+      else if (qs.get('paid') === 'tip') { toast('ギフトありがとうございます。応援が届きました'); giftBurst(qs.get('gift')); setTimeout(reload, 4000); setTimeout(reload, 12000); }
       else if (qs.get('connect') && D.me) { payRefresh(); }
     }
     setInterval(function () { if (!document.hidden) { load(); } }, 20000);
@@ -3358,6 +3633,11 @@ button.pill { display: inline-flex; align-items: center; }
   /* ---------- routing ---------- */
   function route() {
     var raw = location.hash.replace(/^#/, ''), parts = raw.split('/'), r = parts[0], arg = parts.slice(1).join('/');
+    if (r === 'reels') {
+      if (!$('#view').firstChild) { ui.route = 'home'; ui.tab = 'home'; render(); }
+      openReels(arg); return;
+    }
+    if (RL.el) { closeReels(true); }
     if (r === 'pv') { ui.rk = 'pv'; r = 'ranking'; }
     if (r === 'battle') { ui.ev = 'battle'; r = 'event'; }
     try { arg = decodeURIComponent(arg); } catch (e) { /* そのまま使います */ }
